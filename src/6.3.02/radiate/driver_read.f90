@@ -114,10 +114,9 @@
         endif
       enddo
 
-      ts = tl(1,1) !ADele - fix later
-      !print*,'maxcloud',maxval(qcwl)
+      ts = tl(1,1) !Adele - fix later
 
-      !print*,'start flipping'
+      !BUGSRAD works with columns that are upside down.
       CALL flip_profile(nlm,pl)
       CALL flip_profile(nlm+1,pl2)
       CALL flip_profile(nlm,dpl)
@@ -146,28 +145,6 @@
       slr = 1.0
 
 !---- 4. CALL THE RADIATIVE TRANSFER CODE:
-      !print*,'call bugsrad'
-      !print*,nlen,len,nlm
-      !print*,pl2
-      !print*,pl
-      !print*,dpl
-      !print*,tl
-      !print*,ql
-      !print*,qcwl
-      !print*,ncwl
-      !print*,qcil
-      !print*,qril
-      !print*,o3l
-      !print*,ts,amu0,slr,alvdf,alndf,alvdr,alndr,sol_const
-      !print*,gravity,cp_dry_air
-      !print*,asl
-      !print*,atl
-      !print*,fdsw
-      !print*,fusw
-      !print*,fdlw
-      !print*,fulw
-      !print*,acld
-      !print*,umco2,umch4,umn2o
       call bugs_rad(nlen,len,nlm,pl2,pl,dpl,tl,ql,qcwl,ncwl,qcil,qril, &
                     o3l,ts,amu0,slr,alvdf,alndf,alvdr,alndr,sol_const, &
                     gravity,cp_dry_air,asl,atl,fdsw,fusw,fdlw,fulw, &
