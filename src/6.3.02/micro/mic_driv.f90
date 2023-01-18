@@ -98,7 +98,7 @@ ngr = ngrid
 
 !Zero out the radiative heating rate "fthrd" if this this a radiation timestep
 !and if running Harrington Radiation as called below with microphysics loop.
-if (iswrtyp .eq. 3 .or. ilwrtyp .eq. 3) then
+if (iswrtyp .eq. 3 .or. ilwrtyp .eq. 3 .or. iswrtyp .eq. 4 .or. ilwrtyp .eq. 4) then
   if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. .001) then
     CALL azero (mzp*mxp*myp,radiate_g(ngrid)%fthrd(1,1,1))
   endif
@@ -286,6 +286,18 @@ if (iswrtyp .eq. 3 .or. ilwrtyp .eq. 3) then
          ,radiate%lwdn (1,i,j)    &
          ,dn0(1)                  &
          )
+   endif
+endif
+if (iswrtyp .eq. 4 .or. ilwrtyp .eq. 4) then
+   if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. .001) then
+      CALL radcalc4 (m1,maxnzp,7,iswrtyp,ilwrtyp  &
+         ,glat,rtgt,topt  &
+         ,radiate%albedt  (i,j) ,radiate%cosz  (i,j)  &
+         ,radiate%rlongup (i,j) ,radiate%rshort(i,j)  &
+         ,radiate%rlong   (i,j)  &
+         ,zm,zt,rv(1),dn0(1),pi0(1),pp(1),radiate%fthrd(1,i,j),i,j,ngr &
+         ,radiate%bext(1,i,j),radiate%swup(1,i,j),radiate%swdn(1,i,j) &
+         ,radiate%lwup(1,i,j),radiate%lwdn(1,i,j))
    endif
 endif
 

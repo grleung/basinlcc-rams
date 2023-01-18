@@ -6,7 +6,7 @@ MAKE=/usr/bin/make
 #############################################################################
 # Set your RAMS root path and version number.
 #############################################################################
-RAMS_ROOT=/home/smsaleeb/rams_20210806_dev
+RAMS_ROOT=/home/aigel/RAMS
 RAMS_VERSION=6.3.02
 
 #############################################################################
@@ -15,13 +15,13 @@ RAMS_VERSION=6.3.02
 # Typically can use "parallel" for either, but some supercomputers require
 # use of the serial executable.
 #############################################################################
-HDF5_ROOT=/home/smsaleeb/software/hdf5-1.10.7
+HDF5_ROOT=/share/apps/hdf5-1.10.1/intel
 
 #############################################################################
 # Set root locations for parallel processing MPI software.
 # You can comment out MPI_ROOT for serial processing compile.
 #############################################################################
-MPI_ROOT=/home/smsaleeb/software/mpich-3.3.2
+MPI_ROOT=/share/apps/openmpi-3.1.2/intel-2019
 
 #############################################################################
 # Do not change these 2. They point from RAMS_ROOT to the source code.
@@ -78,7 +78,7 @@ CMACH=PC_LINUX1  #Standard Linux (only option available now)
 # (-g) for debugging, (-traceback) for more compiler error info
 # (-check bounds) for array bounds checking, (-fp-model precise) for IEEE
 # (-check uninit) for finding uninitialized variables, (-free) for free format
-F_COMP=/home/smsaleeb/intel/composer_xe_2011_sp1.8.273/bin/intel64/ifort
+F_COMP=ifort
 F_OPTS1=-free -O1 -fp-model precise
 F_OPTS2=-free -O2 -fp-model precise
 LOADER_OPTS= -free -O2 -fp-model precise
@@ -165,5 +165,6 @@ ARCH=ar rsU
 # Comment out these "PAR_" lines for serial processing compile.
 #############################################################################
 PAR_INCS=-I$(MPI_ROOT)/include
-PAR_LIBS=-L$(MPI_ROOT)/lib -lmpich -lmpl
+#PAR_LIBS=-L$(MPI_ROOT)/lib -lmpich -lmpl
+PAR_LIBS=-L$(MPI_ROOT)/lib -lmpi
 PAR_DEFS=-DRAMS_MPI
