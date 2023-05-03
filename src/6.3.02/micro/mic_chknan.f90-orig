@@ -44,13 +44,12 @@ do k = 1,mzp
    endif
 
    !CHECK ICE NUCLEI
-   !GRL 2023 05 03 Commenting out this section for static aerosol
-   !if (jnmb(3)>=5 .and. (iifn==1.or.iifn==2)) then
-   ! if(isnanr(micro_g(ngrid)%cifnp(k,i,j))) prtflg=1
-   ! tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cifnt(1))
-   ! if(isnanr(tempvar)) prtflg=1
-   ! if(tempvar>1.e30) prtflg=1
-   !endif
+   if (jnmb(3)>=5 .and. (iifn==1.or.iifn==2)) then
+    if(isnanr(micro_g(ngrid)%cifnp(k,i,j))) prtflg=1
+    tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cifnt(1))
+    if(isnanr(tempvar)) prtflg=1
+    if(tempvar>1.e30) prtflg=1
+   endif
    !CHECK DUST MODES
    if(idust > 0)then
      if(isnanr(micro_g(ngrid)%md1np(k,i,j)) .or. &
@@ -75,25 +74,24 @@ do k = 1,mzp
         isnanr(micro_g(ngrid)%salt_spum_mp(k,i,j)) ) prtflg=1
    endif
    !CHECK CCN AND GCCN
-   !GRL 2023 05 03 Commenting out this section for static aerosol
-   !if(iaerosol > 0)then
-   !  if(isnanr(micro_g(ngrid)%cccnp(k,i,j)) .or. &
-   !     isnanr(micro_g(ngrid)%cccmp(k,i,j)) .or. &
-   !     isnanr(micro_g(ngrid)%gccnp(k,i,j)) .or. &
-   !     isnanr(micro_g(ngrid)%gccmp(k,i,j)) ) prtflg=1
-   !  tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cccnt(1))
-   !  if(isnanr(tempvar)) prtflg=1
-   !  if(tempvar>1.e30) prtflg=1
-   !  tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cccmt(1))
-   !  if(isnanr(tempvar)) prtflg=1
-   !  if(tempvar>1.e30) prtflg=1
-   !  tempvar = valugp(mzp,mxp,myp,k,i,j,tend%gccnt(1))
-   !  if(isnanr(tempvar)) prtflg=1
-   !  if(tempvar>1.e30) prtflg=1
-   !  tempvar = valugp(mzp,mxp,myp,k,i,j,tend%gccmt(1))
-   !  if(isnanr(tempvar)) prtflg=1
-   !  if(tempvar>1.e30) prtflg=1
-   !endif
+   if(iaerosol > 0)then
+     if(isnanr(micro_g(ngrid)%cccnp(k,i,j)) .or. &
+        isnanr(micro_g(ngrid)%cccmp(k,i,j)) .or. &
+        isnanr(micro_g(ngrid)%gccnp(k,i,j)) .or. &
+        isnanr(micro_g(ngrid)%gccmp(k,i,j)) ) prtflg=1
+     tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cccnt(1))
+     if(isnanr(tempvar)) prtflg=1
+     if(tempvar>1.e30) prtflg=1
+     tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cccmt(1))
+     if(isnanr(tempvar)) prtflg=1
+     if(tempvar>1.e30) prtflg=1
+     tempvar = valugp(mzp,mxp,myp,k,i,j,tend%gccnt(1))
+     if(isnanr(tempvar)) prtflg=1
+     if(tempvar>1.e30) prtflg=1
+     tempvar = valugp(mzp,mxp,myp,k,i,j,tend%gccmt(1))
+     if(isnanr(tempvar)) prtflg=1
+     if(tempvar>1.e30) prtflg=1
+   endif
    !CHECK REGENERATED AEROSOL MODES
    if(iccnlev>=2)then
      if(isnanr(micro_g(ngrid)%regen_aero1_np(k,i,j)) .or. &
@@ -373,21 +371,20 @@ do k = 1,mzp
     print*,'theta:         ',basic_g(ngrid)%theta(k,i,j)
     print*,'rv:            ',basic_g(ngrid)%rv(k,i,j)
 
-    !GRL 2023 05 03 Commenting out this section for static aerosol
-    !if(jnmb(3)>=5 .and. (iifn==1.or.iifn==2)) then
-    !  print*,'cifnp:         ',micro_g(ngrid)%cifnp(k,i,j)
-    !  print*,'cifnp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cifnt(1))
-    !endif
-    !if(iaerosol > 0)then
-    !  print*,'cccnp:         ',micro_g(ngrid)%cccnp(k,i,j)
-    !  print*,'cccnp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cccnt(1))
-    !  print*,'cccmp:         ',micro_g(ngrid)%cccmp(k,i,j)
-    !  print*,'cccmp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cccmt(1))
-    !  print*,'gccnp:         ',micro_g(ngrid)%gccnp(k,i,j)
-    !  print*,'gccnp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%gccnt(1))
-    !  print*,'gccmp:         ',micro_g(ngrid)%gccmp(k,i,j)
-    !  print*,'gccmp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%gccmt(1))
-    !endif
+    if(jnmb(3)>=5 .and. (iifn==1.or.iifn==2)) then
+      print*,'cifnp:         ',micro_g(ngrid)%cifnp(k,i,j)
+      print*,'cifnp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cifnt(1))
+    endif
+    if(iaerosol > 0)then
+      print*,'cccnp:         ',micro_g(ngrid)%cccnp(k,i,j)
+      print*,'cccnp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cccnt(1))
+      print*,'cccmp:         ',micro_g(ngrid)%cccmp(k,i,j)
+      print*,'cccmp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cccmt(1))
+      print*,'gccnp:         ',micro_g(ngrid)%gccnp(k,i,j)
+      print*,'gccnp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%gccnt(1))
+      print*,'gccmp:         ',micro_g(ngrid)%gccmp(k,i,j)
+      print*,'gccmp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%gccmt(1))
+    endif
     if(idust > 0)then
       print*,'md1np:         ',micro_g(ngrid)%md1np(k,i,j)
       print*,'md1mp:         ',micro_g(ngrid)%md1mp(k,i,j)
