@@ -1,0 +1,20 @@
+#PBS -S /bin/csh
+#PBS -V
+#PBS -q normal
+#PBS -lselect=1:ncpus=1:mpiprocs=1:model=rom_ait,walltime=00:30:00
+#PBS -W group_list=s2832
+#PBS -j oe
+#PBS -o /nobackupp12/grleung1/basinlcc/b2_test/
+#PBS -N basinlcc.b2_test.degrib
+#PBS -m be
+#PBS -r n
+
+setenv MPI_TYPE_DEPTH 16
+module load gcc/10.3 mpi-hpe/mpt.2.25 comp-intel/2020.4.304 szip/2.1.1
+#limit coredumpsize unlimited
+
+cd /home6/grleung1/basinlcc-rams/run/b2_test/
+
+#Run dgrib script
+./make_dp_from_era_test.sh >& /nobackupp12/grleung1/basinlcc/b2_test/dp/rams_mkdp.log
+

@@ -4,20 +4,20 @@
 
 !  Simulation title (64 chars)
 
-   EXPNME   = 'RAMS_basinlcc_b2_test_SFC',  !CHANGEME
+   EXPNME   = 'RAMS_basinlcc_b2_test_VAR',  !CHANGEME
 
 !  Type of model run to perform
 
-!   RUNTYPE  = 'INITIAL',                      !CHANGEME                              
-    RUNTYPE  = 'MAKESFC',                       
-!   RUNTYPE  = 'MAKEVFILE',
+    RUNTYPE  = 'INITIAL',                      !CHANGEME                              
+!   RUNTYPE  = 'MAKESFC',                       
+!    RUNTYPE  = 'MAKEVFILE',
 !   RUNTYPE  = 'MAKEHFILE',
 !   RUNTYPE  = 'HISTORY',
 !   RUNTYPE  = 'ERROR',
 
    TIMEUNIT = 'h',          ! 'h','m','s' - Time units of TIMMAX, TIMSTR
 
-   TIMMAX   = 1.,           ! Final time of simulation !CHANGEME
+   TIMMAX   = 12.,           ! Final time of simulation !CHANGEME
 
 !  Start of simulation or ISAN processing
 
@@ -91,7 +91,7 @@
    NUD_TYPE = 1,             ! =0 - no analysis nudging
                              ! =1 - nudge from varfiles
                              
-   VARFPFX  = '/nobackup/grleung1/basinlcc/b2_test/var/var',       ! Varfile prefix !CHANGEME
+   VARFPFX  = '/nobackup/grleung1/basinlcc/b2_test/var-past/var',       ! Varfile prefix !CHANGEME
    VWAIT1   = 0.,            ! wait between each VFILE check (s)
    VWAITTOT = 0.,            ! total wait before giving up on a VFILE (s)
    
@@ -189,7 +189,7 @@
 !  Analysis file output
  
    IOUTPUT  =  1,             ! 0-no files, 1-write files
-   AFILEPREF  = '/nobackup/grleung1/basinlcc/b2_test/out/a', !CHANGEME  
+   AFILEPREF  = '/nobackup/grleung1/basinlcc/b2_test/out-past/a', !CHANGEME  
                               ! File prefix for all analysis files
                               !   state,mean,lite,both
                               
@@ -250,10 +250,10 @@
 
 ! Input topography variables !CHANGEME (Paths)
 
-   TOPFILES = '/nobackup/grleung1/basinlcc/b2_test/sfc/toph', ! Path and prefix for topo files.   !CHANGEME 
-   SFCFILES = '/nobackup/grleung1/basinlcc/b2_test/sfc/sfch', ! Path and prefix for surface files.!CHANGEME
-   SSTFPFX  = '/nobackup/grleung1/basinlcc/b2_test/sfc/ssth', ! Path and prefix for sst files     !CHANGEME
-   NDVIFPFX = '/nobackup/grleung1/basinlcc/b2_test/sfc/ndh',  ! Path and prefix for ndni files    !CHANGEME
+   TOPFILES = '/nobackup/grleung1/basinlcc/b2_test/sfc-past/toph', ! Path and prefix for topo files.   !CHANGEME 
+   SFCFILES = '/nobackup/grleung1/basinlcc/b2_test/sfc-past/sfch', ! Path and prefix for surface files.!CHANGEME
+   SSTFPFX  = '/nobackup/grleung1/basinlcc/b2_test/sfc-past/ssth', ! Path and prefix for sst files     !CHANGEME
+   NDVIFPFX = '/nobackup/grleung1/basinlcc/b2_test/sfc-past/ndh',  ! Path and prefix for ndni files    !CHANGEME
 
    ITOPTFLG = 1,1,1,           ! 2 - Fill data in "leaf3_init"
    ISSTFLG  = 1,1,1,           ! 0 - Interpolate from coarser grid
@@ -724,7 +724,7 @@
 
 ! Input data file prefixes
    IDATAIN = 1,             ! dp-p files have: 0=Relhum, 1=specific humidity
-   IAPR    = '/nobackup/grleung1/basinlcc/b2_test/dp-p', ! Input press level dataset
+   IAPR    = '/nobackup/grleung1/basinlcc/b2_test/dp/dp-p', ! Input press level dataset
    IARAWI  = ' ', ! Archived rawindsonde file name
    IASRFCE = ' ', ! Archived surface obs file name
 
@@ -733,7 +733,7 @@
 
 ! File names and dispose flags 
 
-   VARPFX    = '/nobackup/grleung1/basinlcc/b2_test/var/var',  ! isan file names prefix
+   VARPFX    = '/nobackup/grleung1/basinlcc/b2_test/var-past/var',  ! isan file names prefix
    IOFLGISZ  = 0,           ! Isen-sigz file flag: 0 = no write, 1 = write
    IOFLGVAR  = 1,           ! Var file flag: 0 = no write, 1 = write
 
