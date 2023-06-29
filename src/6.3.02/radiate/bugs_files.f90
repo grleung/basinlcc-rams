@@ -6,16 +6,16 @@
 
 !-----------------------------------------------------------------------
 
-      subroutine bugs_lwr
-     +                (    ncol ,    nlm ,    pp ,    ppl
-     +,                      dp ,     tt ,  rmix ,  cwrho
-     +,                     cwn 
-     +,                   cirho ,  o3mix ,    ts , cldamt
-     +,                  cldmax ,     b1 ,    b2 ,     b3
-     +,                      b4 ,  umco2 , umch4 ,  umn2o
-     +,                    fdlw , fdlwcl ,  fulw , fulwcl
-     +,               sel_rules
-     +                )
+      subroutine bugs_lwr &
+                     (    ncol ,    nlm ,    pp ,    ppl &
+     ,                      dp ,     tt ,  rmix ,  cwrho &
+     ,                     cwn  &
+     ,                   cirho ,  o3mix ,    ts , cldamt &
+     ,                  cldmax ,     b1 ,    b2 ,     b3 &
+     ,                      b4 ,  umco2 , umch4 ,  umn2o &
+     ,                    fdlw , fdlwcl ,  fulw , fulwcl &
+     ,               sel_rules &
+                     )
      
       use kinds
       use bugsrad_planck, only:  planck
@@ -76,158 +76,158 @@
 
 !     INPUT ARGUMENTS:
 !     ----------------
-      logical (kind=log_kind), intent(in)::
-     &  sel_rules
+      logical (kind=log_kind), intent(in):: &
+       sel_rules
 
-      integer (kind=int_kind), intent(in)::
-     &  ncol  !Length of sub-domain.
-     &, nlm   !Number of layers.
+      integer (kind=int_kind), intent(in):: &
+       ncol,  &!Length of sub-domain.
+       nlm   !Number of layers.
 
-      real (kind=dbl_kind), intent(in)::
-     &  umco2 !Concentration of CO2                              (ppm).
-     &, umch4 !Concentration of CH4                              (???).
-     &, umn2o !Concentration of N2o                              (???).
+      real (kind=dbl_kind), intent(in):: &
+       umco2, & !Concentration of CO2                              (ppm).
+       umch4, & !Concentration of CH4                              (???).
+       umn2o !Concentration of N2o                              (???).
 
-      real (kind=dbl_kind), intent(in),  dimension(ncol)::
-     &  ts    !Surface temperature                                 (K).
-     &, cldmax!Maximum cloud fraction                              (-). 
+      real (kind=dbl_kind), intent(in),  dimension(ncol):: &
+       ts,  &  !Surface temperature                                 (K).
+       cldmax !Maximum cloud fraction                              (-). 
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm)::
-     &  ppl!Layer pressure                                       (hPa).
-     &, dp    !Layer thickness                                   (hPa).
-     &, tt    !Temperature                                         (K).
-     &, rmix  !Water vapor mixing ratio                        (kg/kg).
-     &, cwrho !Cloud water mixing ratio                        (g/m^3).
-     &, cwn   !Cloud droplet concentration                     (#/kg) .
-     &, cirho !Cloud ice mixing ratio                          (g/m^3).
-     &, o3mix !Ozone mixing ratio                              (kg/kg).
-     &, cldamt!Cloud fraction                                      (-).
-     &, b1    !Cloud overlap parameter                             (-).
-     &, b2    !Cloud overlap parameter                             (-).
-     &, b3    !Cloud overlap parameter                             (-).
-     &, b4    !Cloud overlap parameter                             (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm):: &
+       ppl, & !Layer pressure                                 (hPa).
+       dp,    & !Layer thickness                               (hPa).
+       tt,    & !Temperature                                   (K).
+       rmix,  & !Water vapor mixing ratio                      (kg/kg).
+       cwrho, & !Cloud water mixing ratio                      (g/m^3).
+       cwn,   & !Cloud droplet concentration                   (#/kg) .
+       cirho, & !Cloud ice mixing ratio                        (g/m^3).
+       o3mix, & !Ozone mixing ratio                            (kg/kg).
+       cldamt, & !Cloud fraction                               (-).
+       b1,  &  !Cloud overlap parameter                        (-).
+       b2,  &  !Cloud overlap parameter                        (-).
+       b3,  &  !Cloud overlap parameter                        (-).
+       b4    !Cloud overlap parameter                         (-).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1)::
-     &  pp    !Level pressure                                    (hPa).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1):: &
+       pp    !Level pressure                                    (hPa).
 
 
 !     OUTPUT ARGUMENTS:
 !     -----------------
-      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1):: 
-     &  fdlw  !Downward LW flux                                (W/m^2).
-     &, fdlwcl!Downward clear-ksy LW flux                      (W/m^2).
-     &, fulw  !Upward LW flux                                  (W/m^2).
-     &, fulwcl!Upward clear-sky LW flux                        (W/m^2).
+      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1):: &
+       fdlw   & !Downward LW flux                            (W/m^2).
+     , fdlwcl & !Downward clear-ksy LW flux                  (W/m^2).
+     , fulw   & !Upward LW flux                              (W/m^2).
+     , fulwcl  !Upward clear-sky LW flux                     (W/m^2).
 
 ! LOCAL VARIABLES:
 
-      integer (kind=int_kind)::
-     &  mb    !Total number of spectral intervals.
-     &, mbs   !Number of shortwave (SW) spectral intervals.
-     &, mbir  !Number of longwave (LW) spectral intervals.
-      parameter(mb=18,mbs=6,mbir=12)        
+      integer (kind=int_kind), parameter :: &
+       mb = 18, &  !Total number of spectral intervals.
+       mbs = 6,  &  !Number of shortwave (SW) spectral intervals.
+       mbir = 12   !Number of longwave (LW) spectral intervals.
+     
 
-      integer (kind=int_kind)::    
-     &  i     !Horizontal index.
-     &, l     !Vertical index.
-     &, ib    !Index of spectral interval.
-     &, ig    !Index of k-distribution.
-     &, ibmbs !Index of LW spectral interval.
+      integer (kind=int_kind)::    &
+       i,    &  !Horizontal index.
+       l,    &  !Vertical index.
+       ib,   &  !Index of spectral interval.
+       ig,   &  !Index of k-distribution.
+       ibmbs   !Index of LW spectral interval.
 
-      integer (kind=int_kind), dimension(ncol,nlm)::
-     &  ip1   !Used in conjunction with pressure weigthing.
-     &, ip2   !Used in conjunction with pressure weigthing.
+      integer (kind=int_kind), dimension(ncol,nlm):: &
+       ip1,  & !Used in conjunction with pressure weigthing.
+       ip2   !Used in conjunction with pressure weigthing.
 
-      real (kind=dbl_kind)::
-     &  hk       !Weighted spectral solar constant             (W/m^2).  .
-     &, tmax     !Temperature threshold                            (K).                        .
-     &, eps      !Threshold for cloud optical properties              .
-     &, pdist
+      real (kind=dbl_kind) :: &
+       hk,    &   !Weighted spectral solar constant             (W/m^2).
+       eps,   &   !Threshold for cloud optical properties              .       
+       tmax,  &   !Temperature threshold                            (K).
+       pdist
       data eps,tmax,pdist /1.e-05,340.,2./
           
-      real (kind=dbl_kind), dimension(mbir)::
-     &  kg       !Nb of k-distributions per spectral intervals.  
+      real (kind=dbl_kind), dimension(mbir):: &
+       kg       !Nb of k-distributions per spectral intervals.  
       data kg /2,3,4,4,3,5,2,10,12,7,7,8/
 
-      real (kind=dbl_kind), dimension(mbir)::
-     &  asym_wat !Spectral asymmetry factor of water clouds.
-     &, asym_ice !Spectral asymmetry factor of ice clouds.
+      real (kind=dbl_kind), dimension(mbir):: &
+        asym_wat,  &!Spectral asymmetry factor of water clouds.
+        asym_ice !Spectral asymmetry factor of ice clouds.
 
-      real (kind=dbl_kind), dimension(mb)::
-     &  cnrw    !Real part of refractive index (Water clouds).
-     &, cniw    !Imaginary part of refractive index (Water clouds).
-     &, cnri    !Real part of refractive index (Ice clouds).
-     &, cnii    !Imaginary part of refractive indec (Ice clouds).
-     &, xlam    !Center of spectral band.
+      real (kind=dbl_kind), dimension(mb):: &
+       cnrw,  &  !Real part of refractive index (Water clouds).
+       cniw,  &  !Imaginary part of refractive index (Water clouds).
+       cnri,  &  !Real part of refractive index (Ice clouds).
+       cnii,  &  !Imaginary part of refractive indec (Ice clouds).
+       xlam    !Center of spectral band.
 
-      real (kind=dbl_kind), dimension(ncol,mbir)::
-     & es       !Spectral surface emissivity                       (-).
+      real (kind=dbl_kind), dimension(ncol,mbir):: &
+      es       !Spectral surface emissivity                       (-).
 
-      real (kind=dbl_kind), dimension(ncol,nlm):: 
-     &  rew     !Effective radius for cloud water                 (mu).
-     &, rei     !Effective radius for cloud ice                   (mu).
-     &, ttem    !Local temperature                                 (K).
-     &, pkd     !
-     &, tau1    !All-sky optical depth                             (-).
-     &, tauclr1 !Clear-sky optical depth                           (-).
-     &, tau     !All-sky optical depth                             (-).
-     &, tauclr  !Clear-sky optical depth                           (-).
-     &, taer    !Aerosol optical depth                             (-).
-     &, tray    !Rayley optical depth                              (-).
-     &, tg      !Gases optical depth                               (-).
-     &, tgm     !WV continuum optical depth                        (-).
-     &, tcldi   !Ice cloud optical depth                           (-).
-     &, tcldw   !Water cloud optical depth                         (-).
-     &, wc      !All-sky single scattering albedo                  (-).
-     &, wcclr   !Clear-sky single scattering albedo                (-).
-     &, waer    !Aerosol single scattering albedo                  (-).
-     &, wray    !Rayley single scattering albedo                   (-).
-     &, wcldi   !Ice cloud single scattering albedo                (-).
-     &, wcldw   !Water cloud single scattering albedo              (-).
-     &, asym    !All-sky asymmetry factor                          (-).
-     &, asyclr  !Clear-sky asymmetry factor                        (-).
-     &, asyaer  !Aerosol asymmetry factor                          (-).
-     &, asycldi !Ice cloud asymmetry factor                        (-).
-     &, asycldw !Water cloud asymmetry factor                      (-).
-     &, fwclr   !
-     &, fwcld   !
+      real (kind=dbl_kind), dimension(ncol,nlm):: &
+       rew,     & !Effective radius for cloud water                 (mu).
+       rei,     & !Effective radius for cloud ice                   (mu).
+       ttem,    & !Local temperature                                 (K).
+       pkd,     & !
+       tau1,    & !All-sky optical depth                             (-).
+       tauclr1, & !Clear-sky optical depth                           (-).
+       tau,     & !All-sky optical depth                             (-).
+       tauclr,  & !Clear-sky optical depth                           (-).
+       taer,    & !Aerosol optical depth                             (-).
+       tray,    & !Rayley optical depth                              (-).
+       tg,      & !Gases optical depth                               (-).
+       tgm,     & !WV continuum optical depth                        (-).
+       tcldi,   & !Ice cloud optical depth                           (-).
+       tcldw,   & !Water cloud optical depth                         (-).
+       wc,      & !All-sky single scattering albedo                  (-).
+       wcclr,   & !Clear-sky single scattering albedo                (-).
+       waer,    & !Aerosol single scattering albedo                  (-).
+       wray,    & !Rayley single scattering albedo                   (-).
+       wcldi,   & !Ice cloud single scattering albedo                (-).
+       wcldw,   & !Water cloud single scattering albedo              (-).
+       asym,    & !All-sky asymmetry factor                          (-).
+       asyclr,  & !Clear-sky asymmetry factor                        (-).
+       asyaer,  & !Aerosol asymmetry factor                          (-).
+       asycldi, & !Ice cloud asymmetry factor                        (-).
+       asycldw, & !Water cloud asymmetry factor                      (-).
+       fwclr,   & !
+       fwcld   !
 
-      real (kind=dbl_kind), dimension(ncol,nlm+1)::
-     &  bf      !Planck function for layers                    (W/m^2).
-     &, fdg     !Spectral downward flux                        (W/m^2).
-     &, fdgcl   !Spectral clear-sky downward flux              (W/m^2).
-     &, fug     !Spectral upward flux                          (W/m^2).
-     &, fugcl   !Spectral clear-sky upward flux                (W/m^2).
+      real (kind=dbl_kind), dimension(ncol,nlm+1):: &
+       bf,    &   !Planck function for layers                    (W/m^2).
+       fdg,   &   !Spectral downward flux                        (W/m^2).
+       fdgcl, &   !Spectral clear-sky downward flux              (W/m^2).
+       fug,   &   !Spectral upward flux                          (W/m^2).
+       fugcl   !Spectral clear-sky upward flux                (W/m^2).
 
 !     longwave asymmetry parameters:
 !     (assumes: re=10 for water; re=30 for ice)
-      data asym_wat /0.8200, 0.8547, 0.8619, 0.8683, 0.8723, 0.8703
-     +,              0.8566, 0.8040, 0.7463, 0.6579, 0.5103, 0.1279 /
-      data asym_ice /0.8524, 0.8791, 0.9022, 0.8797, 0.8637, 0.8722
-     +,              0.8609, 0.8168, 0.7663, 0.6584, 0.6172, 0.3585 /
+      data asym_wat /0.8200, 0.8547, 0.8619, 0.8683, 0.8723, 0.8703, &
+                     0.8566, 0.8040, 0.7463, 0.6579, 0.5103, 0.1279 /
+      data asym_ice /0.8524, 0.8791, 0.9022, 0.8797, 0.8637, 0.8722, &
+                   0.8609, 0.8168, 0.7663, 0.6584, 0.6172, 0.3585 /
 
 !---  cnrw and cniw (water clouds):
-      data cnrw/1.3422,1.3281,1.3174,1.2901,1.3348,1.3700,1.3191,1.2821
-     &,         1.3160,1.3030,1.2739,1.2319,1.1526,1.1981,1.3542,1.4917
-     &,         1.5463,1.8718/
-      data cniw/6.4790e-9,1.3417e-06,1.2521e-4,7.1533e-4,4.2669e-2
-     &,         4.3785e-3,1.3239e-2 ,1.5536e-2,5.3894e-2,3.4346e-2
-     &,         3.7490e-2,4.7442e-2 ,1.2059e-1,3.3546e-1,4.1698e-1
-     &,         4.0674e-1,3.6362e-1 ,5.2930e-1/
+      data cnrw/1.3422,1.3281,1.3174,1.2901,1.3348,1.3700,1.3191,1.2821, &
+                1.3160,1.3030,1.2739,1.2319,1.1526,1.1981,1.3542,1.4917, &
+                1.5463,1.8718/
+      data cniw/6.4790e-9,1.3417e-06,1.2521e-4,7.1533e-4,4.2669e-2, &
+                4.3785e-3,1.3239e-2 ,1.5536e-2,5.3894e-2,3.4346e-2, &
+                3.7490e-2,4.7442e-2 ,1.2059e-1,3.3546e-1,4.1698e-1, &
+                4.0674e-1,3.6362e-1 ,5.2930e-1/
 
 !--- cnri and cnii (ice clouds):
-      data cnri/1.3266,1.2986,1.2826,1.2556,1.2963,1.3956 
-     &,         1.3324,1.2960,1.3121,1.3126,1.2903,1.2295
-     &,         1.1803,1.5224,1.5572,1.5198,1.4993,1.7026/
-      data cnii/7.0696e-9,9.1220e-7,1.2189e-4,5.7648e-4,4.3144e-2
-     &,         8.2935e-3,1.5540e-2,2.5594e-2,5.9424e-2,5.1511e-2
-     &,         4.0325e-2,4.7994e-2,2.3834e-1,3.0697e-1,1.1852e-1
-     &,         4.3048e-2,6.3218e-2,1.5843e-1/
+      data cnri/1.3266,1.2986,1.2826,1.2556,1.2963,1.3956, & 
+                1.3324,1.2960,1.3121,1.3126,1.2903,1.2295, &
+                1.1803,1.5224,1.5572,1.5198,1.4993,1.7026/
+      data cnii/7.0696e-9,9.1220e-7,1.2189e-4,5.7648e-4,4.3144e-2, &
+                8.2935e-3,1.5540e-2,2.5594e-2,5.9424e-2,5.1511e-2, &
+                4.0325e-2,4.7994e-2,2.3834e-1,3.0697e-1,1.1852e-1, &
+                4.3048e-2,6.3218e-2,1.5843e-1/
 
 !---- spectral band center:
-      data xlam/0.45  ,1.0   ,1.6  ,2.2  ,3.0   ,3.75  ,4.878 ,5.556
-     &,         6.452 ,7.547 ,8.511,9.615,11.236,13.605,16.529,21.277 
-     &,         29.412,71.403/
+      data xlam/0.45  ,1.0   ,1.6  ,2.2  ,3.0   ,3.75  ,4.878 ,5.556, &
+                6.452 ,7.547 ,8.511,9.615,11.236,13.605,16.529,21.277, & 
+                29.412,71.403/
 
 !-----------------------------------------------------------------------
 
@@ -277,21 +277,21 @@
 !---- 1.1 optical properties of water and ice clouds (as in crclwr for
 !        now):
 
-         call cloudg
-     +           (   ncol ,    nlm  ,    mb ,    ib
-     +,                pp ,     tt  , cwrho ,   rew
-     +,             pdist ,   cnrw  ,  cniw ,  cnri
-     +,              cnii ,   xlam  , tcldw , wcldw
-     +,           asycldw , .false.
-     +           )
+         call cloudg &
+                 (   ncol ,    nlm  ,    mb ,    ib, &
+                       pp ,     tt  , cwrho ,   rew, &
+                    pdist ,   cnrw  ,  cniw ,  cnri, &
+                     cnii ,   xlam  , tcldw , wcldw, &
+                  asycldw , .false. &
+                 )
 
-         call cloudg
-     +           (   ncol ,   nlm   ,    mb ,    ib
-     +,                pp ,    tt   , cirho ,   rei
-     +,             pdist ,  cnrw   ,  cniw ,  cnri
-     +,              cnii ,  xlam   , tcldi , wcldi
-     +,           asycldi , .true.
-     +           )
+         call cloudg &
+                 (   ncol ,   nlm   ,    mb ,    ib, &
+                       pp ,    tt   , cirho ,   rei, &
+                    pdist ,  cnrw   ,  cniw ,  cnri, &
+                     cnii ,  xlam   , tcldi , wcldi, &
+                  asycldi , .true. &
+                 )
 
 !     the asymmetry factor for water and ice clouds are fixed as for now
 !     functions of the spectral intervals:
@@ -305,24 +305,24 @@
 
 !---- 1.2 water vapor continuum:             
 
-         call gascon
-     +           (ncol , nlm, ib ,   pp
-     +,            ppl ,  dp, tt , rmix
-     +,            tgm
-     +           )
+         call gascon &
+                 (ncol , nlm, ib ,   pp, &
+                   ppl ,  dp, tt , rmix, &
+                   tgm &
+                 )
 
 !---- 1.3 planck function:
          call planck(ncol,nlm,ibmbs,ts,tt,bf)
 
 !---- 1.4 combines single-scattering properties for gray absorption:
 
-         call comscp1
-     +           (   ncol ,     nlm ,  taer ,   tcldi
-     +,             tcldw ,     tgm ,  tray ,    waer
-     +,             wcldi ,   wcldw ,  wray ,  asyaer
-     +,           asycldi , asycldw ,  tau1 , tauclr1
-     +,              asym ,  asyclr , fwcld ,   fwclr
-     +           )
+         call comscp1 &
+                 (   ncol ,     nlm ,  taer ,   tcldi, &
+                    tcldw ,     tgm ,  tray ,    waer, &
+                    wcldi ,   wcldw ,  wray ,  asyaer, &
+                  asycldi , asycldw ,  tau1 , tauclr1, &
+                     asym ,  asyclr , fwcld ,   fwclr &
+                 )
            
 !---- loop over the k-probability distributions starts here:
 
@@ -330,21 +330,21 @@
 
 !---- 1.5 gaseous absorption:
 
-            call gases
-     +              ( ncol ,   nlm ,    ib ,    ig
-     +,                 pp ,    dp ,    tt ,  rmix
-     +,              o3mix , umco2 , umch4 , umn2o
-     +,                 hk ,    tg ,   pkd ,   ip1
-     +,                ip2
-     +              )
+            call gases &
+                    ( ncol ,   nlm ,    ib ,    ig, &
+                        pp ,    dp ,    tt ,  rmix, &
+                     o3mix , umco2 , umch4 , umn2o, &
+                        hk ,    tg ,   pkd ,   ip1, &
+                       ip2 &
+                    )
 
 !---- 1.6 combines all single-scattering properties:
 
-            call comscp2
-     +              (  ncol ,  nlm ,      tg , fwcld
-     +,               fwclr , tau1 , tauclr1 ,   tau
-     +,              tauclr ,   wc ,   wcclr
-     +              )
+            call comscp2 &
+                    (  ncol ,  nlm ,      tg , fwcld, &
+                      fwclr , tau1 , tauclr1 ,   tau, &
+                     tauclr ,   wc ,   wcclr &
+                    )
 
 
       !NBW - Minor (?) bug fix
@@ -360,19 +360,20 @@
 
 !---- 1.7 two-stream approximation:
 ! No overlap
-            call two_rt_lw
-     +              (     ncol , nlm ,  mbs , mbir
-     +,                     ib ,  wc , asym ,  tau
-     +,                     es ,  bf ,  fug ,  fdg
-     +,              sel_rules
-     +              )
+            call two_rt_lw &
+                    (     ncol , nlm ,  mbs , mbir, &
+                            ib ,  wc , asym ,  tau, &
+                            es ,  bf ,  fug ,  fdg, &
+                     sel_rules &
+                    )
 
-            call two_rt_lw
-     +              (     ncol ,   nlm ,   mbs  ,   mbir
-     +,                     ib , wcclr , asyclr , tauclr
-     +,                     es ,    bf ,  fugcl ,  fdgcl
-     +,              sel_rules
-     +              )
+            call two_rt_lw &
+                    (     ncol ,   nlm ,   mbs  ,   mbir, &
+                            ib , wcclr , asyclr , tauclr, &
+                            es ,    bf ,  fugcl ,  fdgcl, &
+                     sel_rules &
+                    )
+
             fdlw(:,:)   = fdlw(:,:)   + fdg(:,:)*hk
             fulw(:,:)   = fulw(:,:)   + fug(:,:)*hk
             fdlwcl(:,:) = fdlwcl(:,:) + fdgcl(:,:)*hk
@@ -386,7 +387,7 @@
       return
       end subroutine bugs_lwr
       
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
 
 ! CVS:  $Id: bugs_swr.F,v 1.4 2005/11/22 21:55:48 norm Exp $
@@ -394,19 +395,19 @@ c-----------------------------------------------------------------------
 
 !-----------------------------------------------------------------------
 
-      subroutine bugs_swr
-     +                (  ncol ,     nlm ,       pp ,      ppl
-     +,                    dp ,      tt ,     rmix ,    cwrho
-     +,                   cwn 
-     +,                 cirho ,   o3mix ,       ts ,     amu0
-     +,                   slr ,   alvdf ,    alndf ,    alvdr
-     +,                 alndr ,  cldamt ,   cldmax ,    umco2
-     +,                 umch4 ,   umn2o ,       b1 ,       b2
-     +,                    b3 ,      b4 ,     fdsw ,   fdswcl
-     +,                  fusw ,  fuswcl ,   radvbc , radvbccl
-     +,                radvdc ,radvdccl ,   radnbc , radnbccl
-     +,                radndc ,radndccl ,sel_rules
-     +                )
+      subroutine bugs_swr &
+                      (  ncol ,     nlm ,       pp ,      ppl, &
+                           dp ,      tt ,     rmix ,    cwrho, &
+                          cwn , &
+                        cirho ,   o3mix ,       ts ,     amu0,  &
+                          slr ,   alvdf ,    alndf ,    alvdr,  &
+                        alndr ,  cldamt ,   cldmax ,    umco2 , &
+                        umch4 ,   umn2o ,       b1 ,       b2 , &
+                           b3 ,      b4 ,     fdsw ,   fdswcl , &
+                         fusw ,  fuswcl ,   radvbc , radvbccl , &
+                       radvdc ,radvdccl ,   radnbc , radnbccl , &
+                       radndc ,radndccl ,sel_rules &
+                      )
 
 
       use kinds
@@ -465,149 +466,147 @@ c-----------------------------------------------------------------------
 
 !     INPUT ARGUMENTS:
 !     ----------------
-      logical (kind=log_kind), intent(in)::
-     &  sel_rules
+      logical (kind=log_kind), intent(in):: &
+        sel_rules
 
-      integer (kind=int_kind), intent(in)::
-     &  ncol   !Length of sub-domain.
-     &, nlm    !Number of layers.
+      integer (kind=int_kind), intent(in):: &
+        ncol,  & !Length of sub-domain.
+        nlm    !Number of layers.
 
-      real (kind=dbl_kind), intent(in)::
-     &  umco2  !Concentration of CO2                              (ppm).
-     &, umch4  !Concentration of CH4                              (???).
-     &, umn2o  !Concentration of N2o                              (???).
+      real (kind=dbl_kind), intent(in):: &
+        umco2, & !Concentration of CO2                              (ppm).
+        umch4, & !Concentration of CH4                              (???).
+        umn2o  !Concentration of N2o                              (???).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol)::
-     &  ts!Surface temperature                                      (K).
-     &, amu0   !Cosine of solar zenith angle                        (-).
-     &, slr    !Fraction of daylight                                (-).
-     &, alvdr  !Visible direct surface albedo                       (-).
-     &, alndr  !Near-IR direct surface albedo                       (-).
-     &, alvdf  !Visible diffuse surface albedo                      (-).
-     &, alndf  !Near-IR diffuse surface albedo                      (-).
-     &, cldmax !Maximum cloud fraction                              (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol):: &
+        ts, &!Surface temperature                                  (K).
+        amu0, &   !Cosine of solar zenith angle                    (-).
+        slr, &    !Fraction of daylight                            (-).
+        alvdr, &  !Visible direct surface albedo                   (-).
+        alndr, &  !Near-IR direct surface albedo                   (-).
+        alvdf, &  !Visible diffuse surface albedo                  (-).
+        alndf, & !Near-IR diffuse surface albedo                   (-).
+        cldmax !Maximum cloud fraction                             (-).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm)::
-     &  ppl     !Layer pressure                                   (hPa).
-     &, dp      !Layer thickness                                  (hPa).
-     &, tt      !Temperature                                        (K).
-     &, rmix    !Water vapor mixing ratio                       (kg/kg).
-     &, cwrho   !Cloud water water content                     (g/m^-3).
-     &, cwn     !Cloud droplet concentration                     (#/kg).
-     &, cirho   !Cloud ice content                             (g/m^-3).
-     &, o3mix   !Ozone mixing ratio                             (kg/kg).
-     &, cldamt  !Cloud fraction                                     (-).
-     &, b1      !Cloud overlap parameter                            (-).
-     &, b2      !Cloud overlap parameter                            (-).
-     &, b3      !Cloud overlap parameter                            (-).
-     &, b4      !Cloud overlap parameter                            (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm):: &
+        ppl, &     !Layer pressure                                   (hPa).
+        dp, &      !Layer thickness                                  (hPa).
+        tt, &      !Temperature                                        (K).
+        rmix, &    !Water vapor mixing ratio                       (kg/kg).
+        cwrho, &   !Cloud water water content                     (g/m^-3).
+        cwn, &     !Cloud droplet concentration                     (#/kg).
+        cirho, &   !Cloud ice content                             (g/m^-3).
+        o3mix, &   !Ozone mixing ratio                             (kg/kg).
+        cldamt, &  !Cloud fraction                                     (-).
+        b1, &      !Cloud overlap parameter                            (-).
+        b2, &      !Cloud overlap parameter                            (-).
+        b3, &      !Cloud overlap parameter                            (-).
+        b4         !Cloud overlap parameter                            (-).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1)::
-     &  pp      !Level pressure                                   (hPa).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1):: &
+        pp      !Level pressure                                   (hPa).
 
 
 
 !     OUTPUT ARGUMENTS:
 !     -----------------
-      real (kind=dbl_kind), intent(out), dimension(ncol)::
-     &  radvbc  !SFC all-sky visible direct net SW radiation   (W/m^-2).
-     &, radvbccl!SFC clear-sky visible direct net SW radiation (W/m^-2).
-     &, radvdc  !SFC all-sky visible direct net SW radiation   (W/m^-2).
-     &, radvdccl!SFC clear-sky visible direct net SW radiation (W/m^-2).
-     &, radnbc  !SFC all-sky near-ir direct net SW radiation   (W/m^-2).
-     &, radnbccl!SFC clear-sky near-ir direct net SW radiation (W/m^-2).
-     &, radndc  !SFC all-sky near-ir direct net SW radiation   (W/m^-2).
-     &, radndccl!SFC clear-sky near-ir direct net SW radiation (W/m^-2).
+      real (kind=dbl_kind), intent(out), dimension(ncol):: &
+        radvbc, &   !SFC all-sky visible direct net SW radiation   (W/m^-2).
+        radvbccl, & !SFC clear-sky visible direct net SW radiation (W/m^-2).
+        radvdc, &   !SFC all-sky visible direct net SW radiation   (W/m^-2).
+        radvdccl, & !SFC clear-sky visible direct net SW radiation (W/m^-2).
+        radnbc, &   !SFC all-sky near-ir direct net SW radiation   (W/m^-2).
+        radnbccl, & !SFC clear-sky near-ir direct net SW radiation (W/m^-2).
+        radndc, &   !SFC all-sky near-ir direct net SW radiation   (W/m^-2).
+        radndccl    !SFC clear-sky near-ir direct net SW radiation (W/m^-2).
 
-      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1)::
-     &  fdsw    !Downward SW flux                              (W/m^-2).
-     &, fdswcl  !Downward clear-ksy SW flux                    (W/m^-2).
-     &, fusw    !Upward SW flux                                (W/m^-2).
-     &, fuswcl  !Upward clear-sky SW flux                      (W/m^-2).
+      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1):: &
+        fdsw , &   !Downward SW flux                              (W/m^-2).
+        fdswcl, &  !Downward clear-ksy SW flux                    (W/m^-2).
+        fusw, &    !Upward SW flux                                (W/m^-2).
+        fuswcl     !Upward clear-sky SW flux                      (W/m^-2).
      
 ! LOCAL VARIABLES:  
+      integer (kind=int_kind), parameter :: &
+       mb = 18, &  !Total number of spectral intervals.
+       mbs = 6,  &  !Number of shortwave (SW) spectral intervals.
+       mbir = 12   !Number of longwave (LW) spectral intervals.    
 
-      integer (kind=int_kind)::
-     &  mb      !Total number of spectral intervals.
-     &, mbs     !Number of shortwave (SW) spectral intervals.
-     &, mbir    !Number of shortwave (LW) spectral intervals.
-      parameter(mb=18,mbs=6,mbir=12)        
+      integer (kind=int_kind) ::  &  
+        i, &       !Horizontal index.
+        l, &       !Vertical index.
+        ib, &      !Index of spectral interval.
+        ig      !Index of k-distribution.
 
-      integer (kind=int_kind) ::    
-     &  i       !Horizontal index.
-     &, l       !Vertical index.
-     &, ib      !Index of spectral interval.
-     &, ig      !Index of k-distribution.
+      integer (kind=int_kind), dimension(ncol,nlm):: &
+        ip1, &     !Used in conjunction with pressure weigthing.
+        ip2     !Used in conjunction with pressure weigthing.
 
-      integer (kind=int_kind), dimension(ncol,nlm)::
-     &  ip1     !Used in conjunction with pressure weigthing.
-     &, ip2     !Used in conjunction with pressure weigthing.
-
-      real (kind=dbl_kind)
-     &  hk      !Weighted spectral solar constant              (W/m^-2).       .
-     &, tmax    !Temperature threshold                              (K).
-     &, eps     !Threshold for cloud optical properties                .
-     &, pdist
+      real (kind=dbl_kind) :: &
+        hk, &      !Weighted spectral solar constant              (W/m^-2).       .
+        tmax, &    !Temperature threshold                              (K).
+        eps, &     !Threshold for cloud optical properties                .
+        pdist
       data eps,tmax,pdist /1.e-05,340.,2./     
       
-      real (kind=dbl_kind), dimension(mbs):: 
-     &  kg      !Nb of k-distributions per spectral intervals.  
+      real (kind=dbl_kind), dimension(mbs):: &
+        kg      !Nb of k-distributions per spectral intervals.  
       data kg /10,8,12,7,12,5/  
 
-      real (kind=dbl_kind), dimension(mbs)::
-     &  asym_wat!Spectral asymmetry factor of water clouds.
-     &, asym_ice!Spectral asymmetry factor of ice clouds.
-     &, ri      !Coefficients related to Rayleigh absorption.     
-      data ri / 0.9022e-5, 0.5282e-6, 0.5722e-7
-     &,         0.1433e-7, 0.4526e-8, 0.1529e-8 /
+      real (kind=dbl_kind), dimension(mbs):: &
+        asym_wat, & !Spectral asymmetry factor of water clouds.
+        asym_ice, & !Spectral asymmetry factor of ice clouds.
+        ri          !Coefficients related to Rayleigh absorption.     
+      data ri / 0.9022e-5, 0.5282e-6, 0.5722e-7, &
+                0.1433e-7, 0.4526e-8, 0.1529e-8 /
 
-      real (kind=dbl_kind), dimension(mb)::
-     &  cnrw    !Real part of refractive index (Water clouds).
-     &, cniw    !Imaginary part of refractive index (Water clouds).
-     &, cnri    !Real part of refractive index (Ice clouds).
-     &, cnii    !Imaginary part of refractive indec (Ice clouds).
-     &, xlam    !Center of spectral band.
+      real (kind=dbl_kind), dimension(mb):: &
+        cnrw, &    !Real part of refractive index (Water clouds).
+        cniw, &    !Imaginary part of refractive index (Water clouds).
+        cnri, &    !Real part of refractive index (Ice clouds).
+        cnii, &    !Imaginary part of refractive indec (Ice clouds).
+        xlam       !Center of spectral band.
 
-      real (kind=dbl_kind), dimension(ncol,mbs)::
-     &  asdir   !Spectral direct surface albedo                     (-).
-     &, asdif   !Spectral diffuse surface albedo                    (-).
+      real (kind=dbl_kind), dimension(ncol,mbs):: &
+        asdir, &   !Spectral direct surface albedo                     (-).
+        asdif      !Spectral diffuse surface albedo                    (-).
 
-      real (kind=dbl_kind), dimension(ncol,nlm)::
-     &  rew     !Effective radius for cloud water                  (mu).
-     &, rei     !Effective radius for cloud ice                    (mu).
-     &, ttem    !Local temperature                                  (K).
-     &, pkd     !
-     &, tau1    !All-sky optical depth                              (-).
-     &, tauclr1 !Clear-sky optical depth                            (-).
-     &, tau     !All-sky optical depth                              (-).
-     &, tauclr  !Clear-sky optical depth                            (-).
-     &, taer    !Aerosol optical depth                              (-).
-     &, tray    !Rayley optical depth                               (-).
-     &, tg      !Gases optical depth                                (-).
-     &, tgm     !WV continuum optical depth                         (-).
-     &, tcldi   !Ice cloud optical depth                            (-).
-     &, tcldw   !Water cloud optical depth                          (-).
-     &, wc      !All-sky single scattering albedo                   (-).
-     &, wcclr   !Clear-sky single scattering albedo                 (-).
-     &, waer    !Aerosol single scattering albedo                   (-).
-     &, wray    !Rayley single scattering albedo                    (-).
-     &, wcldi   !Ice cloud single scattering albedo                 (-).
-     &, wcldw   !Water cloud single scattering albedo               (-).
-     &, asym    !All-sky asymmetry factor                           (-).
-     &, asyclr  !Clear-sky asymmetry factor                         (-).
-     &, asyaer  !Aerosol asymmetry factor                           (-).
-     &, asycldi !Ice cloud asymmetry factor                         (-).
-     &, asycldw !Water cloud asymmetry factor                       (-).
-     &, fwclr   !
-     &, fwcld   !
+      real (kind=dbl_kind), dimension(ncol,nlm):: &
+        rew, &     !Effective radius for cloud water                  (mu).
+        rei, &     !Effective radius for cloud ice                    (mu).
+        ttem, &    !Local temperature                                  (K).
+        pkd, &     !
+        tau1, &    !All-sky optical depth                              (-).
+        tauclr1, & !Clear-sky optical depth                            (-).
+        tau, &     !All-sky optical depth                              (-).
+        tauclr, &  !Clear-sky optical depth                            (-).
+        taer, &    !Aerosol optical depth                              (-).
+        tray, &    !Rayley optical depth                               (-).
+        tg, &      !Gases optical depth                                (-).
+        tgm, &     !WV continuum optical depth                         (-).
+        tcldi, &   !Ice cloud optical depth                            (-).
+        tcldw, &   !Water cloud optical depth                          (-).
+        wc, &      !All-sky single scattering albedo                   (-).
+        wcclr, &   !Clear-sky single scattering albedo                 (-).
+        waer, &    !Aerosol single scattering albedo                   (-).
+        wray, &    !Rayley single scattering albedo                    (-).
+        wcldi, &   !Ice cloud single scattering albedo                 (-).
+        wcldw, &   !Water cloud single scattering albedo               (-).
+        asym, &    !All-sky asymmetry factor                           (-).
+        asyclr, &  !Clear-sky asymmetry factor                         (-).
+        asyaer, &  !Aerosol asymmetry factor                           (-).
+        asycldi, & !Ice cloud asymmetry factor                         (-).
+        asycldw, & !Water cloud asymmetry factor                       (-).
+        fwclr, &   !
+        fwcld   !
 
-      real (kind=dbl_kind), dimension(ncol,nlm+1)::
-     &  fdgdir!Spectral direct downward flux                    (W/m^2).
-     &, fdgcldir!Spectral direct clear-sky downward flux        (W/m^2).
-     &, fdgdif!Spectral diffuse downward flux                   (W/m^2).
-     &, fdgcldif!Spectral diffuse clear-sky downward flux       (W/m^2).
-     &, fugdif!Spectral diffuse upward flux                     (W/m^2).
-     &, fugcldif!Spectral diffuse clear-sky upward flux         (W/m^2).
+      real (kind=dbl_kind), dimension(ncol,nlm+1):: &
+        fdgdir, & !Spectral direct downward flux                    (W/m^2).
+        fdgcldir, & !Spectral direct clear-sky downward flux        (W/m^2).
+        fdgdif, & !Spectral diffuse downward flux                   (W/m^2).
+        fdgcldif, & !Spectral diffuse clear-sky downward flux       (W/m^2).
+        fugdif, & !Spectral diffuse upward flux                     (W/m^2).
+        fugcldif   !Spectral diffuse clear-sky upward flux         (W/m^2).
 
 !     shortwave asymmetry parameters:
 !     (assumes: re=10 for water; re=30 for ice)
@@ -615,27 +614,27 @@ c-----------------------------------------------------------------------
       data asym_ice / 0.8678, 0.8640, 0.8653, 0.8615, 0.9526, 0.8293 /
 
 !---  cnrw and cniw (water clouds):
-      data cnrw/1.3422,1.3281,1.3174,1.2901,1.3348,1.3700,1.3191,1.2821
-     &,         1.3160,1.3030,1.2739,1.2319,1.1526,1.1981,1.3542,1.4917
-     &,         1.5463,1.8718/
-      data cniw/6.4790e-9,1.3417e-06,1.2521e-4,7.1533e-4,4.2669e-2
-     &,         4.3785e-3,1.3239e-2 ,1.5536e-2,5.3894e-2,3.4346e-2
-     &,         3.7490e-2,4.7442e-2 ,1.2059e-1,3.3546e-1,4.1698e-1
-     &,         4.0674e-1,3.6362e-1 ,5.2930e-1/
+      data cnrw/1.3422,1.3281,1.3174,1.2901,1.3348,1.3700,1.3191,1.2821, &
+                1.3160,1.3030,1.2739,1.2319,1.1526,1.1981,1.3542,1.4917, &
+                1.5463,1.8718/
+      data cniw/6.4790e-9,1.3417e-06,1.2521e-4,7.1533e-4,4.2669e-2, &
+                4.3785e-3,1.3239e-2 ,1.5536e-2,5.3894e-2,3.4346e-2, &
+                3.7490e-2,4.7442e-2 ,1.2059e-1,3.3546e-1,4.1698e-1, &
+                4.0674e-1,3.6362e-1 ,5.2930e-1/
 
 !--- cnri and cnii (ice clouds):
-      data cnri/1.3266,1.2986,1.2826,1.2556,1.2963,1.3956
-     &,         1.3324,1.2960,1.3121,1.3126,1.2903,1.2295
-     &,         1.1803,1.5224,1.5572,1.5198,1.4993,1.7026/
-      data cnii/7.0696e-9,9.1220e-7,1.2189e-4,5.7648e-4,4.3144e-2
-     &,         8.2935e-3,1.5540e-2,2.5594e-2,5.9424e-2,5.1511e-2
-     &,         4.0325e-2,4.7994e-2,2.3834e-1,3.0697e-1,1.1852e-1
-     &,         4.3048e-2,6.3218e-2,1.5843e-1/
+      data cnri/1.3266,1.2986,1.2826,1.2556,1.2963,1.3956, &
+                1.3324,1.2960,1.3121,1.3126,1.2903,1.2295, &
+                1.1803,1.5224,1.5572,1.5198,1.4993,1.7026/
+      data cnii/7.0696e-9,9.1220e-7,1.2189e-4,5.7648e-4,4.3144e-2, &
+                8.2935e-3,1.5540e-2,2.5594e-2,5.9424e-2,5.1511e-2, &
+                4.0325e-2,4.7994e-2,2.3834e-1,3.0697e-1,1.1852e-1, &
+                4.3048e-2,6.3218e-2,1.5843e-1/
 
 !---- spectral band center:
-      data xlam/0.45  ,1.0   ,1.6  ,2.2  ,3.0   ,3.75  ,4.878 ,5.556
-     &,         6.452 ,7.547 ,8.511,9.615,11.236,13.605,16.529,21.277 
-     &,         29.412,71.403/
+      data xlam/0.45  ,1.0   ,1.6  ,2.2  ,3.0   ,3.75  ,4.878 ,5.556, &
+                6.452 ,7.547 ,8.511,9.615,11.236,13.605,16.529,21.277, &
+                29.412,71.403/
 
 !-----------------------------------------------------------------------
 
@@ -696,31 +695,31 @@ c-----------------------------------------------------------------------
 
 !---- 1.1 rayleigh absorption:
 
-          call rayle (
-     +             nlm,
-     +              ib,
-     +              pp,
-     +              tray,
-     +              wray)
+          call rayle ( &
+                    nlm, &
+                    ib, &
+                    pp, &
+                    tray, &
+                    wray)
 
 !---- 1.2 optical properties of water and ice clouds (as in crcswr for
 !        now):
 
-         call cloudg
-     +           (   ncol ,     nlm ,    mb ,    ib
-     +,                pp ,      tt , cwrho ,   rew
-     +,             pdist ,    cnrw ,  cniw ,  cnri
-     +,              cnii ,    xlam , tcldw , wcldw
-     +,           asycldw , .false.
-     +           )
+         call cloudg &
+                 (   ncol ,     nlm ,    mb ,    ib, &
+                       pp ,      tt , cwrho ,   rew, &
+                    pdist ,    cnrw ,  cniw ,  cnri, &
+                     cnii ,    xlam , tcldw , wcldw, &
+                  asycldw , .false. &
+                 )
 
-         call cloudg
-     +           (   ncol ,   nlm   ,    mb ,    ib
-     +,                pp ,    tt   , cirho ,   rei
-     +,             pdist ,  cnrw   ,  cniw ,  cnri
-     +,              cnii ,  xlam   , tcldi , wcldi
-     +,           asycldi , .true.
-     +           )
+         call cloudg &
+                 (   ncol ,   nlm   ,    mb ,    ib, &
+                       pp ,    tt   , cirho ,   rei, &
+                    pdist ,  cnrw   ,  cniw ,  cnri, &
+                     cnii ,  xlam   , tcldi , wcldi, &
+                  asycldi , .true. &
+                 )
 
 !     the asymmetry factor for water and ice clouds are fixed as
 !     functions of the spectral intervals.
@@ -734,13 +733,13 @@ c-----------------------------------------------------------------------
 
 !---- 1.3 combines single-scattering properties for gray absorption:
 
-        call comscp1
-     +          (   ncol ,     nlm ,  taer ,   tcldi
-     +,            tcldw ,     tgm ,  tray ,    waer
-     +,            wcldi ,   wcldw ,  wray ,  asyaer
-     +,          asycldi , asycldw ,  tau1 , tauclr1
-     +,             asym ,  asyclr , fwcld ,   fwclr
-     +          )
+        call comscp1 &
+                (   ncol ,     nlm ,  taer ,   tcldi, &
+                   tcldw ,     tgm ,  tray ,    waer, &
+                   wcldi ,   wcldw ,  wray ,  asyaer, &
+                 asycldi , asycldw ,  tau1 , tauclr1, &
+                    asym ,  asyclr , fwcld ,   fwclr &
+                )
 
 !---- loop over the k-probability distributions starts here:
 
@@ -748,43 +747,43 @@ c-----------------------------------------------------------------------
 
 !---- 1.4 non-gray gaseous absorption:         
 
-            call gases
-     +              ( ncol ,   nlm ,    ib ,    ig
-     +,                 pp ,    dp ,  ttem ,  rmix
-     +,              o3mix , umco2 , umch4 , umn2o
-     +,                 hk ,    tg ,   pkd ,   ip1
-     +,                ip2
-     +              )
+            call gases &
+                    ( ncol ,   nlm ,    ib ,    ig, &
+                        pp ,    dp ,  ttem ,  rmix, &
+                     o3mix , umco2 , umch4 , umn2o, &
+                        hk ,    tg ,   pkd ,   ip1, &
+                       ip2 &
+                    )
 
 !---- 1.5 combines single-scattering properties:
 
-            call comscp2
-     +              (  ncol ,  nlm ,      tg , fwcld
-     +,               fwclr , tau1 , tauclr1 ,   tau
-     +,              tauclr ,   wc ,   wcclr
-     +              )
+            call comscp2 &
+                    (  ncol ,  nlm ,      tg , fwcld, &
+                      fwclr , tau1 , tauclr1 ,   tau, &
+                     tauclr ,   wc ,   wcclr &
+                    )
 
 !---- 1.6 two-stream approximation:
 ! No overlap
-            call two_rt_sw
-     +              (  ncol ,    nlm ,       mbs ,     ib
-     +,                 slr ,   amu0 ,        wc ,   asym
-     +,                 tau ,  asdir ,     asdif , fugdif
-     +,              fdgdir , fdgdif , sel_rules
-     +              )
+            call two_rt_sw &
+                    (  ncol ,    nlm ,       mbs ,     ib, &
+                        slr ,   amu0 ,        wc ,   asym, &
+                        tau ,  asdir ,     asdif , fugdif, &
+                     fdgdir , fdgdif , sel_rules &
+                    )
 
-            call two_rt_sw
-     +              (    ncol ,     nlm ,       mbs ,       ib
-     +,                   slr ,    amu0 ,     wcclr ,   asyclr
-     +,                tauclr ,   asdir ,     asdif , fugcldif
-     +,              fdgcldir ,fdgcldif , sel_rules
-     +              )
+            call two_rt_sw &
+                    (    ncol ,     nlm ,       mbs ,       ib, &
+                          slr ,    amu0 ,     wcclr ,   asyclr, &
+                       tauclr ,   asdir ,     asdif , fugcldif, &
+                     fdgcldir ,fdgcldif , sel_rules &
+                    )
 
-            fdsw(:,:)     = fdsw(:,:)   
-     +                    + (fdgdir(:,:)+fdgdif(:,:))*hk
+            fdsw(:,:)     = fdsw(:,:)   &
+                            + (fdgdir(:,:)+fdgdif(:,:))*hk
             fusw(:,:)     = fusw(:,:)   + fugdif(:,:)*hk
-            fdswcl(:,:)   = fdswcl(:,:) 
-     +                    + (fdgcldir(:,:)+fdgcldif(:,:)) * hk
+            fdswcl(:,:)   = fdswcl(:,:) &
+                            + (fdgcldir(:,:)+fdgcldif(:,:)) * hk
             fuswcl(:,:)   = fuswcl(:,:) + fugcldif(:,:)*hk
 
 !---- 1.7 computes the surface visible and near infrared net radiation.
@@ -821,13 +820,13 @@ c-----------------------------------------------------------------------
 
 !-----------------------------------------------------------------------
 
-      subroutine cloudg
-     +              (  ncol ,  nlm ,    mb ,   ib
-     +,                  pp ,   tt , wcont ,   re
-     +,               pdist , cnrw ,  cniw , cnri
-     +,                cnii , xlam ,  tcld , wcld
-     +,              asycld , flag
-     +              )
+      subroutine cloudg &
+                    (  ncol ,  nlm ,    mb ,   ib, &
+                         pp ,   tt , wcont ,   re, &
+                      pdist , cnrw ,  cniw , cnri, &
+                       cnii , xlam ,  tcld , wcld, &
+                     asycld , flag &
+                    )
 
       use kinds
 
@@ -869,54 +868,54 @@ c-----------------------------------------------------------------------
 ! ARGUMENT LIST VARIABLES:
 !     INPUT ARGUMENTS:
 !     ----------------
-      logical (kind=log_kind), intent(in)::
-     &  flag   !If true, computes optical properties of ice clouds, of
+      logical (kind=log_kind), intent(in):: &
+        flag   !If true, computes optical properties of ice clouds, of
 !              of water clouds otherwise.
 
-      integer (kind=int_kind), intent(in)::
-     &  ncol   !Length of sub-domain.
-     &, nlm    !Number of layers.
-     &, mb     !Total number of spectral intervals.
-     &, ib     !Index of spectral interval.
+      integer (kind=int_kind), intent(in):: &
+        ncol, &   !Length of sub-domain.
+        nlm, &    !Number of layers.
+        mb, &     !Total number of spectral intervals.
+        ib       !Index of spectral interval.
 
-      real (kind=dbl_kind), intent(in), dimension(mb)::
-     &  cnrw   !Real part of refractive index (Water clouds).
-     &, cniw   !Imaginary part of refractive index (Water clouds).
-     &, cnri   !Real part of refractive index (Ice clouds).
-     &, cnii   !Imaginary part of refractive index (Ice clouds).
-     &, xlam   !Center of spectral band.
+      real (kind=dbl_kind), intent(in), dimension(mb):: &
+        cnrw, &   !Real part of refractive index (Water clouds).
+        cniw, &   !Imaginary part of refractive index (Water clouds).
+        cnri, &   !Real part of refractive index (Ice clouds).
+        cnii, &   !Imaginary part of refractive index (Ice clouds).
+        xlam      !Center of spectral band.
 
-      real (kind=dbl_kind), intent(in)::
-     &  pdist  !
+      real (kind=dbl_kind), intent(in):: &
+        pdist  !
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm)::
-     &  tt     !Temperature                                        (K).
-     &, wcont  !Cloud water/ice content                       (g/m^-3).
-     &, re     !Cloud effective radius                            (mu).      
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm):: &
+        tt    , & !Temperature                                        (K).
+        wcont , & !Cloud water/ice content                       (g/m^-3).
+        re       !Cloud effective radius                            (mu).      
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1)::
-     &  pp     !Level pressure                                   (hPa).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1):: &
+        pp     !Level pressure                                   (hPa).
      
 !     OUTPUT ARGUMENTS:
 !     -----------------
-      real (kind=dbl_kind), intent(out), dimension(ncol,nlm)::
-     &  tcld   !Cloud optical depth                                (-).
-     &, wcld   !Cloud single scattering albedo                     (-).
-     &, asycld !Cloud asymmetry factor                             (-).
+      real (kind=dbl_kind), intent(out), dimension(ncol,nlm):: &
+        tcld, &   !Cloud optical depth                                (-).
+        wcld, &   !Cloud single scattering albedo                     (-).
+        asycld !Cloud asymmetry factor                             (-).
 
 ! LOCAL VARIABLES:
-      complex (kind=dbl_kind)::
-     &  cm,um
+      complex (kind=dbl_kind):: &
+        cm,um
           
-      integer (kind=int_kind)::
-     &  i, l
+      integer (kind=int_kind):: &
+        i, l
 
-      real (kind=dbl_kind)::
-     &    abs ,  area ,    c0 ,  c1
-     &,   cnr ,   cni ,    dz , eps
-     &,   ext ,    f2 ,    f3 ,  no
-     &,    p0 ,    p1 ,    p2 ,  pi
-     &,    rm ,    xm ,    vm ,  rho_water
+      real (kind=dbl_kind):: &
+          abs ,  area ,    c0 ,  c1, &
+          cnr ,   cni ,    dz , eps, &
+          ext ,    f2 ,    f3 ,  no, &
+           p0 ,    p1 ,    p2 ,  pi, &
+           rm ,    xm ,    vm ,  rho_water
      
 !-----------------------------------------------------------------------
 
@@ -971,23 +970,23 @@ c-----------------------------------------------------------------------
                if (ib .eq. 1 .or. ib .eq. 2) then
                   !For band 1 (0.5 um) only compute the extinction.
                   um = 2.*xm*(cnr-1.)*cmplx(0.d0,1.d0)
-                  ext = c0 + 2.*c1*real(p0/(um*(um+1.)**p1)
-     +                  + 1./(um**2*(um+1.)**p0)-1./um**2)
+                  ext = c0 + 2.*c1*real(p0/(um*(um+1.)**p1) &
+                          + 1./(um**2*(um+1.)**p0)-1./um**2)
                   tcld(i,l) = ext*dz
                   wcld(i,l) = 0.999999
                   asycld(i,l) = 0.85
                else
                   !Compute both extinction and absorption coefficients for all other bands.
                   um = 2.*xm*(cm-1.)*cmplx(0.d0,1.d0)
-                  ext = c0 + 2.*c1*real( p0/(um*(um+1.)**p1)
-     +                  + 1./(um**2*(um+1.)**p0)-1./um**2)
+                  ext = c0 + 2.*c1*real( p0/(um*(um+1.)**p1) &
+                        + 1./(um**2*(um+1.)**p0)-1./um**2)
                   vm = 4.*xm*cni
-                  abs = area + c1*sngl( p0/(vm*(vm+1.)**p1)
-     +                    + 1./(vm**2*(vm+1.)**p0) - 1./vm**2 )
-!                 abs = area + c1*sngl(
-!     +              p0/(dble(vm)*(dble(vm)+1.)**dble(p1))
-!     +            + 1./(dble(vm)**2*(dble(vm)+1.)**dble(p0))
-!     +            - 1./dble(vm)**2)
+                  abs = area + c1*sngl( p0/(vm*(vm+1.)**p1) &
+                          + 1./(vm**2*(vm+1.)**p0) - 1./vm**2 )
+!                 abs = area + c1*sngl( &
+!                    p0/(dble(vm)*(dble(vm)+1.)**dble(p1)) &
+!                  + 1./(dble(vm)**2*(dble(vm)+1.)**dble(p0)) &
+!                  - 1./dble(vm)**2)
                  tcld(i,l) = ext*dz
 
                  if (ext.lt.abs) ext = abs
@@ -1022,13 +1021,13 @@ c-----------------------------------------------------------------------
 
 !-----------------------------------------------------------------------
 
-      subroutine comscp1
-     +              (   ncol ,     nlm ,   taer ,  tcldi
-     +,                tcldw ,     tgm ,   tray ,   waer
-     +,                wcldi ,   wcldw ,   wray , asyaer
-     +,              asycldi , asycldw , tccld1 , tcclr1
-     +,               asycld ,  asyclr ,  fwcld ,  fwclr
-     +              )
+      subroutine comscp1 &
+                    (   ncol ,     nlm ,   taer ,  tcldi, &
+                       tcldw ,     tgm ,   tray ,   waer, &
+                       wcldi ,   wcldw ,   wray , asyaer, &
+                     asycldi , asycldw , tccld1 , tcclr1, &
+                      asycld ,  asyclr ,  fwcld ,  fwclr &
+                    )
 
       use kinds
 
@@ -1064,43 +1063,43 @@ c-----------------------------------------------------------------------
 
 !     INPUT ARGUMENTS:
 !     ----------------
-      integer (kind=int_kind), intent(in)::
-     &  ncol    !Length of sub-domain..
-     &, nlm     !Number of layers.
+      integer (kind=int_kind), intent(in):: &
+        ncol, &    !Length of sub-domain..
+        nlm        !Number of layers.
      
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm)::
-     &  asyaer  !Asymmetry factor of aerosols                      (-).
-     &, asycldi !Asymmetry factor of ice clouds                    (-).
-     &, asycldw !Asymmetry factor of water clouds                  (-).
-     &, taer    !Optical depth of aerosols                         (-).
-     &, tcldi   !Optical depth of ice clouds                       (-).
-     &, tcldw   !Optical depth of water clouds                     (-).
-     &, tgm     !Optical depth of water vapor continuum            (-).
-     &, tray    !Optical depth due to Rayleigh absorption          (-).
-     &, waer    !Single scattering albedo of aerosols              (-).
-     &, wcldi   !Single scattering albedo of ice clouds            (-).
-     &, wcldw   !Single scattering albedo of water clouds          (-).
-     &, wray    !Single scattering albedo due to Rayleigh
-!                absorption                                        (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm):: &
+        asyaer, &  !Asymmetry factor of aerosols                      (-).
+        asycldi, & !Asymmetry factor of ice clouds                    (-).
+        asycldw, & !Asymmetry factor of water clouds                  (-).
+        taer, &    !Optical depth of aerosols                         (-).
+        tcldi, &   !Optical depth of ice clouds                       (-).
+        tcldw, &   !Optical depth of water clouds                     (-).
+        tgm, &     !Optical depth of water vapor continuum            (-).
+        tray, &    !Optical depth due to Rayleigh absorption          (-).
+        waer, &    !Single scattering albedo of aerosols              (-).
+        wcldi, &   !Single scattering albedo of ice clouds            (-).
+        wcldw, &   !Single scattering albedo of water clouds          (-).
+        wray       !Single scattering albedo due to Rayleigh
+!                   absorption                                        (-).
 
 !     OUTPUT ARGUMENTS:
 !     -----------------
-      real (kind=dbl_kind), intent(out), dimension(ncol,nlm)::
-     &  asyclr  !Clear-sky asymmetry factor                        (-).
-     &, asycld  !All-sky asymmetry factor                          (-).
-     &, tcclr1  !Clear-sky optical depth                           (-).
-     &, tccld1  !All-sky optical depth                             (-).
-     &, fwclr   !Total clear-sky single-scattering albedo          (-).
-     &, fwcld   !Total cloudy single-scattering albedo             (-).
+      real (kind=dbl_kind), intent(out), dimension(ncol,nlm):: &
+        asyclr, &  !Clear-sky asymmetry factor                        (-).
+        asycld, &  !All-sky asymmetry factor                          (-).
+        tcclr1, &  !Clear-sky optical depth                           (-).
+        tccld1, &  !All-sky optical depth                             (-).
+        fwclr, &   !Total clear-sky single-scattering albedo          (-).
+        fwcld   !Total cloudy single-scattering albedo             (-).
 
 ! LOCAL LIST VARIABLES:    
 
-      integer (kind=int_kind)::
-     &  i       !Horizontal index.
-     &, l       !Vertical index.
+      integer (kind=int_kind):: &
+        i, &       !Horizontal index.
+        l          !Vertical index.
 
-      real (kind=dbl_kind)::
-     &  wwray,wwaer,wwcldi,wwcldw
+      real (kind=dbl_kind):: &
+        wwray,wwaer,wwcldi,wwcldw
      
 !-----------------------------------------------------------------------
 
@@ -1125,9 +1124,9 @@ c-----------------------------------------------------------------------
             endif
  
             if(fwcld(i,l).gt.1.e-10) then
-               asycld(i,l) = (asyaer(i,l)*wwaer+asycldi(i,l)*wwcldi
-     +                     +  asycldw(i,l)*wwcldw)
-     +                     / fwcld(i,l)
+               asycld(i,l) = (asyaer(i,l)*wwaer+asycldi(i,l)*wwcldi &
+                           +  asycldw(i,l)*wwcldw) &
+                           / fwcld(i,l)
             else
                asycld(i,l) = 1.
             endif
@@ -1147,11 +1146,11 @@ c-----------------------------------------------------------------------
 
 !-----------------------------------------------------------------------
 
-      subroutine comscp2
-     +              ( ncol ,    nlm ,     tg , fwcld
-     +,              fwclr , tccld1 , tcclr1 , tccld
-     +,              tcclr ,  wccld ,  wcclr
-     +              )
+      subroutine comscp2 &
+                    ( ncol ,    nlm ,     tg , fwcld, &
+                     fwclr , tccld1 , tcclr1 , tccld, &
+                     tcclr ,  wccld ,  wcclr &
+                    )
 
       use kinds
       
@@ -1186,34 +1185,34 @@ c-----------------------------------------------------------------------
 
 !     INPUT ARGUMENTS:
 !     ----------------
-      integer (kind=int_kind), intent(in)::
-     &  ncol   !Length of sub-domain..
-     &, nlm    !Number of layers.
+      integer (kind=int_kind), intent(in):: &
+        ncol, &   !Length of sub-domain..
+        nlm       !Number of layers.
      
-      real (kind=dbl_kind), dimension(ncol,nlm)::
-     &  tg     !Optical depth of non-gray gases                    (-).
-     &, fwclr  !Clear-sky single scattering albedo from comscp1    (-).
-     &, fwcld  !
+      real (kind=dbl_kind), dimension(ncol,nlm):: &
+        tg, &     !Optical depth of non-gray gases                    (-).
+        fwclr, &  !Clear-sky single scattering albedo from comscp1    (-).
+        fwcld     !
 
 !     INPUT/OUTPUT ARGUMENTS:
 !     -----------------
-      real (kind=dbl_kind), dimension(ncol,nlm)::
-     &  tcclr1 !Clear-sky optical depth                            (-).
-     &, tccld1 !All-sky optical depth                              (-).
-     &, tcclr  !Clear-sky optical depth                            (-).
-     &, tccld  !All-sky optical depth                              (-).
+      real (kind=dbl_kind), dimension(ncol,nlm):: &
+        tcclr1, & !Clear-sky optical depth                            (-).
+        tccld1, & !All-sky optical depth                              (-).
+        tcclr, &  !Clear-sky optical depth                            (-).
+        tccld     !All-sky optical depth                              (-).
 
 !     OUTPUT ARGUMENTS:
 !     -----------------
-      real (kind=dbl_kind), intent(out), dimension(ncol,nlm)::
-     &  wcclr  !Clear-sky single scattering albedo                 (-).
-     &, wccld  !All-sky single scattering albedo                   (-).
+      real (kind=dbl_kind), intent(out), dimension(ncol,nlm):: &
+        wcclr, &  !Clear-sky single scattering albedo                 (-).
+        wccld     !All-sky single scattering albedo                   (-).
 
 ! LOCAL LIST VARIABLES:    
 
-      integer (kind=int_kind)::
-     &  i      !Horizontal index.
-     &, l      !Vertical index.
+      integer (kind=int_kind):: &
+        i, &      !Horizontal index.
+        l      !Vertical index.
      
 !-----------------------------------------------------------------------
 
@@ -1240,10 +1239,10 @@ c-----------------------------------------------------------------------
      	   enddo
 	enddo
 
-	return
+  return
 	end subroutine comscp2
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
 
 ! CVS:  $Id: two_rt_lw.F,v 1.7 2003/11/11 21:55:13 norm Exp $
@@ -1251,12 +1250,12 @@ c-----------------------------------------------------------------------
 
 !-----------------------------------------------------------------------
  
-      subroutine two_rt_lw
-     +              (     ncol , nlm,  mbs , mbir
-     +,                     ib ,  wc, asym ,  tau
-     +,                     es ,  bf,   fu ,   fd
-     +,              sel_rules
-     +              )
+      subroutine two_rt_lw &
+                    (     ncol , nlm,  mbs , mbir, &
+                            ib ,  wc, asym ,  tau, &
+                            es ,  bf,   fu ,   fd, &
+                     sel_rules &
+                    )
  
       use kinds
 
@@ -1289,69 +1288,69 @@ c-----------------------------------------------------------------------
  
 !     INPUT ARGUMENTS:
 !     ----------------
-      logical (kind=log_kind), intent(in)::
-     &  sel_rules
+      logical (kind=log_kind), intent(in):: &
+        sel_rules
 
-      integer (kind=int_kind), intent(in)::
-     &  ncol  !Length of sub-domain.
-     &, nlm   !Number of layers.
-     &, mbs   !Number of SW spectral intervals.
-     &, mbir  !Number of IR spectral intervals.
-     &, ib    !Index of spectral interval.
+      integer (kind=int_kind), intent(in):: &
+        ncol, &  !Length of sub-domain.
+        nlm, &   !Number of layers.
+        mbs, &   !Number of SW spectral intervals.
+        mbir, &  !Number of IR spectral intervals.
+        ib       !Index of spectral interval.
  
-      real (kind=dbl_kind), intent(in), dimension(ncol,mbir)::
-     &  es    !Spectral surface emissivity                         (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,mbir):: &
+        es    !Spectral surface emissivity                         (-).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm)::
-     &  wc    !Single scattering albedo                            (-).
-     &, asym  !Asymmetry factor                                    (-).
-     &, tau   !Optical depth                                       (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm):: &
+        wc, &    !Single scattering albedo                            (-).
+        asym, &  !Asymmetry factor                                    (-).
+        tau   !Optical depth                                       (-).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1)::
-     &  bf    !Planck function                                 (W/m^2).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1):: &
+        bf    !Planck function                                 (W/m^2).
  
 !     OUTPUT ARGUMENTS:
 !     -----------------
-      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1)::
-     &  fd    !Spectral downward flux                          (W/m^2).
-     &, fu    !Spectral upward flux                            (W/m^2).
+      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1):: &
+        fd, &    !Spectral downward flux                          (W/m^2).
+        fu       !Spectral upward flux                            (W/m^2).
  
 ! LOCAL VARIABLES:
 
-      integer (kind=int_kind)
-     &  i     !Horizontal index.
-     &, l     !Vertical index.
-     &, ibms  !Index of spectral interval.
+      integer (kind=int_kind):: &
+        i, &     !Horizontal index.
+        l, &     !Vertical index.
+        ibms  !Index of spectral interval.
  
-      real (kind=dbl_kind), dimension(nlm)::
-     &  rr    !
-     &, tr    !
-     &, sigu  !
-     &, sigd  !
+      real (kind=dbl_kind), dimension(nlm):: &
+        rr, &    !
+        tr, &    !
+        sigu, &  !
+        sigd  !
 
-      real (kind=dbl_kind)
-     &      aa ,    bb , beta0 ,     cc
-     &, diffac , denom ,  fact , eggtau
-     &,  ggtau
-     &,  kappa ,   oms ,  prop ,r, rinf
-     &,      t ,  taus
+      real (kind=dbl_kind):: &
+            aa ,    bb , beta0 ,     cc, &
+        diffac , denom ,  fact , eggtau, &
+         ggtau, &
+         kappa ,   oms ,  prop ,r, rinf, &
+             t ,  taus
       data diffac /2./
 
-      real (kind=dbl_kind), dimension(nlm)::
-     &  td , vu , exptau
+      real (kind=dbl_kind), dimension(nlm):: &
+        td , vu , exptau
 
-      real (kind=dbl_kind), dimension(nlm+1)::
-     &  re, vd
+      real (kind=dbl_kind), dimension(nlm+1):: &
+        re, vd
  
 ! SELECTION RULE VARIABLES
 
-      logical (kind=log_kind)::
-     &  fail
+      logical (kind=log_kind):: &
+        fail
 
-      real (kind=dbl_kind)::
-     &  tausthresh
-     &, wcthresh
-     &, tauscat
+      real (kind=dbl_kind):: &
+        tausthresh, &
+        wcthresh, &
+        tauscat
 
       data tausthresh / 0.001 /
       data wcthresh   / 0.975 /
@@ -1377,8 +1376,8 @@ c-----------------------------------------------------------------------
 !>> BEGIN SELECTION RULES <<
 !           print *,'selection rules'
             do l = 1, nlm
-               exptau(l) = exp(-2*tau(i,l))
-               if(tau(i,l) .lt. .8e-2) then
+               exptau(l) = exp(-2.0*tau(i,l))
+               if(tau(i,l) .lt. 0.8e-2) then
                   sigu(l) = (bf(i,l)+bf(i,l+1))*tau(i,l)
                   sigd(l) = sigu(l)
                else
@@ -1426,7 +1425,7 @@ c-----------------------------------------------------------------------
          tr(l) = (1.-rinf**2)*eggtau/denom
          rr(l) = rinf*(1.-eggtau**2)/denom
 
-         if(taus .lt. .8e-2) then
+         if(taus .lt. 0.8e-2) then
             sigu(l) = 0.5*diffac*(bf(i,l)+bf(i,l+1))*taus
             sigd(l) = sigu(l)
          else
@@ -1443,8 +1442,8 @@ c-----------------------------------------------------------------------
         do l = 1, nlm
            prop = 1. / (1. - re(l)*rr(l))
            re(l+1) = rr(l) + tr(l)**2*re(l)*prop
-           vd(l+1) = sigd(l) + (tr(l)*vd(l)
-     +             + tr(l)*re(l)*sigu(l))*prop
+           vd(l+1) = sigd(l) + (tr(l)*vd(l) &
+                   + tr(l)*re(l)*sigu(l))*prop
            vu(l)   = (rr(l)*vd(l) + sigu(l))*prop
            td(l)   = prop
         enddo
@@ -1473,15 +1472,15 @@ c-----------------------------------------------------------------------
 
 !-----------------------------------------------------------------------
  
-      subroutine two_rt_lw_iter
-     +              (
-     +                    ncol ,    nlm ,  mbs ,   mbir
-     +,                     ib , cldamt ,   wc ,  wcclr
-     +,                   asym , asyclr ,  tau , tauclr
-     +,                     es ,     bf ,   fu ,     fd
-     +,              sel_rules ,     b1 ,   b2 ,     b3
-     +,                     b4
-     +              )
+      subroutine two_rt_lw_iter &
+                    ( &
+                          ncol ,    nlm ,  mbs ,   mbir, &
+                            ib , cldamt ,   wc ,  wcclr, &
+                          asym , asyclr ,  tau , tauclr, &
+                            es ,     bf ,   fu ,     fd, &
+                     sel_rules ,     b1 ,   b2 ,     b3, &
+                            b4 &
+                    )
 
       use kinds
 
@@ -1515,99 +1514,99 @@ c-----------------------------------------------------------------------
  
 !     INPUT ARGUMENTS:
 !     ----------------
-      logical (kind=log_kind), intent(in)::
-     &  sel_rules
+      logical (kind=log_kind), intent(in):: &
+        sel_rules
 
-      integer (kind=int_kind), intent(in)::
-     &  ncol   !Length of sub-domain.
-     &, nlm    !Number of layers.
-     &, mbs    !Number of SW spectral intervals.
-     &, mbir   !Number of IR spectral intervals.
-     &, ib     !Index of spectral interval.
+      integer (kind=int_kind), intent(in):: &
+        ncol, &   !Length of sub-domain.
+        nlm, &    !Number of layers.
+        mbs, &    !Number of SW spectral intervals.
+        mbir, &   !Number of IR spectral intervals.
+        ib     !Index of spectral interval.
  
-      real (kind=dbl_kind), intent(in), dimension(ncol,mbir)::
-     &  es    !Spectral surface emissivity                         (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,mbir):: &
+        es    !Spectral surface emissivity                         (-).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm)::
-     &  cldamt !Cloud fraction                                     (-).
-     &, wc     !All sky single scattering albedo                   (-).
-     &, wcclr  !Clear sky single scattering albedo                 (-).
-     &, asym   !All sky asymmetry factor                           (-).
-     &, asyclr !Clear sky asymmetry factor                         (-).
-     &, tau    !All sky optical depth                              (-).
-     &, tauclr !Clear sky optical depth                            (-).
-     &, b1     !Cloud overlap parameter                            (-).
-     &, b2     !Cloud overlap parameter                            (-).
-     &, b3     !Cloud overlap parameter                            (-).
-     &, b4     !Cloud overlap parameter                            (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm):: &
+        cldamt, & !Cloud fraction                                     (-).
+        wc, &     !All sky single scattering albedo                   (-).
+        wcclr, &  !Clear sky single scattering albedo                 (-).
+        asym, &   !All sky asymmetry factor                           (-).
+        asyclr, & !Clear sky asymmetry factor                         (-).
+        tau, &    !All sky optical depth                              (-).
+        tauclr, & !Clear sky optical depth                            (-).
+        b1, &     !Cloud overlap parameter                            (-).
+        b2, &     !Cloud overlap parameter                            (-).
+        b3, &     !Cloud overlap parameter                            (-).
+        b4        !Cloud overlap parameter                            (-).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1)::
-     &  bf    !Planck function                                 (W/m^2).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1):: &
+        bf    !Planck function                                 (W/m^2).
  
 !     OUTPUT ARGUMENTS:
 !     -----------------
-      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1)::
-     &  fd     !Spectral downward flux                         (W/m^2).
-     &, fu     !Spectral upward flux                           (W/m^2).
+      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1):: &
+        fd, &     !Spectral downward flux                         (W/m^2).
+        fu     !Spectral upward flux                           (W/m^2).
  
 ! LOCAL VARIABLES:
 
-      integer (kind=int_kind)
-     &  i      !Horizontal index.
-     &, l      !Vertical index.
-     &, ibms   !Index of spectral interval.
-     &, j
-     &, nsr
-     &, nsmx
-     &, n
-     &, ii
-     &, jj
-     &, kk
-     &, ir
-     &, iter
-      integer (kind=int_kind), dimension(16*nlm-6)::
-     &  idc
+      integer (kind=int_kind):: &
+        i, &      !Horizontal index.
+        l, &      !Vertical index.
+        ibms, &   !Index of spectral interval.
+        j, &
+        nsr, &
+        nsmx, &
+        n, &
+        ii, &
+        jj, &
+        kk, &
+        ir, &
+        iter
+      integer (kind=int_kind), dimension(16*nlm-6):: &
+        idc
 
-      integer (kind=int_kind), dimension(4*nlm+2)::
-     &  nir
+      integer (kind=int_kind), dimension(4*nlm+2):: &
+        nir
 
-      real (kind=dbl_kind), dimension(nlm)::
-     &  rrcld    !All sky global reflection                        (-).
-     &, rrclr    !Clear sky global reflection                      (-).
-     &, trcld    !All sky global transmission                      (-).
-     &, trclr    !Clear sky global transmission                    (-).
-     &, sigucld  !All sky upwelling source                         (-).
-     &, siguclr  !Clear sky upwelling source                       (-).
-     &, sigdcld  !All sky downwelling source                       (-).
-     &, sigdclr  !Clear sky downwelling source                     (-).
-     &, exptau   !
+      real (kind=dbl_kind), dimension(nlm):: &
+        rrcld, &    !All sky global reflection                     (-).
+        rrclr, &    !Clear sky global reflection                   (-).
+        trcld, &    !All sky global transmission                   (-).
+        trclr, &    !Clear sky global transmission                 (-).
+        sigucld, &  !All sky upwelling source                      (-).
+        siguclr, &  !Clear sky upwelling source                    (-).
+        sigdcld, &  !All sky downwelling source                    (-).
+        sigdclr, &  !Clear sky downwelling source                  (-).
+        exptau   !
 
-      real (kind=dbl_kind), dimension(4*nlm+2)::
-     &  b
-     &, fvc
-     &, error
-!     &, old_fvc
+      real (kind=dbl_kind), dimension(4*nlm+2):: &
+        b, &
+        fvc, &
+        error !, &
+!        old_fvc
 
-      real (kind=dbl_kind), dimension(16*nlm-6)::
-     &  smx
+      real (kind=dbl_kind), dimension(16*nlm-6):: &
+        smx
 
-      real (kind=dbl_kind)
-     &      aa ,    bb , beta0 ,     cc
-     &, diffac , denom ,  fact , eggtau
-     &,  ggtau
-     &,  kappa ,   oms ,  prop ,r, rinf
-     &,      t ,  taus , omega
+      real (kind=dbl_kind):: &
+            aa ,    bb , beta0 ,     cc, &
+        diffac , denom ,  fact , eggtau, &
+         ggtau, &
+         kappa ,   oms ,  prop ,r, rinf, &
+             t ,  taus , omega
       data diffac /2./
  
 ! SELECTION RULE VARIABLES
 
-      logical (kind=log_kind)::
-     &  fail
+      logical (kind=log_kind):: &
+        fail
 
-      real (kind=dbl_kind)::
-     &  tausthresh
-     &, wcthresh
-     &, tauscat
+      real (kind=dbl_kind):: &
+        tausthresh, &
+        wcthresh, &
+        tauscat
       data tausthresh / 0.001 /
       data wcthresh   / 0.975 /
  
@@ -1641,9 +1640,9 @@ c-----------------------------------------------------------------------
             trcld(l) = (1.-rinf**2)*eggtau/denom
             rrcld(l) = rinf*(1.-eggtau**2)/denom
 
-            if(taus .lt. .8e-2) then
-               sigucld(l) = cldamt(i,l)*0.5*diffac*(bf(i,l)+
-     *                      bf(i,l+1))*taus
+            if(taus .lt. 0.8e-2) then
+               sigucld(l) = cldamt(i,l)*0.5*diffac*(bf(i,l)+ &
+                            bf(i,l+1))*taus
                sigdcld(l) = cldamt(i,l)*sigucld(l)
             else
                aa =  (t+r)*(1.-rrcld(l))-(1.+rrcld(l)-trcld(l))/taus
@@ -1671,18 +1670,18 @@ c-----------------------------------------------------------------------
             trclr(l) = (1.-rinf**2)*eggtau/denom
             rrclr(l) = rinf*(1.-eggtau**2)/denom
 
-            if(taus .lt. .8e-2) then
-               siguclr(l) = (1.0-cldamt(i,l))*0.5*diffac*(bf(i,l)+
-     *                      bf(i,l+1))*taus
+            if(taus .lt. 0.8e-2) then
+               siguclr(l) = (1.0-cldamt(i,l))*0.5*diffac*(bf(i,l)+ &
+                            bf(i,l+1))*taus
                sigdclr(l) = (1.0-cldamt(i,l))*siguclr(l)
             else
                aa =  (t+r)*(1.-rrclr(l))-(1.+rrclr(l)-trclr(l))/taus
                bb = -(t+r)*trclr(l)+(1.+rrclr(l)-trclr(l))/taus
                cc = diffac*(1.-oms)/kappa**2
-               siguclr(l) = (1.0-cldamt(i,l))*cc*(aa*bf(i,l)+
-     *                      bb*bf(i,l+1))
-               sigdclr(l) = (1.0-cldamt(i,l))*cc*(bb*bf(i,l)+
-     *                      aa*bf(i,l+1))
+               siguclr(l) = (1.0-cldamt(i,l))*cc*(aa*bf(i,l)+ &
+                            bb*bf(i,l+1))
+               sigdclr(l) = (1.0-cldamt(i,l))*cc*(bb*bf(i,l)+ &
+                            aa*bf(i,l+1))
             endif
 
          enddo
@@ -1824,11 +1823,11 @@ c-----------------------------------------------------------------------
 
 !-----------------------------------------------------------------------
  
-      subroutine two_rt_lw_sel
-     +                 (
-     +                    ncol , nlm ,  mbs , mbir , ib
-     +,                 tauclr ,  es ,   bf ,   fu , fd
-     +                 )
+      subroutine two_rt_lw_sel &
+                       ( &
+                          ncol , nlm ,  mbs , mbir , ib, &
+                        tauclr ,  es ,   bf ,   fu , fd &
+                       )
  
       use kinds
 
@@ -1863,43 +1862,43 @@ c-----------------------------------------------------------------------
  
 !     INPUT ARGUMENTS:
 !     ----------------
-      integer (kind=int_kind), intent(in)::
-     &  ncol   !Length of sub-domain.
-     &, nlm    !Number of layers.
-     &, mbs    !Number of SW spectral intervals.
-     &, mbir   !Number of IR spectral intervals.
-     &, ib     !Index of spectral interval.
+      integer (kind=int_kind), intent(in):: &
+        ncol, &   !Length of sub-domain.
+        nlm, &    !Number of layers.
+        mbs, &    !Number of SW spectral intervals.
+        mbir, &   !Number of IR spectral intervals.
+        ib        !Index of spectral interval.
  
-      real (kind=dbl_kind), intent(in), dimension(ncol,mbir)::
-     &  es     ! Spectral surface emissivity                       (-).
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm)::
-     &  tauclr !Optical depth                                      (-).
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1)::
-     &  bf     !Planck function                                    (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,mbir):: &
+        es     ! Spectral surface emissivity                       (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm):: &
+        tauclr !Optical depth                                      (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm+1):: &
+        bf     !Planck function                                    (-).
  
 !     OUTPUT ARGUMENTS:
 !     -----------------
-      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1)::
-     &  fd    !Spectral downward flux                          (W/m^2).
-     &, fu    !Spectral upward flux                            (W/m^2).
+      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1):: &
+        fd, &    !Spectral downward flux                          (W/m^2).
+        fu    !Spectral upward flux                            (W/m^2).
  
 ! LOCAL VARIABLES:
 
-      integer (kind=int_kind)
-     &  i     !Horizontal index.
-     &, l     !Vertical index.
-     &, ibms  !Index of spectral interval.
+      integer (kind=int_kind):: &
+        i, &     !Horizontal index.
+        l, &     !Vertical index.
+        ibms     !Index of spectral interval.
  
-      real (kind=dbl_kind), dimension(nlm)::
-     &  sigu
-     &, sigd
-     &, exptau
+      real (kind=dbl_kind), dimension(nlm):: &
+        sigu, &
+        sigd, &
+        exptau
 
-      real (kind=dbl_kind)
-     &  aa
-     &, bb
-     &, cc
-     &, prop
+      real (kind=dbl_kind):: &
+        aa, &
+        bb, &
+        cc, &
+        prop
 
 !----------------------------------------------------------------------
 
@@ -1943,14 +1942,14 @@ c-----------------------------------------------------------------------
 
 !-----------------------------------------------------------------------
  
-      subroutine two_rt_sw_bs
-     +               ( ncol ,      nlm ,   mbs ,     ib
-     +,                 slr ,     amu0 ,    wc ,  wcclr
-     +,                asym ,   asyclr ,   tau , tauclr
-     +,               asdir ,    asdif , fudif ,  fddir
-     +,               fddif ,sel_rules ,    b1 ,     b2
-     +,                  b3 ,       b4
-     +               )
+      subroutine two_rt_sw_bs &
+                     ( ncol ,      nlm ,   mbs ,     ib, &
+                        slr ,     amu0 ,    wc ,  wcclr, &
+                       asym ,   asyclr ,   tau , tauclr, &
+                      asdir ,    asdif , fudif ,  fddir, &
+                      fddif ,sel_rules ,    b1 ,     b2, &
+                         b3 ,       b4 &
+                     )
  
  
       use kinds
@@ -1986,95 +1985,95 @@ c-----------------------------------------------------------------------
  
 !     INPUT ARGUMENTS:
 !     ----------------
-      logical (kind=log_kind), intent(in)::
-     &  sel_rules
+      logical (kind=log_kind), intent(in):: &
+        sel_rules
 
-      integer (kind=int_kind), intent(in)::
-     &  ncol  !Length of sub-domain.
-     &, nlm   !Number of layers.
-     &, mbs   !Number of SW spectral intervals.
-     &, ib    !Index of spectral interval.
+      integer (kind=int_kind), intent(in):: &
+        ncol, &  !Length of sub-domain.
+        nlm, &   !Number of layers.
+        mbs, &   !Number of SW spectral intervals.
+        ib       !Index of spectral interval.
  
-      real (kind=dbl_kind), intent(in), dimension(ncol)::
-     &  slr   !Fraction of daylight                                (-).
-     &, amu0  !Cosine of the solar zenith angle                    (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol):: &
+        slr, &   !Fraction of daylight                             (-).
+        amu0     !Cosine of the solar zenith angle                 (-).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,mbs)::
-     &  asdir !Spectral direct surface albedo                      (-).
-     &, asdif !Spectral diffuse surface albedo                     (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,mbs):: &
+        asdir, & !Spectral direct surface albedo                   (-).
+        asdif    !Spectral diffuse surface albedo                  (-).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm)::
-     &  wc    !Single scattering albedo                            (-).
-     &, wcclr !Single scattering albedo                            (-).
-     &, asym  !Asymmetry factor                                    (-).
-     &, asyclr!Asymmetry factor                                    (-).
-     &, tau   !Optical depth                                       (-).
-     &, tauclr!Optical depth                                       (-).
-     &, b1    !Cloud overlap parameter                             (-).
-     &, b2    !Cloud overlap parameter                             (-).
-     &, b3    !Cloud overlap parameter                             (-).
-     &, b4    !Cloud overlap parameter                             (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm):: &
+        wc, &     !Single scattering albedo                           (-).
+        wcclr, &  !Single scattering albedo                           (-).
+        asym, &   !Asymmetry factor                                   (-).
+        asyclr, & !Asymmetry factor                                   (-).
+        tau, &    !Optical depth                                      (-).
+        tauclr, & !Optical depth                                      (-).
+        b1, &     !Cloud overlap parameter                            (-).
+        b2, &     !Cloud overlap parameter                            (-).
+        b3, &     !Cloud overlap parameter                            (-).
+        b4        !Cloud overlap parameter                            (-).
  
 !     OUTPUT ARGUMENTS:
 !     -----------------
-      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1)::
-     &  fddir !Spectral direct downward flux                   (W/m^2).
-     &, fddif !Spectral diffuse downward flux                  (W/m^2).
-     &, fudif !Spectral diffuse upward flux                    (W/m^2).
+      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1):: &
+        fddir, & !Spectral direct downward flux                   (W/m^2).
+        fddif, & !Spectral diffuse downward flux                  (W/m^2).
+        fudif    !Spectral diffuse upward flux                    (W/m^2).
  
 ! LOCAL VARIABLES:
 ! ----------------
-      integer (kind=int_kind)
-     &  i     ! Horizontal index.
-     &, l     ! Vertical index.
+      integer (kind=int_kind):: &
+        i, &     ! Horizontal index.
+        l     ! Vertical index.
 
-      integer (kind=int_kind), dimension(nlm*4+2)::
-     &  indx    !Vector used by bandec and banbks
+      integer (kind=int_kind), dimension(nlm*4+2):: &
+        indx    !Vector used by bandec and banbks
  
-      real (kind=dbl_kind), dimension(nlm)::
-     &  rrcld   !All sky global reflection
-     &, rrclr   !Clear sky global reflection
-     &, trcld   !All sky global transmission
-     &, trclr   !Clear sky global transmission
-     &, sigucld !All sky upwelling source
-     &, siguclr !Clear sky upwelling source
-     &, sigdcld !All sky downwelling source
-     &, sigdclr !Clear sky downwelling source
+      real (kind=dbl_kind), dimension(nlm):: &
+        rrcld, &   !All sky global reflection
+        rrclr, &   !Clear sky global reflection
+        trcld, &   !All sky global transmission
+        trclr, &   !Clear sky global transmission
+        sigucld, & !All sky upwelling source
+        siguclr, & !Clear sky upwelling source
+        sigdcld, & !All sky downwelling source
+        sigdclr    !Clear sky downwelling source
 
-      real (kind=dbl_kind), dimension(nlm*4+2,11)::
-     &  a       !Diagonal matrix for bandec and banbks
-     &, al      !Matrix used by bandec and banbks
+      real (kind=dbl_kind), dimension(nlm*4+2,11):: &
+        a, &       !Diagonal matrix for bandec and banbks
+        al      !Matrix used by bandec and banbks
 
-      real (kind=dbl_kind), dimension(nlm*4+2)::
-     &  b       !Vector of sources (for A*x = b)
+      real (kind=dbl_kind), dimension(nlm*4+2):: &
+        b       !Vector of sources (for A*x = b)
 
-      real (kind=dbl_kind)
-     &  exptaucld
-     &, exptauclr
-     &, directcld(nlm+1)
-     &, directclr(nlm+1)
-     &, d
+      real (kind=dbl_kind):: &
+        exptaucld, &
+        exptauclr, &
+        directcld(nlm+1), &
+        directclr(nlm+1), &
+        d
 
-      real (kind=dbl_kind)
-     &      aa ,    bb ,   cc , denom
-     &, eggtau ,   eps ,   g3 ,    g4
-     &,  ggtau , kappa ,    r ,  rinf
-     &,      t ,   oms , taus ,  fact
-     &,    asy
+      real (kind=dbl_kind):: &
+            aa ,    bb ,   cc , denom, &
+        eggtau ,   eps ,   g3 ,    g4, &
+         ggtau , kappa ,    r ,  rinf, &
+             t ,   oms , taus ,  fact, &
+           asy
       data eps /1.e-02/
 
-      real (kind=dbl_kind), dimension(nlm+1)::     
-     &  re , vd
+      real (kind=dbl_kind), dimension(nlm+1):: &    
+        re , vd
  
 ! SELECTION RULE VARIABLES:
 ! -------------------------
-      logical (kind=log_kind)::
-     &  fail
+      logical (kind=log_kind):: &
+        fail
 
-      real (kind=dbl_kind)::
-     &  tausthresh
-     &, wcthresh
-     &, tauscat
+      real (kind=dbl_kind):: &
+        tausthresh, &
+        wcthresh, &
+        tauscat
 
 !#ifdef usenewexp
 !      real(kind=dbl_kind), external :: exp
@@ -2157,10 +2156,10 @@ c-----------------------------------------------------------------------
             aa = g3*(t-1./amu0(i))+g4*r
             bb = g4*(t+1./amu0(i))+g3*r
  
-            sigucld(l) = cc*((aa-rrcld(l)*bb)-aa*trcld(l)*exptaucld) *
-     &                 (b3(i,l)*directcld(l)+(1.-b1(i,l))*directclr(l))
-            sigdcld(l) = cc*(-bb*trcld(l)+(bb-rrcld(l)*aa)*exptaucld) *
-     &                 (b3(i,l)*directcld(l)+(1.-b1(i,l))*directclr(l))
+            sigucld(l)=cc*((aa-rrcld(l)*bb)-aa*trcld(l)*exptaucld)* &
+                    (b3(i,l)*directcld(l)+(1.-b1(i,l))*directclr(l))
+            sigdcld(l)=cc*(-bb*trcld(l)+(bb-rrcld(l)*aa)*exptaucld)* &
+                    (b3(i,l)*directcld(l)+(1.-b1(i,l))*directclr(l))
 
             !CLEAR SKY
             fact = asyclr(i,l)*asyclr(i,l)
@@ -2196,15 +2195,15 @@ c-----------------------------------------------------------------------
             aa = g3*(t-1./amu0(i))+g4*r
             bb = g4*(t+1./amu0(i))+g3*r
 
-            siguclr(l) = cc*((aa-rrclr(l)*bb)-aa*trclr(l)*exptauclr) *
-     &                 (b1(i,l)*directclr(l)+(1.-b3(i,l))*directcld(l))
-            sigdclr(l) = cc*(-bb*trclr(l)+(bb-rrclr(l)*aa)*exptauclr) *
-     &                 (b1(i,l)*directclr(l)+(1.-b3(i,l))*directcld(l))
+            siguclr(l)=cc*((aa-rrclr(l)*bb)-aa*trclr(l)*exptauclr)* &
+                    (b1(i,l)*directclr(l)+(1.-b3(i,l))*directcld(l))
+            sigdclr(l)=cc*(-bb*trclr(l)+(bb-rrclr(l)*aa)*exptauclr)* &
+                    (b1(i,l)*directclr(l)+(1.-b3(i,l))*directcld(l))
  
-            directclr(l+1) = exptauclr *
-     &          ((1.-b3(i,l))*directcld(l) + b1(i,l)*directclr(l))
-            directcld(l+1) = exptaucld *
-     &          (b3(i,l)*directcld(l) + (1.-b1(i,l))*directclr(l))
+            directclr(l+1) = exptauclr * &
+                ((1.-b3(i,l))*directcld(l) + b1(i,l)*directclr(l))
+            directcld(l+1) = exptaucld * &
+                (b3(i,l)*directcld(l) + (1.-b1(i,l))*directclr(l))
          enddo
  
 !---- 2. LOAD A MATRIX, B MATRIX
@@ -2292,8 +2291,8 @@ c-----------------------------------------------------------------------
  
          fddir(i,1) = amu0(i)*slr(i)
          do l = 1, nlm
-            fddir(i,l+1) = amu0(i)*slr(i)*
-     &                     (directcld(l+1)+directclr(l+1))
+            fddir(i,l+1) = amu0(i)*slr(i)* &
+                           (directcld(l+1)+directclr(l+1))
          enddo
 !         do l = 1, nlm+1
 !            print *,ib,l,fddir(l),fddif(l),fudif(l)
@@ -2315,12 +2314,12 @@ c-----------------------------------------------------------------------
 
 !-----------------------------------------------------------------------
  
-      subroutine two_rt_sw
-     +               ( ncol ,   nlm ,      mbs ,    ib
-     +,                 slr ,  amu0 ,       wc ,  asym
-     +,                 tau , asdir ,    asdif , fudif
-     +,               fddir , fddif ,sel_rules
-     +               )
+      subroutine two_rt_sw &
+                     ( ncol ,   nlm ,      mbs ,    ib, &
+                        slr ,  amu0 ,       wc ,  asym, &
+                        tau , asdir ,    asdif , fudif, &
+                      fddir , fddif ,sel_rules &
+                     )
  
       use kinds
 
@@ -2354,73 +2353,73 @@ c-----------------------------------------------------------------------
  
 !     INPUT ARGUMENTS:
 !     ----------------
-      logical (kind=log_kind), intent(in)::
-     &  sel_rules
+      logical (kind=log_kind), intent(in):: &
+        sel_rules
 
-      integer (kind=int_kind), intent(in)::
-     &  ncol  !Length of sub-domain.
-     &, nlm   !Number of layers.
-     &, mbs   !Number of SW spectral intervals.
-     &, ib    !Index of spectral interval.
+      integer (kind=int_kind), intent(in):: &
+        ncol, &  !Length of sub-domain.
+        nlm, &   !Number of layers.
+        mbs, &   !Number of SW spectral intervals.
+        ib    !Index of spectral interval.
  
-      real (kind=dbl_kind), intent(in), dimension(ncol)::
-     &  slr   !Fraction of daylight                                (-).
-     &, amu0  !Cosine of the solar zenith angle                    (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol):: &
+        slr, &   !Fraction of daylight                                (-).
+        amu0  !Cosine of the solar zenith angle                    (-).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,mbs)::
-     &  asdir !Spectral direct surface albedo                      (-).
-     &, asdif !Spectral diffuse surface albedo                     (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,mbs):: &
+        asdir, & !Spectral direct surface albedo                      (-).
+        asdif !Spectral diffuse surface albedo                     (-).
 
-      real (kind=dbl_kind), intent(in), dimension(ncol,nlm)::
-     &  wc    !Single scattering albedo                            (-).
-     &, asym  !Asymmetry factor                                    (-).
-     &, tau   !Optical depth                                       (-).
+      real (kind=dbl_kind), intent(in), dimension(ncol,nlm):: &
+        wc, &    !Single scattering albedo                            (-).
+        asym, &  !Asymmetry factor                                    (-).
+        tau   !Optical depth                                       (-).
  
 !     OUTPUT ARGUMENTS:
 !     -----------------
-      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1)::
-     &  fddir !Spectral direct downward flux                   (W/m^2).
-     &, fddif !Spectral diffuse downward flux                  (W/m^2).
-     &, fudif !Spectral diffuse upward flux                    (W/m^2).
+      real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1):: &
+        fddir, & !Spectral direct downward flux                (W/m^2).
+        fddif, & !Spectral diffuse downward flux               (W/m^2).
+        fudif    !Spectral diffuse upward flux                 (W/m^2).
  
 ! LOCAL VARIABLES:
 
-      integer (kind=int_kind)
-     &  i     ! Horizontal index.
-     &, l     ! Vertical index.
+      integer (kind=int_kind):: &
+        i, &     ! Horizontal index.
+        l     ! Vertical index.
  
-      real (kind=dbl_kind), dimension(nlm)::
-     &  rr      !
-     &, tr      !
-     &, sigu    !
-     &, sigd    !
+      real (kind=dbl_kind), dimension(nlm):: &
+        rr, &      !
+        tr, &      !
+        sigu, &    !
+        sigd       !
 
-      real (kind=dbl_kind)
-     &  exptau_s(nlm),direct_s(nlm+1),exptau_us(nlm),direct_us(nlm+1)
+      real (kind=dbl_kind):: &
+        exptau_s(nlm),direct_s(nlm+1),exptau_us(nlm),direct_us(nlm+1)
 
-      real (kind=dbl_kind)
-     &      aa ,    bb ,   cc , denom
-     &, eggtau ,   eps ,   g3 ,    g4
-     &,  ggtau , kappa ,    r ,  rinf
-     &,      t ,   oms , taus ,  fact
-     &,    asy ,  prop, fd_total
+      real (kind=dbl_kind):: &
+            aa ,    bb ,   cc , denom, &
+        eggtau ,   eps ,   g3 ,    g4, &
+         ggtau , kappa ,    r ,  rinf, &
+             t ,   oms , taus ,  fact, &
+           asy ,  prop, fd_total
       data eps /1.e-02/
 
-      real (kind=dbl_kind), dimension(nlm)::
-     &  td , vu
+      real (kind=dbl_kind), dimension(nlm):: &
+        td , vu
 
-      real (kind=dbl_kind), dimension(nlm+1)::     
-     &  re , vd
+      real (kind=dbl_kind), dimension(nlm+1):: &    
+        re , vd
  
 ! SELECTION RULE VARIABLES
 
-      logical (kind=log_kind)::
-     &  fail
+      logical (kind=log_kind):: &
+        fail
 
-      real (kind=dbl_kind)::
-     &  tausthresh
-     &, wcthresh
-     &, tauscat
+      real (kind=dbl_kind):: &
+        tausthresh, &
+        wcthresh, &
+        tauscat
 
 
 !     data tausthresh / 0.001 /
@@ -2453,7 +2452,7 @@ c-----------------------------------------------------------------------
             fudif(i,nlm+1) = fddir(i,nlm+1) * asdir(i,ib)
  
             do l = nlm, 1, -1
-               fudif(i,l) = fudif(i,l+1) * exp(-2*tau(i,l))
+               fudif(i,l) = fudif(i,l+1) * exp(-2.*tau(i,l))
             enddo
 
             cycle
@@ -2506,10 +2505,10 @@ c-----------------------------------------------------------------------
             g4 = 1.-g3
             aa = g3*(t-1./amu0(i))+g4*r
             bb = g4*(t+1./amu0(i))+g3*r
-            sigu(l) = cc*((aa-rr(l)*bb)-aa*tr(l)*exptau_s(l))
-     +              * direct_s(l)
-            sigd(l) = cc*(-bb*tr(l)+(bb-rr(l)*aa)*exptau_s(l))
-     +              * direct_s(l)
+            sigu(l) = cc*((aa-rr(l)*bb)-aa*tr(l)*exptau_s(l)) &
+                    * direct_s(l)
+            sigd(l) = cc*(-bb*tr(l)+(bb-rr(l)*aa)*exptau_s(l)) &
+                    * direct_s(l)
          enddo
  
 !---- 1. do adding, going from top down:
@@ -2517,8 +2516,8 @@ c-----------------------------------------------------------------------
          do l = 1, nlm
             prop = 1. / (1. - re(l)*rr(l))
             re(l+1) = rr(l) + tr(l)**2*re(l)*prop
-            vd(l+1) = sigd(l) + (tr(l)*vd(l)
-     +              + tr(l)*re(l)*sigu(l))*prop
+            vd(l+1) = sigd(l) + (tr(l)*vd(l) &
+                    + tr(l)*re(l)*sigu(l))*prop
             vu(l)   = (rr(l)*vd(l) + sigu(l))*prop
             td(l)   = prop
          enddo
@@ -2526,9 +2525,9 @@ c-----------------------------------------------------------------------
 !---- 2. calculate diffuse fluxes:
 
          fddif(i,1) = 0.
-         fudif(i,nlm+1) = (asdif(i,ib)*vd(nlm+1)
-     +                  + asdir(i,ib)*slr(i)*amu0(i)*direct_s(nlm+1))
-     +                  / (1.-asdif(i,ib)*re(nlm+1))
+         fudif(i,nlm+1) = (asdif(i,ib)*vd(nlm+1) &
+                        + asdir(i,ib)*slr(i)*amu0(i)*direct_s(nlm+1)) &
+                        / (1.-asdif(i,ib)*re(nlm+1))
  
          do l = nlm+1, 2, -1
             fddif(i,l)   = re(l)*fudif(i,l) + vd(l)
