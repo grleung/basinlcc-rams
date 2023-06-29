@@ -17,7 +17,7 @@
      +,               sel_rules
      +                )
      
-      use kinds
+      use bugs_kinds
       use bugsrad_planck, only:  planck
       use gases_ckd, only:  gases, stanpir,pscale
       use continuum
@@ -409,7 +409,7 @@ c-----------------------------------------------------------------------
      +                )
 
 
-      use kinds
+      use bugs_kinds
       use gases_ckd, only: gases, stanps, pscale
       use rayleigh, only: rayle
       implicit none
@@ -829,7 +829,7 @@ c-----------------------------------------------------------------------
      +,              asycld , flag
      +              )
 
-      use kinds
+      use bugs_kinds
 
       implicit none
 
@@ -1030,7 +1030,7 @@ c-----------------------------------------------------------------------
      +,               asycld ,  asyclr ,  fwcld ,  fwclr
      +              )
 
-      use kinds
+      use bugs_kinds
 
       implicit none
              
@@ -1153,7 +1153,7 @@ c-----------------------------------------------------------------------
      +,              tcclr ,  wccld ,  wcclr
      +              )
 
-      use kinds
+      use bugs_kinds
       
       implicit none
              
@@ -1258,7 +1258,7 @@ c-----------------------------------------------------------------------
      +,              sel_rules
      +              )
  
-      use kinds
+      use bugs_kinds
 
 
 
@@ -1483,7 +1483,7 @@ c-----------------------------------------------------------------------
      +,                     b4
      +              )
 
-      use kinds
+      use bugs_kinds
 
 
 
@@ -1830,7 +1830,7 @@ c-----------------------------------------------------------------------
      +,                 tauclr ,  es ,   bf ,   fu , fd
      +                 )
  
-      use kinds
+      use bugs_kinds
 
 
 
@@ -1953,7 +1953,7 @@ c-----------------------------------------------------------------------
      +               )
  
  
-      use kinds
+      use bugs_kinds
       use bandsolve 
 
 
@@ -2322,7 +2322,7 @@ c-----------------------------------------------------------------------
      +,               fddir , fddif ,sel_rules
      +               )
  
-      use kinds
+      use bugs_kinds
 
 
 

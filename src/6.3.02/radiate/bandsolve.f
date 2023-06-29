@@ -13,7 +13,7 @@
       
       subroutine bandec(a, n, m1, m2, np, mp, al, mpl, indx, d)
       
-         use kinds
+         use bugs_kinds
       
          integer(kind=int_kind), intent(in) :: n, m1, m2, np, mp, mpl
       
@@ -85,7 +85,7 @@
       
       subroutine banbks(a, n, m1, m2, np, mp, al, mpl, indx, b)
       
-         use kinds
+         use bugs_kinds
       
          integer(kind=int_kind), intent(in):: n, m1, m2, np, mp, mpl
          integer(kind=int_kind), intent(in), dimension(:):: indx
