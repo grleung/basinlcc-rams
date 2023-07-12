@@ -1,5 +1,5 @@
 #!/usr/bin/env make
-include ../../../../../include.mk
+include ../../../../include.mk
 
 COMPILE_DIR = $(PWD)
 RTE_DIR = ../rte

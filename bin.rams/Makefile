@@ -7,13 +7,10 @@ include ../include.mk
 ###############################################################################
 # Compiler commands
 ###############################################################################
-#LIBS += -L$(MODEL)/radiate/rte-rrtmgp/build -lrrtmgp -lrte
-#LIBS += -L$(MODEL)/radiate/rte-rrtmgp/examples/all-sky -lrte_rrtmgp
 LIBS += -L$(NETCDF_FORTRAN_ROOT)/lib -lnetcdff
 LIBS += -L$(NETCDF_C_ROOT)/lib -lnetcdf
 
 INCLUDES  = $(UTILS_INCS) $(PAR_INCS) $(HDF5_INCS)
-#INCLUDES += -I../src/6.3.02/radiate/rte-rrtmgp/build
 INCLUDES += -I$(NETCDF_FORTRAN_ROOT)/include 
 
 F_CD1 = $(F_COMP) -c $(F_OPTS1) $(INCLUDES)

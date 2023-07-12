@@ -1,4 +1,4 @@
-include ../../../../../include.mk
+include ../../../../include.mk
 
 RTE_RRTMG_OBJS = \
   rte_rrtmgp_rams.o \
