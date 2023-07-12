@@ -8,7 +8,7 @@
       subroutine bugs_driver(nlm,amu0,alvdr,pl,tl,ql,qcwl,ncwl,qcil &
       ,     qrwl,qril,o3l,asl,atl,fuswb,fdswb,fulwb,fdlwb)
 
-      use kinds, only:  int_kind, dbl_kind
+      use bugs_kinds, only:  int_kind, dbl_kind
       use bugsrad_physconst, only:  gravity, cp_dry_air, sol_const
 
       implicit none
@@ -173,7 +173,7 @@
       end subroutine bugs_driver
 
       subroutine flip_profile(nrad,prof)
-      use kinds, only: dbl_kind
+      use bugs_kinds, only: dbl_kind
 
       implicit none
 
@@ -186,4 +186,18 @@
       enddo
 
       end subroutine flip_profile
+      subroutine flip_profile_int(nrad,prof)
+      use bugs_kinds, only: dbl_kind
+
+      implicit none
+
+      integer::nrad,i
+      integer,dimension(1,nrad)::prof,temp
+
+      temp=prof
+      do i=1,nrad
+         prof(1,i)=temp(1,nrad+1-i)
+      enddo
+
+      end subroutine flip_profile_int
 !-----------------------------------------------------------------------

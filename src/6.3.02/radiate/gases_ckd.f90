@@ -10,7 +10,7 @@ module gases_ckd
 !The various c2h2o, c3h2o, c10ch4, c10n2o etc. variables are coefficients
 !required to calculate the absorption coefficient in (atm-cm)^-1.
 
-   use kinds, only: int_kind, dbl_kind
+   use bugs_kinds, only: int_kind, dbl_kind
    implicit none
    private
 

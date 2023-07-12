@@ -4,7 +4,7 @@
 ! CVS:  $Name:  $
 
 module newexp
-      use kinds
+      use bugs_kinds
       contains
 
       function exp(x) result(val)

@@ -14,7 +14,7 @@ subroutine two_rt_sw_gsolap                          &
      fudif_clr , fddir_all , fddif_all , fudif_all , &
      cldamt    , c_maximal , cf_max,  cf_random )
 
-   use kinds
+   use bugs_kinds
    implicit none
 
 !------------------------------------------------------------------------------

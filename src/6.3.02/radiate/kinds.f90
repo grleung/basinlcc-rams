@@ -5,7 +5,7 @@
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-module kinds
+module bugs_kinds
 
 !***********************************************************************
 !
@@ -25,7 +25,7 @@ integer, parameter :: char_len  = 80,                       &
                          dbl_kind  = selected_real_kind(6)    !13 for dble
                          !dbl_kind  = selected_real_kind(13)    !13 for dble
 
-end module kinds
+end module bugs_kinds
 
 !|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 

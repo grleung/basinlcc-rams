@@ -5,7 +5,7 @@
 
 module bugsrad_planck
 
-   use kinds
+   use bugs_kinds
    implicit none
 
    integer, private, parameter :: MBIR = 12  !Number of IR bands

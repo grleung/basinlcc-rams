@@ -4,7 +4,7 @@
 ! CVS:  $Name:  $ 
 module continuum
 
-use kinds
+use bugs_kinds
 implicit none
 
 integer (kind=int_kind), parameter :: &
@@ -103,7 +103,7 @@ subroutine gascon                &
            ,ppl,  dp, tt, rmix   &
            ,tgm )
 
-   use kinds,             only:  int_kind, dbl_kind
+   use bugs_kinds,             only:  int_kind, dbl_kind
    use bugsrad_physconst, only:  gravity, R_d, f_virt
    implicit none
       
@@ -187,7 +187,7 @@ subroutine gascon                &
 end subroutine gascon
 
 function parm_ckd24(iband,amnt,patm,temp,dz) result(ckd24_tau)
-   use kinds
+   use bugs_kinds
    use bugsrad_physconst, only:  R_star,MW_h2o
    implicit none
 ! Parameterization of CKD_2.4 continuum over Fu-Liou Bands

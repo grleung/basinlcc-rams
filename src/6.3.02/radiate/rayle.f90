@@ -13,7 +13,7 @@ subroutine rayle (&
    ,tray         & !Rayleigh optical depth
    ,wray)          !Rayleigh single-scattering albedo
 
-   use kinds
+   use bugs_kinds
    use bugsrad_physconst, only:  N_av, gravity, MW_dry_air, ri
         
    implicit none

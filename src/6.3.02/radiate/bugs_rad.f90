@@ -15,7 +15,7 @@
                       fdsw ,     fusw ,     fdlw ,     fulw,  &
                       acld, umco2, umch4, umn2o )
       
-      use kinds
+      use bugs_kinds
 
       
       implicit none

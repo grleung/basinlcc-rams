@@ -2,7 +2,7 @@
 
 module bugsrad_physconst
 
-   use kinds
+   use bugs_kinds
    implicit none
    private
 

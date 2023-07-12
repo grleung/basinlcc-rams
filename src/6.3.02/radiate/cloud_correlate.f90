@@ -4,7 +4,7 @@
 ! CVS: $Name:  $
 
 module bugs_cloud_correlate
-   use kinds
+   use bugs_kinds
    implicit none
    real(kind=dbl_kind), PARAMETER :: MIN_CF = 1.0e-6   !Minimum layer cloud fraction considered cloudy
    real(kind=dbl_kind), PARAMETER :: MIN_LC = 1.0      !Minimum correlation length in meters
@@ -119,7 +119,7 @@ module bugs_cloud_correlate
 
    subroutine bugs_cloudfit(len, nlm, c_tot, acld, &
                             c_maximal, cf_max, cf_random)
-      use kinds
+      use bugs_kinds
       implicit none
    
       integer (kind=int_kind), intent(in) :: &

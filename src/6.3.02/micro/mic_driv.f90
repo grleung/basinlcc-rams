@@ -266,8 +266,8 @@ do lcat = 1,8
 enddo
 
 ! Evaluate radiative heating rates if using Harrington radiation scheme
-if (iswrtyp .eq. 3 .or. ilwrtyp .eq. 3) then
-   if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. .001) then
+if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. .001) then
+   if (iswrtyp .eq. 3 .or. ilwrtyp .eq. 3) then
       !Saleeby(2008): Change passing of 7 to 8 if adding drizzle mode
       ! and modify locations in radcalc3 and radcomp3 to match
       CALL radcalc3 (m1,i,j,ngr,maxnzp,7,iswrtyp,ilwrtyp,zm,zt &
@@ -286,11 +286,17 @@ if (iswrtyp .eq. 3 .or. ilwrtyp .eq. 3) then
          ,radiate%lwdn (1,i,j)    &
          ,dn0(1)                  &
          )
-   endif
-endif
-if (iswrtyp .eq. 4 .or. ilwrtyp .eq. 4) then
-   if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. .001) then
+   elseif (iswrtyp .eq. 4 .or. ilwrtyp .eq. 4) then
       CALL radcalc4 (m1,maxnzp,7,iswrtyp,ilwrtyp  &
+         ,glat,rtgt,topt  &
+         ,radiate%albedt  (i,j) ,radiate%cosz  (i,j)  &
+         ,radiate%rlongup (i,j) ,radiate%rshort(i,j)  &
+         ,radiate%rlong   (i,j)  &
+         ,zm,zt,rv(1),dn0(1),pi0(1),pp(1),radiate%fthrd(1,i,j),i,j,ngr &
+         ,radiate%bext(1,i,j),radiate%swup(1,i,j),radiate%swdn(1,i,j) &
+         ,radiate%lwup(1,i,j),radiate%lwdn(1,i,j))
+   elseif (iswrtyp .eq. 5 .or. ilwrtyp .eq. 5) then
+      CALL radcalc5 (m1,maxnzp,iswrtyp,ilwrtyp  &
          ,glat,rtgt,topt  &
          ,radiate%albedt  (i,j) ,radiate%cosz  (i,j)  &
          ,radiate%rlongup (i,j) ,radiate%rshort(i,j)  &

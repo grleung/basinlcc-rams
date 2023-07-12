@@ -7,7 +7,15 @@ include ../include.mk
 ###############################################################################
 # Compiler commands
 ###############################################################################
+#LIBS += -L$(MODEL)/radiate/rte-rrtmgp/build -lrrtmgp -lrte
+#LIBS += -L$(MODEL)/radiate/rte-rrtmgp/examples/all-sky -lrte_rrtmgp
+LIBS += -L$(NETCDF_FORTRAN_ROOT)/lib -lnetcdff
+LIBS += -L$(NETCDF_C_ROOT)/lib -lnetcdf
+
 INCLUDES  = $(UTILS_INCS) $(PAR_INCS) $(HDF5_INCS)
+#INCLUDES += -I../src/6.3.02/radiate/rte-rrtmgp/build
+INCLUDES += -I$(NETCDF_FORTRAN_ROOT)/include 
+
 F_CD1 = $(F_COMP) -c $(F_OPTS1) $(INCLUDES)
 F_CD2 = $(F_COMP) -c $(F_OPTS2) $(INCLUDES)
 C_CD  = $(C_COMP) -c $(C_OPTS)  $(INCLUDES) $(PAR_DEFS) $(HDF5_DEFS)
@@ -31,13 +39,16 @@ $(ARC)(%.o): %.c;   $(C_CM)
 ################################################################################
 # Define objects
 ################################################################################
-OBJ = $(ARC)($(MODEL)/lib/an_header.o) \
+OBJ1 =$(ARC)($(MODEL)/lib/an_header.o) \
       $(ARC)($(MODEL)/lib/rconstants.o) \
       $(ARC)($(MODEL)/memory/grid_dims.o) \
       $(ARC)($(MODEL)/micro_bin/micro_prm.o) \
       $(ARC)($(MODEL)/micro/micphys.o) \
       $(ARC)($(MODEL)/kpp/kpp_params.o) \
-      $(ARC)($(MODEL)/io/io_params.o) \
+      $(ARC)($(MODEL)/io/io_params.o) 
+# Needed to break up the objects list in order to compile the RTE+RRTMGP code
+# Add new files to the second list unless it is a module needed by RTE+RRTGMP
+OBJ2 = \
       $(ARC)($(MODEL)/core/ref_sounding.o) \
       $(ARC)($(MODEL)/memory/var_tables.o) \
       $(ARC)($(MODEL)/memory/mem_basic.o) \
@@ -129,6 +140,7 @@ OBJ = $(ARC)($(MODEL)/lib/an_header.o) \
       $(ARC)($(MODEL)/nesting/nest_drivers.o) \
       $(ARC)($(MODEL)/nesting/nest_intrp.o) \
       $(ARC)($(MODEL)/nesting/nest_feed.o) \
+      $(ARC)($(MODEL)/radiate/kinds.o) \
       $(ARC)($(MODEL)/radiate/rrad3.o) \
       $(ARC)($(MODEL)/radiate/rad_driv.o) \
       $(ARC)($(MODEL)/radiate/rad_aero.o) \
@@ -136,7 +148,6 @@ OBJ = $(ARC)($(MODEL)/lib/an_header.o) \
       $(ARC)($(MODEL)/radiate/rad_ccmp.o) \
       $(ARC)($(MODEL)/radiate/rad_stable.o) \
       $(ARC)($(MODEL)/radiate/rrad2.o) \
-      $(ARC)($(MODEL)/radiate/kinds.o) \
       $(ARC)($(MODEL)/radiate/bugsrad_physconst.o) \
       $(ARC)($(MODEL)/radiate/bugsrad_planck.o) \
       $(ARC)($(MODEL)/radiate/cloud_correlate.o) \
@@ -247,7 +258,10 @@ $(MAIN): FORCE
 	@echo ""
 	$(F_CD2) $@
 
-$(ARC): $(OBJ)
+$(ARC): $(OBJ1) RTE_RRTMGP $(OBJ2) 
+
+RTE_RRTMGP: 
+	make -C $(MODEL)/radiate/rte-rrtmgp rams
 
 FORCE:
 
@@ -257,5 +271,6 @@ check: FORCE
 
 clean:
 	@echo ""
+	make -C $(MODEL)/radiate/rte-rrtmgp clean
 	rm -f $(ARC) $(EXE) $(BASE) *.o *.mod *.f
 	@echo ""

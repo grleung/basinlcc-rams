@@ -9,7 +9,7 @@ subroutine two_rt_lw_gsolap                &
        cf_random)
 
  
-   use kinds
+   use bugs_kinds
    implicit none
 
 !-----------------------------------------------------------------------
