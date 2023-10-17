@@ -114,10 +114,10 @@
 !     OUTPUT ARGUMENTS:
 !     -----------------
       real (kind=dbl_kind), intent(out), dimension(ncol,nlm+1):: &
-       fdlw   & !Downward LW flux                            (W/m^2).
-     , fdlwcl & !Downward clear-ksy LW flux                  (W/m^2).
-     , fulw   & !Upward LW flux                              (W/m^2).
-     , fulwcl  !Upward clear-sky LW flux                     (W/m^2).
+       fdlw,   & !Downward LW flux                           (W/m^2).
+       fdlwcl, & !Downward clear-ksy LW flux                 (W/m^2).
+       fulw,   & !Upward LW flux                             (W/m^2).
+       fulwcl  !Upward clear-sky LW flux                     (W/m^2).
 
 ! LOCAL VARIABLES:
 
