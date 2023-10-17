@@ -1814,7 +1814,7 @@
       end do  !i=1,ncol
  
       return
-      end
+      end subroutine two_rt_lw_iter
 
 
 ! CVS:  $Id: two_rt_lw_sel.F,v 1.3 2003/11/11 21:55:13 norm Exp $
@@ -1912,8 +1912,8 @@
           fd(i,1) = 0.
 
           do l=1,nlm
-            exptau(l) = exp(-2*tauclr(i,l))
-            if(tauclr(i,l) .lt. .8e-2) then
+            exptau(l) = exp(-2.*tauclr(i,l))
+            if(tauclr(i,l) .lt. 0.8e-2) then
               sigu(l) = (bf(i,l)+bf(i,l+1))*tauclr(i,l)
               sigd(l) = sigu(l)
             else
@@ -1934,7 +1934,7 @@
 1000  continue
 
       return
-      end
+      end subroutine two_rt_lw_sel
 
 
 ! CVS:  $Id: two_rt_sw_bs.F,v 1.3 2003/11/11 21:55:13 norm Exp $
@@ -2108,7 +2108,7 @@
 !            fudif(i,nlm+1) = fddir(i,nlm+1) * asdir(i,ib)
 ! 
 !            do l=nlm,1,-1
-!               fudif(i,l) = fudif(i,l+1) * exp(-2*tau(i,l))
+!               fudif(i,l) = fudif(i,l+1) * exp(-2.*tau(i,l))
 !            enddo
 ! 
 !            cycle
