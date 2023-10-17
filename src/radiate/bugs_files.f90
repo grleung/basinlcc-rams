@@ -7,14 +7,14 @@
 !-----------------------------------------------------------------------
 
       subroutine bugs_lwr &
-                     (    ncol ,    nlm ,    pp ,    ppl &
-     ,                      dp ,     tt ,  rmix ,  cwrho &
-     ,                     cwn  &
-     ,                   cirho ,  o3mix ,    ts , cldamt &
-     ,                  cldmax ,     b1 ,    b2 ,     b3 &
-     ,                      b4 ,  umco2 , umch4 ,  umn2o &
-     ,                    fdlw , fdlwcl ,  fulw , fulwcl &
-     ,               sel_rules &
+                     (    ncol ,    nlm ,    pp ,    ppl, &
+                            dp ,     tt ,  rmix ,  cwrho, &
+                           cwn ,  &
+                         cirho ,  o3mix ,    ts , cldamt, &
+                        cldmax ,     b1 ,    b2 ,     b3, &
+                            b4 ,  umco2 , umch4 ,  umn2o, &
+                          fdlw , fdlwcl ,  fulw , fulwcl, &
+                     sel_rules &
                      )
      
       use bugs_kinds
