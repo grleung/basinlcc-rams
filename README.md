@@ -17,7 +17,5 @@ o  BUGSRAD contains separate albedo values for shortwave and near IR. I've set t
 
 o  BUGSRAD has its own precision definitions (e.g. dbl_kind). They're still being used and aren't interfaced with the options to compile with double or single precision in the Makefile.
 
-o  Three of the new BUGSRAD source files are .f. These don't play well with archiving, so they will compile every time and you'll get a warning about it.
-
 I've also added RTE+RRTMGP radiation (https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2019MS001621) as option 5
 
