@@ -5,15 +5,15 @@
 cd /home6/grleung1/basinlcc-rams/bin.dp.grib1/
 
 # ERA5 Data input
-IN_FILE="/nobackupp12/grleung1/basinlcc/b2_test/ERA5/ERA5_20190911.grib"
+IN_FILE="/nobackupp12/grleung1/basinlcc/ERA5/ERA5_20190917.grib"
 
 # DP_FILE Output directory needs trailing slash
-OUT_DIR="/nobackupp12/grleung1/basinlcc/b2_test/dp/"
+OUT_DIR="/nobackupp12/grleung1/basinlcc/dp/"
 
 YEAR=2019 # YYYY
 MONTH=09 # MM
-START_DAY=11 # DD
-END_DAY=13 # DD
+START_DAY=17 # DD
+END_DAY=20 # DD
 
 #### UPDATE INFOMRATION ABOVE HERE ^^^^^
 

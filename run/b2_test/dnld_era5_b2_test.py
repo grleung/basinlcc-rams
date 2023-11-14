@@ -9,10 +9,10 @@ import os
 # This is for 3D DATA
 
 # Specific save directory and filenames for saving
-savedir = '/nobackup/grleung1/basinlcc/b2_test/ERA5/'
-savename_p = 'ERA5_20190911_Pressure'
-savename_l = 'ERA5_20190911_Land'
-savename_f = 'ERA5_20190911'
+savedir = '/nobackup/grleung1/basinlcc/ERA5/'
+savename_p = 'ERA5_20190910_Pressure'
+savename_l = 'ERA5_20190910_Land'
+savename_f = 'ERA5_20190910'
 filetype = 'grib'
 dir_finf = savedir + savename_f + '.' + filetype
 
@@ -24,7 +24,7 @@ low = 106; loe = 120 # Longitude bounds (West ; East)
 YY = '2019'
 MM = '09'
 #DD = ['13','14',]
-DD = ['11','12','13']
+DD = ['10','11','12']
 
 ############################################################################################
 ############################################################################################

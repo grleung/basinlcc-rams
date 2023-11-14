@@ -97,7 +97,7 @@ implicit none
    if (allocated(micro_g(1)%q7))      allocate (tend%q7t(ntpts))
    
    !GRL 2023 05 03 Disabled aerosol tendencies for static aerosol
-   if (allocated(micro_g(1)%cifnp))   allocate (tend%cifnt(ntpts))
+   !if (allocated(micro_g(1)%cifnp))   allocate (tend%cifnt(ntpts))
 
    if (allocated(micro_g(1)%fncn))   allocate (tend%fncnt(ntpts*nkr))
    if (allocated(micro_g(1)%ffcd))   allocate (tend%ffcdt(ntpts*nkr))
