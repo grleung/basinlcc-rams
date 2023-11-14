@@ -1033,6 +1033,9 @@ contains
                     solar_quiet, solar_facular, solar_sunspot, &
                     tsi_default, mg_default, sb_default, &
                     rayl_lower, rayl_upper)  result(err_message)
+
+    use mem_radiate, only:irce,rce_solc
+ 
     class(ty_gas_optics_rrtmgp), intent(inout) :: this
     class(ty_gas_concs),         intent(in   ) :: available_gases ! Which gases does the host model have available?
     character(len=*), &
@@ -1115,7 +1118,13 @@ contains
       this%solar_source_sunspot = solar_sunspot
       !$acc end kernels
       !$omp end target
-      err_message = this%set_solar_variability(mg_default, sb_default)
+
+      if (irce == 1) then 
+         err_message = this%set_solar_variability(mg_default, sb_default, rce_solc)
+      else
+         err_message = this%set_solar_variability(mg_default, sb_default)
+      endif
+
     endif
   end function load_ext
   !--------------------------------------------------------------------------------------------------------------------

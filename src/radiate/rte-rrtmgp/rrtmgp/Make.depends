@@ -3,7 +3,7 @@ RRTMGP_FORTRAN_KERNELS = \
 
 RRTMGP_FORTRAN_INTERFACE = \
   mo_rrtmgp_util_string.o \
-	mo_rrtmgp_constants.o \
+  mo_rrtmgp_constants.o \
   mo_gas_concentrations.o \
   mo_gas_optics.o \
   mo_gas_optics_rrtmgp.o

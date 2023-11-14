@@ -42,7 +42,8 @@ OBJ1 =$(ARC)($(MODEL)/lib/an_header.o) \
       $(ARC)($(MODEL)/micro_bin/micro_prm.o) \
       $(ARC)($(MODEL)/micro/micphys.o) \
       $(ARC)($(MODEL)/kpp/kpp_params.o) \
-      $(ARC)($(MODEL)/io/io_params.o) 
+      $(ARC)($(MODEL)/io/io_params.o) \
+      $(ARC)($(MODEL)/memory/mem_radiate.o) 
 # Needed to break up the objects list in order to compile the RTE+RRTMGP code
 # Add new files to the second list unless it is a module needed by RTE+RRTGMP
 OBJ2 = \
@@ -53,7 +54,6 @@ OBJ2 = \
       $(ARC)($(MODEL)/memory/mem_leaf.o) \
       $(ARC)($(MODEL)/memory/mem_sib.o) \
       $(ARC)($(MODEL)/memory/mem_micro.o) \
-      $(ARC)($(MODEL)/memory/mem_radiate.o) \
       $(ARC)($(MODEL)/memory/mem_tracer.o) \
       $(ARC)($(MODEL)/memory/mem_scratch.o) \
       $(ARC)($(MODEL)/memory/mem_turb.o) \
@@ -258,6 +258,8 @@ $(MAIN): FORCE
 $(ARC): $(OBJ1) RTE_RRTMGP $(OBJ2) 
 
 RTE_RRTMGP: 
+	#This is inelegant
+	cp mem_radiate.mod $(MODEL)/radiate/rte-rrtmgp/build/.
 	make -C $(MODEL)/radiate/rte-rrtmgp rams
 
 FORCE:
