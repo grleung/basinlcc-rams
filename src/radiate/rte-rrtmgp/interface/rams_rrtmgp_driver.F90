@@ -21,7 +21,7 @@ subroutine rte_rrtmgp_init()
 
   implicit none
 
-  CHARACTER(60) :: filename
+  CHARACTER(80) :: filename
 
   call stop_on_err(gas_concs%init(gas_names))
   !Initialize some gas concentrations that don't change in time
@@ -301,5 +301,5 @@ subroutine rte_rrtmgp_driver(nrad,ncat,mu0,alb,p_lay,t_lay,z_lay,z_lev, &
     fthsw = hrate(1,:)
   end if
  enddo
- deallocate(toa_flux) !or save these so that they don't need re-allocating?
+ deallocate(toa_flux) 
 end subroutine rte_rrtmgp_driver

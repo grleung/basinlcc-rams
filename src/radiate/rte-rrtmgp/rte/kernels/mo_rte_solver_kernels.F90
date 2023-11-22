@@ -1029,6 +1029,7 @@ contains
   !
   ! -------------------------------------------------------------------------------------------------
   pure subroutine sw_dif_and_source(ncol, nlay, top_at_1, mu0, sfc_albedo, &
+!  subroutine sw_dif_and_source(ncol, nlay, top_at_1, mu0, sfc_albedo, &
                                     tau, w0, g,  &
                                     Rdif, Tdif, source_dn, source_up, source_sfc, flux_dn_dir) bind (C, name="rte_sw_source_dir")
     integer,                          intent(in   ) :: ncol, nlay
@@ -1088,7 +1089,10 @@ contains
         !   k = 0 for isotropic, conservative scattering; this lower limit on k
         !   gives relative error with respect to conservative solution
         !   of < 0.1% in Rdif down to tau = 10^-9
-        k = sqrt(max((gamma1 - gamma2) * (gamma1 + gamma2), 1.e-12_wp))
+        !k = sqrt(max((gamma1 - gamma2) * (gamma1 + gamma2), 1.e-12_wp))
+        !Adele - increased limiting value because it was causing very large errors ... 
+        !not sure exactly why. May need to be increased again.
+        k = sqrt(max((gamma1 - gamma2) * (gamma1 + gamma2), 1.e-10_wp))
         k_mu     = k * mu0_s
         exp_minusktau = exp(-tau_s*k)
         exp_minus2ktau = exp_minusktau * exp_minusktau
@@ -1264,13 +1268,10 @@ subroutine adding(ncol, nlay, top_at_1, &
     !
     ! From the top of the atmosphere downward -- compute fluxes
     !
-!print*,'adding'
     do ilev = nlay, 1, -1
       flux_dn(:,ilev) = (tdif(:,ilev)*flux_dn(:,ilev+1) + &  ! Equation 13
                          rdif(:,ilev)*src(:,ilev) + &
                          src_dn(:, ilev)) * denom(:,ilev)
-!print*,flux_dn(1,ilev)
-!print*,tdif(1,ilev),rdif(1,ilev),src(1,ilev),src_dn(1,ilev),denom(1,ilev)
       flux_up(:,ilev) = flux_dn(:,ilev) * albedo(:,ilev) + & ! Equation 12
                         src(:,ilev)
 
