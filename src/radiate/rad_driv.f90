@@ -1674,13 +1674,18 @@ CALL rte_rrtmgp_driver(nrad,ncat,cosz,albedt,pl(2:nrad),tl(2:nrad),ztl(2:nrad),z
                  ,flxul(1:nrad),flxdl(1:nrad),fthsw(2:nrad),fthlw(2:nrad))
 
 !fluxes are defined on zm levels
-do k = 1,m1
+do k = 1,m1-1
    swup(k) = flxus(k)
    swdn(k) = flxds(k)
 
    lwup(k) = flxul(k)
    lwdn(k) = flxdl(k) 
 enddo
+!Use top of radiative atmosphere rather than top of model
+swup(m1)=flxus(nrad)
+swdn(m1)=flxds(nrad)
+lwup(m1)=flxul(nrad)
+lwdn(m1)=flxdl(nrad)
 
 !heating rates are defined on zt levels
 do k = 2,m1
