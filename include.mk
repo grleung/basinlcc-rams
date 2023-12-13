@@ -92,6 +92,13 @@ CMACH=PC_LINUX1  #Standard Linux (only option available now)
 #F_COMP=ifort
 #F_OPTS1=-free -O1 -fp-model precise
 #F_OPTS2=-free -O2 -fp-model precise
+#F_OPTS3=-free -O3 -fp-model precise
+
+#F_OPTS1=-free -g -traceback -fp-model precise
+#F_OPTS2=-free -g -traceback -fp-model precise
+#F_OPTS3=-free -g -traceback -fp-model precise
+
+
 #LOADER_OPTS= -free -O2 -fp-model precise
 #LIBS=-L/usr/lib/x86_64-linux-gnu -lrt -lpthread -lsz -lz
 
@@ -130,6 +137,9 @@ F_COMP=gfortran
 F_OPTS1=-fallow-argument-mismatch -ffree-form -O1 
 F_OPTS2=-fallow-argument-mismatch -ffree-form -O2
 F_OPTS3=-fallow-argument-mismatch -ffree-form -O3
+#F_OPTS1=-fallow-argument-mismatch -ffree-form -O1 -fbacktrace
+#F_OPTS2=-fallow-argument-mismatch -ffree-form -O2 -fbacktrace
+#F_OPTS3=-fallow-argument-mismatch -ffree-form -O3 -fbacktrace
 #Use F_OPTS3 for RTE+RRTMGP. See Makefiles in src/version/radiate/rte-rrtmgp
 LOADER_OPTS=-ffree-form -O2
 LIBS=-L/usr/lib/x86_64-linux-gnu -lrt -lpthread -lz -lsz

@@ -17,7 +17,7 @@
 
    TIMEUNIT = 's',          ! 'h','m','s' - Time units of TIMMAX, TIMSTR
 
-   TIMMAX   = 2400.,           ! Final time of simulation
+   TIMMAX   = 3.,!2400.,           ! Final time of simulation
 
 !  Start of simulation or ISAN processing
 
@@ -203,7 +203,7 @@
                               !   state,mean,lite,both
                               
 !------------------------------------------------------------------------
-   FRQSTATE   = 300.,600.,3600.,1800., ! "state" file write frequency
+   FRQSTATE   = 3.,600.,3600.,1800., ! "state" file write frequency
                               !  can be different for each grid
                               !  works best if grids are multiples of each other
    FRQST_KEEP   =    0.,      ! If > 0., frequency at which "state" files will be 
@@ -300,8 +300,8 @@
  
 ! Radiation parameters
  
-   ISWRTYP  = 4,             ! Shortwave radiation type
-   ILWRTYP  = 4,             ! Longwave radiation type
+   ISWRTYP  = 5,             ! Shortwave radiation type
+   ILWRTYP  = 5,             ! Longwave radiation type
                              !    0-none, 2-Mahrer/Pielke, 1-Chen, 3-Harrington
    RADFRQ   = 60.,          ! Freq. of radiation tendency update (s)
    LONRAD   = 1,             ! Longitudinal variation of shortwave  
