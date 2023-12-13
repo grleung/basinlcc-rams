@@ -96,10 +96,20 @@
       nlen = 1    !to do timing tests
       len = nlen
 !----
-      do l=2,nlm+1
+! AJD changed: original:
+!      do l=2,nlm+1
+!       pl2(1,l)=(pl(1,l-1)+pl(1,l))/2.
+!      enddo
+!      pl2(1,1)=pl2(1,2)+abs(pl2(1,2)-pl2(1,3))
+! Bug in original: pl(1,nlm+1) is not defined!
+!
+! AJD changed: modified:
+      do l=2,nlm
        pl2(1,l)=(pl(1,l-1)+pl(1,l))/2.
       enddo
       pl2(1,1)=pl2(1,2)+abs(pl2(1,2)-pl2(1,3))
+! AJD - extrapolate to the top-layer pressure:
+      pl2(1,nlm+1)=pl2(1,nlm)-abs(pl2(1,nlm-1)-pl2(1,nlm))
 
       pl = pl/100. !convert from Pascals to millibars
       pl2 = pl2/100. 
