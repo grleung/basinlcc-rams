@@ -62,7 +62,7 @@ use node_mod
 implicit none
 
 integer :: nnns,k,kk,kkk
-real :: toffset,dir,spd,zold1,zold2,tavg,rtss,wt
+real :: toffset,dir,spd,zold1,zold2,tavg,rtss,wt,extra
 real, dimension(:), allocatable :: temp_vec
 
 !     Arrange the input sounding
@@ -77,9 +77,13 @@ if (ps(1) .eq. 0.) then
       vs(nsndg) = 0.
    enddo
 
-   open(1,file='SOUND_IN',status='old',form='formatted')
+   open(1,file=trim(sound_file),status='old',form='formatted')
    do nsndg=1,maxsndg
-      read(1,*,end=1999) ps(nsndg),ts(nsndg),rts(nsndg),us(nsndg),vs(nsndg)
+      if (io3flg==0) then
+         read(1,*,end=1999) ps(nsndg),ts(nsndg),rts(nsndg),us(nsndg),vs(nsndg)
+      elseif (io3flg==1) then
+         read(1,*,end=1999) ps(nsndg),ts(nsndg),rts(nsndg),us(nsndg),vs(nsndg),o3s(nsndg)
+      endif
       if(ps(nsndg).le.0.) go to 1999
    enddo
 1999    continue
@@ -181,6 +185,9 @@ do nsndg=1,maxsndg
 125        format(' HUMIDITY TYPE (IRTSFLG=',I2,') NOT KNOWN')
       stop
    endif
+ 
+   !convert ozone from ppb
+   if(io3flg.eq.1)o3s(nsndg) = o3s(nsndg)*1.e-9
 enddo
 300  continue
 deallocate(temp_vec)
@@ -263,6 +270,23 @@ allocate(temp_vec(mmzp(ngrid)))
 CALL htint (nsndg,thds,hs,mmzp(ngrid),temp_vec,ztn(1,ngrid))
 CALL htint (nsndg,us,hs,mmzp(ngrid),u01dn(1,ngrid),ztn(1,ngrid))
 CALL htint (nsndg,vs,hs,mmzp(ngrid),v01dn(1,ngrid),ztn(1,ngrid))
+if (io3flg==1) then
+   CALL htint(nsndg,o3s,hs,mmzp(ngrid),o3ref(1,ngrid),ztn(1,ngrid))
+   do k=1,nsndg
+      if (hs(k)>zmn(mmzp(ngrid),ngrid)) then
+         o3ref(mmzp(ngrid)+1:mmzp(ngrid)+nsndg-k+1,ngrid) = o3s(k:nsndg)
+         nzref = mmzp(ngrid) + nsndg - k + 1
+         exit
+      endif
+   enddo
+else
+   do k=1,nsndg
+      if (hs(k)>zmn(mmzp(ngrid),ngrid)) then
+         nzref = mmzp(ngrid) + nsndg - k + 1
+         exit
+      endif
+   enddo
+endif
 
 if (level .ge. 1) then
    CALL htint (nsndg,rts,hs,mmzp(ngrid),rt01dn(1,ngrid),ztn(1,ngrid))
@@ -292,6 +316,18 @@ do k = 1,mmzp(ngrid)
    temp_vec(k) = (pi01dn(k,ngrid) / cp) ** cpor * p00
    dn01dn(k,ngrid) = cp * temp_vec(k)  &
       / (rgas * th01dn(k,ngrid) * pi01dn(k,ngrid))
+enddo
+
+!Adele - calculate large-scale divergence
+wsub(1,ngrid)=0.
+do k = 2,nnzp(ngrid)
+   if (divls<0) then
+      wsub(k,ngrid) = divls
+   elseif (divls>0.) then
+      wsub(k,ngrid)=wsub(k-1,ngrid)-divls*(zmn(k,ngrid)-zmn(k-1,ngrid))
+   else
+      wsub(k,ngrid)=0.
+   endif
 enddo
 
 deallocate(temp_vec)

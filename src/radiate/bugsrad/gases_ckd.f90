@@ -1150,7 +1150,7 @@ subroutine gases  ( ncol ,   nlm ,    ib ,    ig   &
       ! (800-670 cm^-1):  overlapping absorption by H2O and CO2
       ! using approach two of Fu(1991).
 
-      where (pp .ge. 63.1)
+      where (pp(:,1:nlm) .ge. 63.1)
          pq = rmix
       elsewhere
         pq = 0._dbl_kind
@@ -1167,7 +1167,7 @@ subroutine gases  ( ncol ,   nlm ,    ib ,    ig   &
       ! (670-540 cm^-1):  overlapping absorption by H2O and CO2
       ! using approach two of Fu(1991).
 
-      where (pp .ge. 63.1)
+      where (pp(:,1:nlm) .ge. 63.1)
          pq = rmix
       elsewhere
         pq = 0._dbl_kind

@@ -114,8 +114,10 @@ implicit none
     ie=cio_f(iunhd,1,'vs',vs,nsndg)
     ie=cio_f(iunhd,1,'ts',ts,nsndg)
     ie=cio_f(iunhd,1,'thds',thds,nsndg)
+    ie=cio_f(iunhd,1,'rts',rts,nsndg)
     ie=cio_f(iunhd,1,'ps',ps,nsndg)
     ie=cio_f(iunhd,1,'hs',hs,nsndg)
+    if(io3flg==1)ie=cio_f(iunhd,1,'o3s',o3s,nsndg)
 
     !Get original simulation type
     ie=cio_i(iunhd,1,'initorig',initorig,1)

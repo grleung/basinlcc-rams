@@ -32,7 +32,7 @@
  
    NNXP     = 10,30,        ! Number of x gridpoints
    NNYP     = 10,50,        ! Number of y gridpoints
-   NNZP     = 30,68,40,        ! Number of z gridpoints
+   NNZP     = 25,68,40,        ! Number of z gridpoints
    NZG      = 3,           ! Number of soil layers
    NZS      = 3,            ! Maximum number of snow layers
  
@@ -46,6 +46,7 @@
    DELTAX   = 100.0,          ! X-Y grid spacing (meters)
    DELTAZ   = 50.0,           ! Z grid spacing (set to 0. to use ZZ)
    DZRAT    = 1.,           ! Vertical grid stretch ratio
+   ZDELAY   = 0.,             ! Height at which to begin the stretching
    DZMAX    = 1000.,          ! Maximum delta Z for vertical stretch
  
    ZZ       = 0.0,            ! Vertical levels if DELTAZ = 0
@@ -198,7 +199,7 @@
 !  Analysis file output
  
    IOUTPUT  =  1,             ! 0-no files, 1-write files
-   AFILEPREF  = './output2/a',  
+   AFILEPREF  = './test.output/a',  
                               ! File prefix for all analysis files
                               !   state,mean,lite,both
                               
@@ -229,10 +230,10 @@
 
 ! Input topography variables
 
-   TOPFILES = './surface/toph', ! Path and prefix for topo files. 
-   SFCFILES = './surface/sfch', ! Path and prefix for surface files. 
-   SSTFPFX  = './surface/ssth', ! Path and prefix for sst files
-   NDVIFPFX = './surface/ndh',  ! Path and prefix for ndni files
+   TOPFILES = './test.output/toph', ! Path and prefix for topo files. 
+   SFCFILES = './test.output/sfch', ! Path and prefix for surface files. 
+   SSTFPFX  = './test.output/ssth', ! Path and prefix for sst files
+   NDVIFPFX = './test.output/ndh',  ! Path and prefix for ndni files
 
    ITOPTFLG = 2,0,0,0,           ! 2 - Fill data in "leaf3_init"
    ISSTFLG  = 2,2,0,0,           ! 0 - Interpolate from coarser grid
@@ -243,6 +244,7 @@
    IUPDNDVI  = 0,             ! 0 - No update of NDVI values during run
    IUPDSST  = 0,              ! 0 - No update of SST values during run
                               ! 1 - Update values during run
+                              ! 2 - Update values during run from 0D FORCINGFILE (see below)
  
                              ! The following only apply for IxxxxFLG=1
    ITOPTFN  = '/home/smsaleeb/sfctypehdf5/DEM30s-h5/EL',
@@ -295,8 +297,22 @@
  
    ICORFLG  = 0,             ! Coriolis flag/2D v-component  -  0=off, 1=on
 
+   IUGFORCE = 1,             ! Geostrophic wind forcing
+                             ! 0=off
+                             ! 1=on using input sounding winds. 
+                             ! 2=on using time-varying winds from FORCINGFILE
+                             ! Turn on only if INITIAL = 1 or restarting from INITIAL = 1 run
+                             ! Highly recommended if ICORFLG = 1 with INITIAL = 1
+   FORCINGFILE = '',         ! Forcing file for IUGFORCE = 2 and IUPDSST = 2
+                             ! Could easily modify source code to include other forcing datasets
+
+   DIVLS = 0.,               ! Large-scale divergence rate for calculating imposed subsidence
+
    IBND     = 2,             ! Lateral boundary condition flags
    JBND     = 2,             ! 1-Klemp/Wilhelmson, 2-cyclic
+
+   ISPONGE_PTS = 0,5,5,       ! Number of nested grid boundary sponge points
+   SPONGE_TAU  = 0.,30.,30.,  ! Nested grid sponge zone time scale (seconds)
 
    CPHAS    = 30.,           ! Phase speed if IBND or JBND = 1
    LSFLG    = 0,             ! Large-scale gradient flag for variables other than
@@ -350,6 +366,9 @@
    ISFCL    = 0,             ! Surface layer/soil/veg model
                              !  0-specified surface layer gradients
                              !  1-LEAF3 model, 2-SiB model
+                             !  3-specified fluxes, albedo, and surf. T
+                             !   - fluxes specified with DTHCON and DRTCON
+                             !   - albedo with ALBEDO, surface T with SEATMP
 
    IFREESLIP = 0,            ! Freeslip BC: 0=NO, 1=YES
 
@@ -387,12 +406,16 @@
    !   7 -- silty clay loam  8 -- clay loam       9 -- sandy clay
    !  10 -- silty clay      11 -- clay           12 -- peat
 
-   ZROUGH   = .00015,           ! Constant roughness if for all domain
+   ZTROUGH   = .00015,           ! Constant roughness if for all domain
+   ZMROUGH   = .05,          ! Constant momentum roughness if for all domain
+   ICHARNOCK = 1,            ! Use Charnock ocean roughness for patch 1
+
    ALBEDO   = .5,            ! Constant albedo if not running soil model
    SEATMP   = 267.,          ! Constant water surface temperature
 
    DTHCON   = 0.,            ! Constant sfc layer  temp grad for no soil
    DRTCON   = 0.,            ! Constant sfc layer moist grad for no soil
+                              ! OR constant surface fluxes (W/m2) for ISFCL = 3
    
    SLZ      = -.3, -.25,-.20,-.16,-.12,-.09,-.06,-.03,
                              ! Soil grid levels
@@ -506,7 +529,6 @@
    SCMTIME = 1800.,          ! Time for SCM output (seconds)
 
    ICHECKMIC = 1,            ! Check Micro Negative & Nans: 0=Off,1=on
-
    IMBUDGET = 2,             ! Micro budgets: 0=Off,1=partial,2=all,3=all+dust
 
    IRIME   = 1,              ! Riming: 0-Bulk, 1-HybridBin 
@@ -568,6 +590,7 @@
                              ! 1 = Meyers formula (CIN_MAX)
                              ! 2 = DeMott(2010) (CIN_MAX)
                              ! 3 = DeMott(2010) (aerosols D>0.5 microns)
+                             ! 4 = quasi-constant (CIN_MAX)
 
    IIFN_FORMULA = 2,         ! DeMott IN Formulation if IIFN = 2 or 3
                              ! 1 = DeMott(2010) (composite aerosol types)
@@ -585,11 +608,12 @@
                              ! ------------------------------------------
    IAEROPRNT  = 0,           ! Print aerosol init profiles (0=no,1=yes)
    IAEROHIST  = 0,           ! Re-initialize aerosols on hist restart:0,1 
-   CIN_MAX    = .01,        ! Ice Nuclei (#/mg)
-   CCN_MAX    = 100.,         ! CCN (#/mg)
-   GCCN_MAX   = 0.,          ! Giant-CCN (#/mg)
-   DUST1_MAX  = 0.,        ! Small Dust Mode (#/mg)
-   DUST2_MAX  = 0.,         ! Large Dust Mode (#/mg)
+   CIN_MAX    = .01,         ! Ice Nuclei (#/mg)
+                             ! Quasi-constant ice concentration (#/L) for IIFN = 4
+   CCN1_MAX    = 100.,       ! CCN-mode-1 (#/mg)
+   CCN2_MAX   = 0.,          ! CCN-mode-2 (#/mg)
+   DUST1_MAX  = 0.,          ! Small Dust Mode (#/mg)
+   DUST2_MAX  = 0.,          ! Large Dust Mode (#/mg)
    SALTF_MAX  = 000.,        ! Film Sea Salt (#/mg)
    SALTJ_MAX  = 0.,          ! Jet Sea Salt (#/mg)
    SALTS_MAX  = 0.e-3,       ! Spume Sea Salt (#/mg)
@@ -633,17 +657,24 @@
 
    IRTSFLG  = 2,             ! Specifies what is in RTS array
                              !  0-dew pnt.(C) 1-dew pnt.(K) 
-                             !  2-mix rat(g/kg) 
+                             !  2-mix rat(g/kg)   
                              !  3-relative humidity in %, 
                              !  4-dew pnt depression(K)
  
    IUSFLG   = 0,             ! Specifies what is in US and VS arrays
                              ! 0-u,v component(m/s) 
                              ! 1-umoms-direction, vmoms-speed
+
+   IO3FLG   = 0,             ! Optional ozone profile
+                             ! 0-ozone not provided
+                             ! 1-ozone provided in ppb
+ 
+   SOUND_FILE = 'SOUND_IN',  ! Input sounding file name. Only used 
+                             ! if PS(1)=0.
  
    HS       = 0.,
 
-  PS = 1020,10,20,30,40,50,60,70,80,
+  PS = 0,10,20,30,40,50,60,70,80,
 90,100,110,120,130,140,150,160,170,
 180,190,200,210,220,230,240,250,260,
 270,280,290,300,310,320,330,340,350,

@@ -15,12 +15,14 @@ INCLUDES += -I$(NETCDF_FORTRAN_ROOT)/include
 
 F_CD1 = $(F_COMP) -c $(F_OPTS1) $(INCLUDES)
 F_CD2 = $(F_COMP) -c $(F_OPTS2) $(INCLUDES)
+F_CD3 = $(F_COMP) -c $(F_OPTS3) $(INCLUDES)
 C_CD  = $(C_COMP) -c $(C_OPTS)  $(INCLUDES) $(PAR_DEFS) $(HDF5_DEFS)
 
 C_CM =$(C_CD)  -D$(CMACH) $< && $(ARCH) $@ $(<F:.c=.o)   && rm -f $(<F:.c=.o)
 F_CM1=$(F_CD1) $<            && $(ARCH) $@ $(<F:.f90=.o) && rm -f $(<F:.f90=.o)
 F_CM2=$(F_CD2) $<            && $(ARCH) $@ $(<F:.f90=.o) && rm -f $(<F:.f90=.o)
 F_CM3=$(F_CD2) -D$(CMACH) $< && $(ARCH) $@ $(<F:.F90=.o) && rm -f $(<F:.F90=.o)
+F_CM4=$(F_CD3) $<            && $(ARCH) $@ $(<F:.F90=.o) && rm -f $(<F:.F90=.o)
 
 ################################################################################
 ## File extension rules
@@ -33,6 +35,8 @@ $(ARC)(%.o): %.F90; $(F_CM3)
 
 $(ARC)(%.o): %.c;   $(C_CM)
 
+$(ARC)($(MODEL)/radiate/rte-rrtmgp/%o): $(MODEL)/radiate/rte-rrtmgp/%F90; $(F_CM4)
+
 ################################################################################
 # Define objects
 ################################################################################
@@ -44,10 +48,33 @@ OBJ1 =$(ARC)($(MODEL)/lib/an_header.o) \
       $(ARC)($(MODEL)/kpp/kpp_params.o) \
       $(ARC)($(MODEL)/io/io_params.o) \
       $(ARC)($(MODEL)/memory/var_tables.o) \
-      $(ARC)($(MODEL)/memory/mem_radiate.o) 
-# Needed to break up the objects list in order to compile the RTE+RRTMGP code
-# Add new files to the second list unless it is a module needed by RTE+RRTGMP
-OBJ2 = \
+      $(ARC)($(MODEL)/memory/mem_radiate.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rte/mo_rte_kind.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rte/mo_rte_util_array.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rte/kernels/mo_rte_solver_kernels.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rte/kernels/mo_optical_props_kernels.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rte/kernels/mo_fluxes_broadband_kernels.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rte/mo_rte_config.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rte/mo_optical_props.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rte/mo_source_functions.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rte/mo_fluxes.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rte/mo_rte_lw.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rte/mo_rte_sw.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rrtmgp/kernels/mo_gas_optics_kernels.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rrtmgp/mo_rrtmgp_util_string.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rrtmgp/mo_rrtmgp_constants.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rrtmgp/mo_gas_concentrations.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rrtmgp/mo_gas_optics.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/rrtmgp/mo_gas_optics_rrtmgp.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/interface/mo_simple_netcdf.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/extensions/cloud_optics/mo_cloud_optics.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/extensions/aerosol_optics/mo_aerosol_optics.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/interface/mo_load_coefficients.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/interface/mo_load_cloud_coefficients.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/interface/mo_load_aerosol_coefficients.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/extensions/mo_heating_rates.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/interface/rte_rrtmgp_rams.o) \
+      $(ARC)($(MODEL)/radiate/rte-rrtmgp/interface/rams_rrtmgp_driver.o) \
       $(ARC)($(MODEL)/core/ref_sounding.o) \
       $(ARC)($(MODEL)/memory/mem_basic.o) \
       $(ARC)($(MODEL)/memory/mem_cuparm.o) \
@@ -137,7 +164,7 @@ OBJ2 = \
       $(ARC)($(MODEL)/nesting/nest_drivers.o) \
       $(ARC)($(MODEL)/nesting/nest_intrp.o) \
       $(ARC)($(MODEL)/nesting/nest_feed.o) \
-      $(ARC)($(MODEL)/radiate/kinds.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/kinds.o) \
       $(ARC)($(MODEL)/radiate/rrad3.o) \
       $(ARC)($(MODEL)/radiate/rad_driv.o) \
       $(ARC)($(MODEL)/radiate/rad_aero.o) \
@@ -145,19 +172,19 @@ OBJ2 = \
       $(ARC)($(MODEL)/radiate/rad_ccmp.o) \
       $(ARC)($(MODEL)/radiate/rad_stable.o) \
       $(ARC)($(MODEL)/radiate/rrad2.o) \
-      $(ARC)($(MODEL)/radiate/bugsrad_physconst.o) \
-      $(ARC)($(MODEL)/radiate/bugsrad_planck.o) \
-      $(ARC)($(MODEL)/radiate/cloud_correlate.o) \
-      $(ARC)($(MODEL)/radiate/continuum.o) \
-      $(ARC)($(MODEL)/radiate/gases_ckd.o) \
-      $(ARC)($(MODEL)/radiate/newexp.o) \
-      $(ARC)($(MODEL)/radiate/rayle.o) \
-      $(ARC)($(MODEL)/radiate/two_rt_lw_ocastrndm.o) \
-      $(ARC)($(MODEL)/radiate/two_rt_sw_ocastrndm.o) \
-      $(ARC)($(MODEL)/radiate/bandsolve.o) \
-      $(ARC)($(MODEL)/radiate/bugs_rad.o) \
-      $(ARC)($(MODEL)/radiate/bugs_files.o) \
-      $(ARC)($(MODEL)/radiate/driver_read.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/bugsrad_physconst.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/bugsrad_planck.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/cloud_correlate.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/continuum.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/gases_ckd.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/newexp.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/rayle.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/two_rt_lw_ocastrndm.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/two_rt_sw_ocastrndm.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/bandsolve.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/bugs_rad.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/bugs_files.o) \
+      $(ARC)($(MODEL)/radiate/bugsrad/driver_read.o) \
       $(ARC)($(MODEL)/init/data_init.o) \
       $(ARC)($(MODEL)/micro/mic_aero.o) \
       $(ARC)($(MODEL)/micro/mic_chknan.o) \
@@ -255,12 +282,8 @@ $(MAIN): FORCE
 	@echo ""
 	$(F_CD2) $@
 
-$(ARC): $(OBJ1) RTE_RRTMGP $(OBJ2) 
+$(ARC): $(OBJ1)
 
-RTE_RRTMGP: 
-	#This is inelegant
-	cp mem_radiate.mod $(MODEL)/radiate/rte-rrtmgp/build/.
-	make -C $(MODEL)/radiate/rte-rrtmgp rams
 
 FORCE:
 
@@ -270,6 +293,6 @@ check: FORCE
 
 clean:
 	@echo ""
-	make -C $(MODEL)/radiate/rte-rrtmgp clean
 	rm -f $(ARC) $(EXE) $(BASE) *.o *.mod *.f
 	@echo ""
+

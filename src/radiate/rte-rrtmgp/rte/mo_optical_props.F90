@@ -76,7 +76,7 @@ module mo_optical_props
   type, public :: ty_optical_props
     integer,  dimension(:,:), allocatable, private :: band2gpt      ! (begin g-point, end g-point) = band2gpt(2,band)
     integer,  dimension(:),   allocatable, private :: gpt2band      ! band = gpt2band(g-point)
-    real(wp), dimension(:,:), allocatable, private :: band_lims_wvn ! (upper and lower wavenumber by band) = band_lims_wvn(2,band)
+    real(wp), dimension(:,:), allocatable, public :: band_lims_wvn ! (upper and lower wavenumber by band) = band_lims_wvn(2,band)
     character(len=name_len),               private :: name = ""
   contains
     generic,   public  :: init => init_base, init_base_from_copy

@@ -14,10 +14,14 @@ subroutine rte_rrtmgp_init()
 
   use rte_rrtmgp_rams
   use micro_prm, only:hucmfile
+  use micphys, only:iaerorad
   use mo_load_cloud_coefficients, &
                              only: load_cld_lutcoeff
+  use mo_load_aerosol_coefficients, &
+                             only: load_aero_lutcoeff
   use mo_load_coefficients,  only: load_and_init
   use mo_cloud_optics,       only: ty_cloud_optics
+  use mo_aerosol_optics,     only: ty_aerosol_optics
 
   implicit none
 
@@ -43,17 +47,28 @@ subroutine rte_rrtmgp_init()
   filename = trim(hucmfile)//'/../RTE-RRTMGP/mic2rrtmgp_sw.nc'
   call load_cld_lutcoeff (cloud_optics_sw, filename)
 
+  if (iaerorad == 1) then
+    filename = trim(hucmfile)//'/../RTE-RRTMGP/aero2rrtmgp_lw.nc'
+    call load_aero_lutcoeff (aerosol_optics_lw, filename)
+    filename = trim(hucmfile)//'/../RTE-RRTMGP/aero2rrtmgp_sw.nc'
+    call load_aero_lutcoeff (aerosol_optics_sw, filename)
+  endif
+
 end subroutine rte_rrtmgp_init
 ! ----------------------------------------------------------------------------------
-subroutine rte_rrtmgp_driver(nrad,ncat,mu0,alb,p_lay,t_lay,z_lay,z_lev, &
+subroutine rte_rrtmgp_driver(nrad,ncat,aerocat,mu0,alb,p_lay,t_lay,rh_lay, &
+                             z_lay,z_lev, &
                              rv_lay,t_sfc,wat_path,reff,rcat, &
+                             acon,arad,atype,aodt, &
                              o3_lay,flux_up_sw,flux_dn_sw,flux_up_lw,flux_dn_lw,fthsw,fthlw)
+  use micphys, only:iaerorad
   use rte_rrtmgp_rams !cloud_optics, k_dist
   use mo_rte_kind,           only: wp, i8, wl
   use mo_optical_props,      only: ty_optical_props, &
                                    ty_optical_props_arry, ty_optical_props_1scl, ty_optical_props_2str
   use mo_gas_optics_rrtmgp,  only: ty_gas_optics_rrtmgp
   use mo_cloud_optics,       only: ty_cloud_optics
+  use mo_aerosol_optics,     only: ty_aerosol_optics
   use mo_gas_concentrations, only: ty_gas_concs
   use mo_source_functions,   only: ty_source_func_lw
   use mo_fluxes,             only: ty_fluxes_broadband
@@ -66,7 +81,7 @@ subroutine rte_rrtmgp_driver(nrad,ncat,mu0,alb,p_lay,t_lay,z_lay,z_lev, &
   ! Variables
   ! ----------------------------------------------------------------------------------
   ! Arrays: dimensions (col, lay)
-  integer :: nrad, ncat
+  integer :: nrad, ncat, aerocat
   integer, parameter :: ncol=1
   real(wp), dimension(ncol,nrad) :: p_lev, t_lev
   real(wp), dimension(ncol,nrad-1) :: p_lay, t_lay, rv_lay, o3_lay, co2_lay, ch4_lay, n2o_lay, o2_lay
@@ -74,6 +89,12 @@ subroutine rte_rrtmgp_driver(nrad,ncat,mu0,alb,p_lay,t_lay,z_lay,z_lev, &
   real(wp), dimension(nrad-1) :: z_lay
   real(wp), dimension(ncol,nrad-1,ncat) ::  wat_path, reff
   integer, dimension(ncol,nrad-1,ncat) :: rcat
+
+  ! Aerosol only
+  real(wp), dimension(ncol,nrad-1) :: rh_lay
+  real(wp), dimension(ncol,nrad-1,aerocat) :: acon, arad
+  integer, dimension(ncol,aerocat) :: atype
+  real(wp), dimension(ncol) :: aodt
 
   !
   ! Longwave only
@@ -102,7 +123,7 @@ subroutine rte_rrtmgp_driver(nrad,ncat,mu0,alb,p_lay,t_lay,z_lay,z_lev, &
   ! Derived types from the RTE and RRTMGP libraries
   !
   class(ty_optical_props_arry), &
-                 allocatable :: atmos, clouds
+                 allocatable :: atmos, clouds, aerosols
   type(ty_fluxes_broadband)  :: fluxes
 
   !
@@ -192,18 +213,26 @@ subroutine rte_rrtmgp_driver(nrad,ncat,mu0,alb,p_lay,t_lay,z_lay,z_lev, &
   !
   if(allocated(atmos)) deallocate(atmos)
   if(allocated(clouds)) deallocate(clouds)
+  if(allocated(aerosols)) deallocate(aerosols)
 
   if(is_sw) then
     allocate(ty_optical_props_2str::atmos)
     allocate(ty_optical_props_2str::clouds)
+    if(iaerorad==1) allocate(ty_optical_props_2str::aerosols)
   else
     allocate(ty_optical_props_1scl::atmos)
     allocate(ty_optical_props_1scl::clouds)
+    if(iaerorad==1) allocate(ty_optical_props_1scl::aerosols)
   end if
 
   ! Clouds optical props are defined by band
   if(is_sw)  call stop_on_err(clouds%init(k_dist_sw%get_band_lims_wavenumber()))
   if(is_lw)  call stop_on_err(clouds%init(k_dist_lw%get_band_lims_wavenumber()))
+  ! Aerosols optical props are defined by band
+  if (iaerorad==1) then
+    if(is_sw)  call stop_on_err(aerosols%init(k_dist_sw%get_band_lims_wavenumber()))
+    if(is_lw)  call stop_on_err(aerosols%init(k_dist_lw%get_band_lims_wavenumber()))
+  endif
   !
   ! Allocate arrays for the optical properties themselves.
   !
@@ -225,6 +254,16 @@ subroutine rte_rrtmgp_driver(nrad,ncat,mu0,alb,p_lay,t_lay,z_lay,z_lev, &
     class default
       call stop_on_err("rte_rrtmgp_clouds: Don't recognize the kind of optical properties ")
   end select
+  if (iaerorad==1) then
+    select type(aerosols)
+      class is (ty_optical_props_1scl)
+        call stop_on_err(aerosols%alloc_1scl(ncol, nlay))
+      class is (ty_optical_props_2str)
+        call stop_on_err(aerosols%alloc_2str(ncol, nlay))
+      class default
+        call stop_on_err("rte_rrtmgp_clouds: Don't recognize the kind of optical properties ")
+    end select
+  endif
   ! ----------------------------------------------------------------------------
   !  Boundary conditions depending on whether the k-distribution being supplied
   !   is LW or SW
@@ -254,6 +293,12 @@ subroutine rte_rrtmgp_driver(nrad,ncat,mu0,alb,p_lay,t_lay,z_lay,z_lev, &
    cloud_optics_sw%cloud_optics(wat_path, reff, rcat, clouds))
   if(is_lw)call stop_on_err(                                      &
    cloud_optics_lw%cloud_optics(wat_path, reff, rcat, clouds))
+
+  aodt = 0.
+  if(is_sw .and. iaerorad.eq.1)call stop_on_err(                                      &
+   aerosol_optics_sw%aerosol_optics(acon, arad, atype, rh_lay, aerosols, aodt))
+  if(is_lw .and. iaerorad.eq.1)call stop_on_err(                                      &
+   aerosol_optics_lw%aerosol_optics(acon, arad, atype, rh_lay, aerosols))
     !
     ! Solvers
     !
@@ -267,6 +312,7 @@ subroutine rte_rrtmgp_driver(nrad,ncat,mu0,alb,p_lay,t_lay,z_lay,z_lev, &
                                        lw_sources,   &
                                        tlev = t_lev))
     call stop_on_err(clouds%increment(atmos))
+    if(iaerorad.eq.1)call stop_on_err(aerosols%increment(atmos))
     call stop_on_err(rte_lw(atmos, top_at_1, &
                             lw_sources,      &
                             emis_sfc,        &
@@ -290,6 +336,7 @@ subroutine rte_rrtmgp_driver(nrad,ncat,mu0,alb,p_lay,t_lay,z_lay,z_lev, &
                                        toa_flux))
     call stop_on_err(clouds%delta_scale())
     call stop_on_err(clouds%increment(atmos))
+    if(iaerorad.eq.1)call stop_on_err(aerosols%increment(atmos))
     call stop_on_err(rte_sw(atmos, top_at_1, &
                             mu0,   toa_flux, &
                             sfc_alb_dir, sfc_alb_dif, &
