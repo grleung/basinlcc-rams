@@ -62,10 +62,8 @@ if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. 0.001) then
       ,radiate_g(ngrid)%rlongup      (1,1)      &
       ,radiate_g(ngrid)%albedt       (1,1)      &
       ,radiate_g(ngrid)%cosz         (1,1)      &
-      ,leaf_g(ngrid)%veg_temp        (1,1,1)    &
-      ,leaf_g(ngrid)%can_temp        (1,1,1)    )
-      !,sib_g(ngrid)%sfcswa           (1,1,1)    &
-      !,sib_g(ngrid)%uplwrf           (1,1,1)    )
+      ,sib_g(ngrid)%sfcswa           (1,1,1)    &
+      ,sib_g(ngrid)%uplwrf           (1,1,1)    )
 
    ! If using Mahrer-Pielke and/or Chen-Cotton radiation, call radcomp.
 

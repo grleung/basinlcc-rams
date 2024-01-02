@@ -60,9 +60,6 @@ numarg=numarg+1 !Total number of arguments on command line
 ! line and the case where rams is called using mpirun -np 1 (one
 ! process). For these cases, rams will run in "sequential" mode.
 ! Otherwise, rams will run in "parallel" mode.
-!print*,numarg
-print*,my_mpi_num
-!print*,nmachs
 CALL par_init_fortran (numarg,cargs,len(cargs),my_mpi_num,nmachs)
 
 ! set global vars in node_mod
