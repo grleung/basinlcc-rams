@@ -336,7 +336,10 @@ subroutine rte_rrtmgp_driver(nrad,ncat,aerocat,mu0,alb,p_lay,t_lay,rh_lay, &
                                        toa_flux))
     call stop_on_err(clouds%delta_scale())
     call stop_on_err(clouds%increment(atmos))
-    if(iaerorad.eq.1)call stop_on_err(aerosols%increment(atmos))
+    if (iaerorad.eq.1) then
+      call stop_on_err(aerosols%delta_scale())
+      call stop_on_err(aerosols%increment(atmos))
+    endif
     call stop_on_err(rte_sw(atmos, top_at_1, &
                             mu0,   toa_flux, &
                             sfc_alb_dir, sfc_alb_dif, &
