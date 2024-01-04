@@ -282,9 +282,13 @@ if(nmachs .gt. 1) then
   if (iugforce == 2) then     
      CALL broadcast_forcing (ug,nlev,nt)
      CALL broadcast_forcing (vg,nlev,nt)
+     CALL broadcast_forcing (forc_lev,nlev,1)
   endif
   if (iupdsst == 2) then
      CALL broadcast_forcing (forc_ts,1,nt)
+  endif
+  if (iugforce == 2 .or. iupdsst == 2) then
+     CALL broadcast_forcing (forc_time,1,nt)
   endif
 endif
 

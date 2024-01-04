@@ -882,7 +882,12 @@ real, external :: rslf
 
 if (ncall == 0) then
    ncall = 1
-   nradmax = maxnzp + namax
+   if (initial == 1 .or. initorig == 1) then
+      nrad = nzref - 1 + narad
+   else
+      nrad = m1 - 1 + narad
+   endif
+   nradmax = nrad
    allocate(zml  (nradmax) ,ztl  (nradmax) ,dzl  (nradmax) ,pl (nradmax)  &
            ,tl   (nradmax) ,dl   (nradmax) ,rl   (nradmax) ,o3l(nradmax)  &
            ,vp   (nradmax) ,flxus(nradmax) ,flxds(nradmax) ,tg (nradmax)  &
@@ -893,12 +898,6 @@ if (ncall == 0) then
    allocate(u(nradmax*mg),fu(nradmax*6),fd(nradmax*6))
    allocate(tp(nradmax*mb),omgp(nradmax*mb),gp(nradmax*mb))
    tg=0.
-endif
-
-if (initial == 1 .or. initorig == 1) then
-   nrad = nzref - 1 + narad
-else
-   nrad = m1 - 1 + narad
 endif
 
 CALL prep_atm_profiles(nrad,zml,ztl,pl,tl,dl,rl,o3l,dzl, &
@@ -1457,18 +1456,18 @@ real, external :: rslf
 
 if (ncall == 0) then
    ncall = 1
-   nradmax = maxnzp + namax
+   if (initial == 1 .or. initorig == 1) then
+      nrad = nzref - 1 + narad
+   else
+      nrad = m1 - 1 + narad
+   endif
+   nradmax = nrad
+   
    allocate(zml  (nradmax) ,ztl  (nradmax) ,dzl  (nradmax) ,pl (nradmax)  &
            ,tl   (nradmax) ,dl   (nradmax) ,rl   (nradmax) ,o3l(nradmax)  &
            ,fthsw (nradmax),fthlw(nradmax)                                &
            ,flxul(nradmax),flxdl(nradmax),flxds(nradmax),flxus(nradmax)   &
            ,rcl(nradmax),ncl(nradmax),rrl(nradmax),ril(nradmax),rsl(nradmax))
-endif
-
-if (initial == 1 .or. initorig == 1) then
-   nrad = nzref - 1 + narad
-else
-   nrad = m1 - 1 + narad
 endif
 
 CALL prep_atm_profiles(nrad,zml,ztl,pl,tl,dl,rl,o3l,dzl, &
@@ -1587,7 +1586,12 @@ integer, parameter :: kradcat(16) = (/1,3,6,6,5,4,4,2,8, 8, 7, 9, 8, 8, 7, 9/)
 ! FIRST CALL INITIALIZATIONS
  if (ncall == 0) then
    ncall = 1
-   nradmax = maxnzp + namax
+   if (initial == 1 .or. initorig == 1) then
+      nrad = nzref - 1 + narad
+   else
+      nrad = m1 - 1 + narad
+   endif
+   nradmax = nrad
    allocate(zml  (nradmax) ,ztl  (nradmax) ,dzl  (nradmax) ,pl (nradmax)  &
            ,tl   (nradmax) ,dl   (nradmax) ,rl   (nradmax) ,o3l(nradmax)  &
            , fthsw (nradmax),fthlw(nradmax)                               &
@@ -1625,11 +1629,6 @@ integer, parameter :: kradcat(16) = (/1,3,6,6,5,4,4,2,8, 8, 7, 9, 8, 8, 7, 9/)
  endif
 !END FIRST CALL CODE ------------------------------------------
   
-if (initial == 1 .or. initorig == 1) then
-   nrad = nzref - 1 + narad
-else
-   nrad = m1 - 1 + narad
-endif
 
 !GET ATMOSPHERE ABOVE MODEL TOP-------------------------------
 CALL prep_atm_profiles(nrad,zml,ztl,pl,tl,dl,rl,o3l,dzl, &
