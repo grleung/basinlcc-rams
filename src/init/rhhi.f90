@@ -272,21 +272,12 @@ CALL htint (nsndg,us,hs,mmzp(ngrid),u01dn(1,ngrid),ztn(1,ngrid))
 CALL htint (nsndg,vs,hs,mmzp(ngrid),v01dn(1,ngrid),ztn(1,ngrid))
 if (io3flg==1) then
    CALL htint(nsndg,o3s,hs,mmzp(ngrid),o3ref(1,ngrid),ztn(1,ngrid))
-   do k=1,nsndg
-      if (hs(k)>zmn(mmzp(ngrid),ngrid)) then
-         o3ref(mmzp(ngrid)+1:mmzp(ngrid)+nsndg-k+1,ngrid) = o3s(k:nsndg)
-         nzref = mmzp(ngrid) + nsndg - k + 1
-         exit
-      endif
-   enddo
-else
-   do k=1,nsndg
-      if (hs(k)>zmn(mmzp(ngrid),ngrid)) then
-         nzref = mmzp(ngrid) + nsndg - k + 1
-         exit
-      endif
-   enddo
 endif
+
+!Calculate number of levels for radiation profiles using a combination 
+!of the model prognostic grid and the input sounding. If ozone is present,
+!also fill the ozone reference profile above the prognostic model top
+CALL calc_refs()
 
 if (level .ge. 1) then
    CALL htint (nsndg,rts,hs,mmzp(ngrid),rt01dn(1,ngrid),ztn(1,ngrid))
@@ -318,6 +309,23 @@ do k = 1,mmzp(ngrid)
       / (rgas * th01dn(k,ngrid) * pi01dn(k,ngrid))
 enddo
 
+CALL calc_wsub()
+
+deallocate(temp_vec)
+
+return
+END SUBROUTINE refs1d
+!##############################################################################
+Subroutine calc_wsub
+
+use ref_sounding
+use mem_grid
+use node_mod
+ 
+implicit none
+
+integer :: k
+
 !Adele - calculate large-scale divergence
 wsub(1,ngrid)=0.
 do k = 2,nnzp(ngrid)
@@ -329,12 +337,38 @@ do k = 2,nnzp(ngrid)
       wsub(k,ngrid)=0.
    endif
 enddo
+return 
+END SUBROUTINE calc_wsub
+!##############################################################################
+Subroutine calc_refs
 
-deallocate(temp_vec)
+use ref_sounding
+use mem_grid
+use node_mod
+ 
+implicit none
+
+integer :: k
+
+if (io3flg==1) then
+   do k=1,nsndg
+      if (hs(k)>zmn(mmzp(ngrid),ngrid)) then
+         o3ref(mmzp(ngrid)+1:mmzp(ngrid)+nsndg-k+1,ngrid) = o3s(k:nsndg)
+         nzref = mmzp(ngrid) + nsndg - k + 1
+         exit
+      endif
+   enddo
+else
+   do k=1,nsndg
+      if (hs(k)>zmn(mmzp(ngrid),ngrid)) then
+         nzref = mmzp(ngrid) + nsndg - k + 1
+         exit
+      endif
+   enddo
+endif
 
 return
-END SUBROUTINE refs1d
-
+END SUBROUTINE
 !##############################################################################
 Subroutine flds3d (n1,n2,n3,i0,j0,uc,vc,pi0,theta,thp,rtp,pc,rv  &
    ,topt,topu,topv,rtgt,rtgu,rtgv)

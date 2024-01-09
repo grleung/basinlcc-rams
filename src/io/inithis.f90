@@ -629,6 +629,13 @@ if(inithisflg == 1) then
  !Deallocate temporary arrays
  deallocate(u01dn1,v01dn1,rt01dn1,th01dn1,pi01dn1,dn01dn1)
 
+ !Calculate number of levels for radiation profiles using a combination 
+ !of the model prognostic grid and the input sounding. If ozone is present,
+ !also fill the ozone reference profile above the prognostic model top
+ CALL calc_refs()
+
+ !Calculate large-scale subsidence
+ CALL calc_wsub()
 endif !If doing full history initialization
 
 !Deallocate temporary arrays

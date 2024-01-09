@@ -9,6 +9,8 @@ use mem_basic
 use node_mod
 use micro_prm, only:nkr
 use kpp_parameters, only:nkppz
+use ref_sounding, only:iugforce
+
 
 implicit none
 
@@ -32,6 +34,12 @@ enddo
 CALL hist_read (maxarr,trim(hfilin))
 
 if(print_msg) print*,'back from read'
+
+if (iugforce==2 .or. iupdsst==2) CALL readforcing ()
+
+CALL calc_refs()
+
+CALL calc_wsub()
 
 do ifm = 1,ngrids
    icm = nxtnest(ifm)
