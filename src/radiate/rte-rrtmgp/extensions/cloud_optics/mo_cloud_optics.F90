@@ -860,7 +860,7 @@ contains
         do icol = 1, ncol
           if(mask(icol,ilay)) then
             index = min(floor((re(icol,ilay) - offset)/step_size)+1, nsteps-1)
-            fint = (re(icol,ilay) - offset)/step_size - (index-1)
+            fint = min((re(icol,ilay) - offset)/step_size - (index-1),1.)
             t   = lwp(icol,ilay) * &
                   (tau_table(index,  ibnd) + fint * (tau_table(index+1,ibnd) - tau_table(index,ibnd)))
             ts  = t              * &
