@@ -261,8 +261,7 @@ do j = ja,jz
    if (ip == 1) then
 
       leaf%ground_rsat(i,j,ip) = rslif(prss,tempk(mzg))   
-      if (ip == 1) then
-      !if (icharnock.eq.1) then
+      if (ip == 1 .and. icharnock == 1) then
          leaf%patch_rought(i,j,ip)  &
                   = max(z0fac_water * leaf%ustar(i,j,ip) ** 2,.0001)
          leaf%patch_roughm(i,j,ip)  &
