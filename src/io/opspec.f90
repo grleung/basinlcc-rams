@@ -323,8 +323,8 @@ elseif (level .eq. 3) then
   print*,'FATAL - IMBUDGET OUT OF RANGE'
   IFATERR = IFATERR + 1
  endif
- if (iifn .lt. 0 .or. iifn .gt. 3) THEN
-  print*,'FATAL - IIFN OUT OF RANGE: MUST BE 0-3'
+ if (iifn .lt. 0 .or. iifn .gt. 4) THEN
+  print*,'FATAL - IIFN OUT OF RANGE: MUST BE 0-4'
   IFATERR = IFATERR + 1
  endif
  if (isedim .lt. 0 .or. isedim .gt. 1) THEN
