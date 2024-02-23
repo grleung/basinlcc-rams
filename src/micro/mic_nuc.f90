@@ -513,7 +513,7 @@ do k = 2,m1-1
    if (sati > 0.05 .and. rvisair(k) < rvlsair(k) &
       .and. (satw<0. .or. rx(k,1)>=2.e-6)) then
       !Adele - assuming that cin_max is in 1/L!!!
-      nnuc = max(0.,cin_max/dn0(k)*1.e-3-cx(k,3)-cx(k,4))
+      nnuc = max(0.,cin_max/dn0(k)*1.e3-cx(k,3)-cx(k,4))
       if (nnuc > 0) then
          rnuc = nnuc * emb0(4)
          rsnew = min(rnuc,.5*excessrv)
