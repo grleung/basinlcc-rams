@@ -1,0 +1,17 @@
+#PBS -S /bin/csh
+#PBS -V
+#PBS -q smd_ops
+#PBS -lselect=1:ncpus=128:mpiprocs=128:model=rom_ait,walltime=08:00:00
+#PBS -W group_list=s2841
+#PBS -j oe
+#PBS -o /nobackupp12/grleung1/har_ccn200_sst295/ 
+#PBS -N har_ccn200_sst295
+#PBS -m be
+#PBS -r n
+
+setenv MPI_TYPE_DEPTH 16
+module load gcc/10.3 comp-intel/2020.4.304  szip/2.1.1 mpi-hpe/mpt hdf5/1.8.18_mpt hdf4/4.2.12 netcdf/4.4.1.1_mpt 
+
+cd /nobackupp16/swbuild/grleung1/rcemip-rams/run/
+
+mpiexec ./rams-6.3.04 -f ./RAMSIN.har_ccn200_sst295.INIT >& /nobackupp12/grleung1/har_ccn200_sst295/rams_00.log
