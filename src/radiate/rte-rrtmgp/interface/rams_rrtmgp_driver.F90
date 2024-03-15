@@ -32,10 +32,12 @@ subroutine rte_rrtmgp_init()
   !If you want them to change in time, they can easily be set along
   !with water vapor in the driver below.
   !ch4 and n2o are required by the code.
-  call stop_on_err(gas_concs%set_vmr('ch4', 0.0))
-  call stop_on_err(gas_concs%set_vmr('n2o', 0.0))
+
+  !GRL 2023-03-15 Changed these for RCEMIP concentrations
+  call stop_on_err(gas_concs%set_vmr('ch4', 1650.e-9))
+  call stop_on_err(gas_concs%set_vmr('n2o', 306.e-9))
   call stop_on_err(gas_concs%set_vmr('o2 ', 0.209))
-  call stop_on_err(gas_concs%set_vmr('co2', 400.e-6))
+  call stop_on_err(gas_concs%set_vmr('co2', 348.e-6))
 
   filename = trim(hucmfile)//'/../RTE-RRTMGP/rrtmgp-data-lw-g128-210809.nc'
   call load_and_init(k_dist_lw, filename, gas_concs)

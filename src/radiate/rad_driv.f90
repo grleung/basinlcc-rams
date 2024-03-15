@@ -496,7 +496,7 @@ use micro_prm, only:iceprocs
 
 implicit none
 
-integer :: m1,m2,m3,ia,iz,ja,jz,mcat,i,j,k,kk,k0
+integer :: m1,m2,m3,ia,iz,ja,jz,mcat,i,j,k
 
 real :: cfmasi,cparmi,glg,glgm,picpi
 real, dimension(m2,m3) :: glat,rtgt,topt,cosz,albedt,rlongup,rshort,rlong,aodt
@@ -845,14 +845,12 @@ use rconstants
 use rrad3
 use micphys
 use node_mod
-use ref_sounding, only:nzref
-use mem_grid, only:initial, initorig
 
 implicit none
 
 integer m1,maxnzp,mcat,ngrid
 integer :: iswrtyp,ilwrtyp
-integer i,j,k,kk,k0,nzr
+integer i,j,k
 integer, save :: ncall = 0,nradmax
 integer, save :: ngass(mg)=(/1, 1, 1/),ngast(mg)=(/1, 1, 1/)
 !     one can choose the gases of importance here,
@@ -896,6 +894,7 @@ if (ncall == 0) then
 endif
 
 nrad = m1 - 1 + narad
+
 CALL prep_atm_profiles(nrad,zml,ztl,pl,tl,dl,rl,o3l,dzl, &
                        m1,zm,zt,dn0,rv, &
                        glat,rtgt,topt,rlongup) 
@@ -1242,6 +1241,7 @@ END SUBROUTINE sum_opt
 Subroutine path_lengths (nrad,u,rl,dzl,dl,o3l,vp,pl,eps)
 
 ! Get the path lengths for the various gases...
+! GRL 2024-03-14: Converting from mass path length to pressure path length 
 
 implicit none
 
@@ -1251,8 +1251,18 @@ real, dimension(nrad,3) :: u
 real :: rvk0,rvk1,dzl9,rmix,eps
 integer :: k
 
+! water vapor
 u(1,1) = .5 * (rl(2) + rl(1)) * 9.81 * dzl(1)
-u(1,2) = .5 * (dl(2) + dl(1)) * .45575e-3 * 9.81 * dzl(1)
+
+! carbon dioxide
+! GRL edited CO2 concentration to be consistent with RCEMIP 2024-03-1
+! using a constant-with-height CO2 concentration of 348ppmv 
+! as in Wing et al. (2018)
+! constant value before 9.81 (g) is CO2(parts per million)/(1,000,000) * (M_co2/M_d)
+! where M_co2/M_d is ratio of molar mass CO2 to dry air = 44.01/28.964= 1.519472
+u(1,2) = .5 * (dl(2) + dl(1)) * .5288e-3 * 9.81 * dzl(1)
+
+! ozone
 u(1,3) = o3l(1) * 9.81 * dzl(1)
 
 rvk0 = rl(1)
@@ -1262,14 +1272,16 @@ do k = 2,nrad
    rmix = rvk1 / dl(k)
    vp(k) = pl(k) * rmix / (.622 + rmix)
    u(k,1) = (rvk1 - rvk0) / (log(rvk1 / rvk0) + eps) * dzl9
+   !GRL edited CO2 profile for RCEMIP 2024-03-14
    u(k,2) = (dl(k) - dl(k-1)) / (log(dl(k) / dl(k-1)) + eps)  &
-       * dzl9 * 0.45575e-3
+         * dzl9 * 0.5288e-3
    u(k,3) = 0.5 * dzl9 * (o3l(k) + o3l(k-1))
    rvk0 = rvk1
 enddo
 
 return
 END SUBROUTINE path_lengths
+   
 
 !##############################################################################
 Subroutine cloud_prep_lev4 (m1,i,j,ng)
