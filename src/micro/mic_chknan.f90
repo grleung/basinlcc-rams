@@ -44,54 +44,56 @@ do k = 1,mzp
    endif
 
    !CHECK ICE NUCLEI
-   if (jnmb(3)>=5 .and. (iifn==1.or.iifn==2)) then
-    if(isnanr(micro_g(ngrid)%cifnp(k,i,j))) prtflg=1
-    tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cifnt(1))
-    if(isnanr(tempvar)) prtflg=1
-    if(tempvar>1.e30) prtflg=1
-   endif
+   !GRL 2024-03-15 Commenting out this section for static aerosol
+   
+   !if (jnmb(3)>=5 .and. (iifn==1.or.iifn==2)) then
+   ! if(isnanr(micro_g(ngrid)%cifnp(k,i,j))) prtflg=1
+   ! tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cifnt(1))
+   ! if(isnanr(tempvar)) prtflg=1
+   ! if(tempvar>1.e30) prtflg=1
+   !endif
    !CHECK DUST MODES
-   if(idust > 0)then
-     if(isnanr(micro_g(ngrid)%md1np(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%md1mp(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%md2np(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%md2mp(k,i,j)) ) prtflg=1
-   endif
+   !if(idust > 0)then
+   !  if(isnanr(micro_g(ngrid)%md1np(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%md1mp(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%md2np(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%md2mp(k,i,j)) ) prtflg=1
+   !endif
    !CHECK ABSORBING CARBON MODES
-   if(iabcarb > 0)then
-     if(isnanr(micro_g(ngrid)%abc1np(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%abc1mp(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%abc2np(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%abc2mp(k,i,j)) ) prtflg=1
-   endif
+   !if(iabcarb > 0)then
+   ! if(isnanr(micro_g(ngrid)%abc1np(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%abc1mp(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%abc2np(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%abc2mp(k,i,j)) ) prtflg=1
+   !endif
    !CHECK SEA SALT MODES
-   if(isalt > 0)then
-     if(isnanr(micro_g(ngrid)%salt_film_np(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%salt_jet_np(k,i,j))  .or. &
-        isnanr(micro_g(ngrid)%salt_spum_np(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%salt_film_mp(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%salt_jet_mp(k,i,j))  .or. &
-        isnanr(micro_g(ngrid)%salt_spum_mp(k,i,j)) ) prtflg=1
-   endif
+   !if(isalt > 0)then
+   !  if(isnanr(micro_g(ngrid)%salt_film_np(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%salt_jet_np(k,i,j))  .or. &
+   !     isnanr(micro_g(ngrid)%salt_spum_np(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%salt_film_mp(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%salt_jet_mp(k,i,j))  .or. &
+   !     isnanr(micro_g(ngrid)%salt_spum_mp(k,i,j)) ) prtflg=1
+   !endif
    !CHECK CCN Modes
-   if(iaerosol > 0)then
-     if(isnanr(micro_g(ngrid)%cn1np(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%cn1mp(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%cn2np(k,i,j)) .or. &
-        isnanr(micro_g(ngrid)%cn2mp(k,i,j)) ) prtflg=1
-     tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cn1nt(1))
-     if(isnanr(tempvar)) prtflg=1
-     if(tempvar>1.e30) prtflg=1
-     tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cn1mt(1))
-     if(isnanr(tempvar)) prtflg=1
-     if(tempvar>1.e30) prtflg=1
-     tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cn2nt(1))
-     if(isnanr(tempvar)) prtflg=1
-     if(tempvar>1.e30) prtflg=1
-     tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cn2mt(1))
-     if(isnanr(tempvar)) prtflg=1
-     if(tempvar>1.e30) prtflg=1
-   endif
+   !if(iaerosol > 0)then
+   !  if(isnanr(micro_g(ngrid)%cn1np(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%cn1mp(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%cn2np(k,i,j)) .or. &
+   !     isnanr(micro_g(ngrid)%cn2mp(k,i,j)) ) prtflg=1
+   !  tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cn1nt(1))
+   !  if(isnanr(tempvar)) prtflg=1
+   !  if(tempvar>1.e30) prtflg=1
+   !  tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cn1mt(1))
+   !  if(isnanr(tempvar)) prtflg=1
+   !  if(tempvar>1.e30) prtflg=1
+   !  tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cn2nt(1))
+   !  if(isnanr(tempvar)) prtflg=1
+   !  if(tempvar>1.e30) prtflg=1
+   !  tempvar = valugp(mzp,mxp,myp,k,i,j,tend%cn2mt(1))
+   !  if(isnanr(tempvar)) prtflg=1
+   !  if(tempvar>1.e30) prtflg=1
+   !endif
    !CHECK REGENERATED AEROSOL MODES
    if(iccnlev>=2)then
      if(isnanr(micro_g(ngrid)%regen_aero1_np(k,i,j)) .or. &
@@ -371,40 +373,41 @@ do k = 1,mzp
     print*,'theta:         ',basic_g(ngrid)%theta(k,i,j)
     print*,'rv:            ',basic_g(ngrid)%rv(k,i,j)
 
-    if(jnmb(3)>=5 .and. (iifn==1.or.iifn==2)) then
-      print*,'cifnp:         ',micro_g(ngrid)%cifnp(k,i,j)
-      print*,'cifnp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cifnt(1))
-    endif
-    if(iaerosol > 0)then
-      print*,'cn1np:         ',micro_g(ngrid)%cn1np(k,i,j)
-      print*,'cn1np-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cn1nt(1))
-      print*,'cn1mp:         ',micro_g(ngrid)%cn1mp(k,i,j)
-      print*,'cn1mp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cn1mt(1))
-      print*,'cn2np:         ',micro_g(ngrid)%cn2np(k,i,j)
-      print*,'cn2np-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cn2nt(1))
-      print*,'cn2mp:         ',micro_g(ngrid)%cn2mp(k,i,j)
-      print*,'cn2mp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cn2mt(1))
-    endif
-    if(idust > 0)then
-      print*,'md1np:         ',micro_g(ngrid)%md1np(k,i,j)
-      print*,'md1mp:         ',micro_g(ngrid)%md1mp(k,i,j)
-      print*,'md2np:         ',micro_g(ngrid)%md2np(k,i,j)
-      print*,'md2mp:         ',micro_g(ngrid)%md2mp(k,i,j)
-    endif
-    if(iabcarb > 0)then
-      print*,'abc1np:         ',micro_g(ngrid)%abc1np(k,i,j)
-      print*,'abc1mp:         ',micro_g(ngrid)%abc1mp(k,i,j)
-      print*,'abc2np:         ',micro_g(ngrid)%abc2np(k,i,j)
-      print*,'abc2mp:         ',micro_g(ngrid)%abc2mp(k,i,j)
-    endif
-    if(isalt > 0)then
-      print*,'salt_film_np:  ',micro_g(ngrid)%salt_film_np(k,i,j)
-      print*,'salt_jet_np:   ' ,micro_g(ngrid)%salt_jet_np(k,i,j)
-      print*,'salt_spum_np:  ',micro_g(ngrid)%salt_spum_np(k,i,j)
-      print*,'salt_film_mp:  ',micro_g(ngrid)%salt_film_mp(k,i,j)
-      print*,'salt_jet_mp:   ' ,micro_g(ngrid)%salt_jet_mp(k,i,j)
-      print*,'salt_spum_mp:  ',micro_g(ngrid)%salt_spum_mp(k,i,j)
-    endif
+    !GRL 2024-03-15 Commenting out this section for static aerosol
+    !if(jnmb(3)>=5 .and. (iifn==1.or.iifn==2)) then
+    !  print*,'cifnp:         ',micro_g(ngrid)%cifnp(k,i,j)
+    !  print*,'cifnp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cifnt(1))
+    !endif
+    !if(iaerosol > 0)then
+    !  print*,'cn1np:         ',micro_g(ngrid)%cn1np(k,i,j)
+    !  print*,'cn1np-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cn1nt(1))
+    !  print*,'cn1mp:         ',micro_g(ngrid)%cn1mp(k,i,j)
+    !  print*,'cn1mp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cn1mt(1))
+    !  print*,'cn2np:         ',micro_g(ngrid)%cn2np(k,i,j)
+    !  print*,'cn2np-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cn2nt(1))
+    !  print*,'cn2mp:         ',micro_g(ngrid)%cn2mp(k,i,j)
+    !  print*,'cn2mp-tend:    ',valugp(mzp,mxp,myp,k,i,j,tend%cn2mt(1))
+    !endif
+    !if(idust > 0)then
+    !  print*,'md1np:         ',micro_g(ngrid)%md1np(k,i,j)
+    !  print*,'md1mp:         ',micro_g(ngrid)%md1mp(k,i,j)
+    !  print*,'md2np:         ',micro_g(ngrid)%md2np(k,i,j)
+    !  print*,'md2mp:         ',micro_g(ngrid)%md2mp(k,i,j)
+    !endif
+    !if(iabcarb > 0)then
+    !  print*,'abc1np:         ',micro_g(ngrid)%abc1np(k,i,j)
+    !  print*,'abc1mp:         ',micro_g(ngrid)%abc1mp(k,i,j)
+    !  print*,'abc2np:         ',micro_g(ngrid)%abc2np(k,i,j)
+    !  print*,'abc2mp:         ',micro_g(ngrid)%abc2mp(k,i,j)
+    !endif
+    !if(isalt > 0)then
+    !  print*,'salt_film_np:  ',micro_g(ngrid)%salt_film_np(k,i,j)
+    !  print*,'salt_jet_np:   ' ,micro_g(ngrid)%salt_jet_np(k,i,j)
+    !  print*,'salt_spum_np:  ',micro_g(ngrid)%salt_spum_np(k,i,j)
+    !  print*,'salt_film_mp:  ',micro_g(ngrid)%salt_film_mp(k,i,j)
+    !  print*,'salt_jet_mp:   ' ,micro_g(ngrid)%salt_jet_mp(k,i,j)
+    !  print*,'salt_spum_mp:  ',micro_g(ngrid)%salt_spum_mp(k,i,j)
+    !endif
     if(iccnlev>=2)then
       print*,'regen1:        ',micro_g(ngrid)%regen_aero1_np(k,i,j)
       print*,'regen2:        ',micro_g(ngrid)%regen_aero2_np(k,i,j)
@@ -508,4 +511,3 @@ endif
     
 return
 END FUNCTION isnanr
-

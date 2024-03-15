@@ -95,7 +95,8 @@ implicit none
    if (allocated(micro_g(1)%q2))      allocate (tend%q2t(ntpts))
    if (allocated(micro_g(1)%q6))      allocate (tend%q6t(ntpts))
    if (allocated(micro_g(1)%q7))      allocate (tend%q7t(ntpts))
-   if (allocated(micro_g(1)%cifnp))   allocate (tend%cifnt(ntpts))
+   !GRL 2024-03-15 Disabled aerosol tendencies for static aerosol
+   !if (allocated(micro_g(1)%cifnp))   allocate (tend%cifnt(ntpts))
 
    if (allocated(micro_g(1)%fncn))   allocate (tend%fncnt(ntpts*nkr))
    if (allocated(micro_g(1)%ffcd))   allocate (tend%ffcdt(ntpts*nkr))
@@ -109,10 +110,10 @@ implicit none
 
    if (allocated(turb_g(1)%tkep))     allocate (tend%tket(ntpts))
 
-   if (allocated(micro_g(1)%cn1np))   allocate (tend%cn1nt(ntpts))
-   if (allocated(micro_g(1)%cn2np))   allocate (tend%cn2nt(ntpts))
-   if (allocated(micro_g(1)%cn1mp))   allocate (tend%cn1mt(ntpts))
-   if (allocated(micro_g(1)%cn2mp))   allocate (tend%cn2mt(ntpts))
+   !if (allocated(micro_g(1)%cn1np))   allocate (tend%cn1nt(ntpts))
+   !if (allocated(micro_g(1)%cn2np))   allocate (tend%cn2nt(ntpts))
+   !if (allocated(micro_g(1)%cn1mp))   allocate (tend%cn1mt(ntpts))
+   !if (allocated(micro_g(1)%cn2mp))   allocate (tend%cn2mt(ntpts))
    if (allocated(micro_g(1)%md1np))   allocate (tend%md1nt(ntpts))
    if (allocated(micro_g(1)%md2np))   allocate (tend%md2nt(ntpts))
    if (allocated(micro_g(1)%md1mp))   allocate (tend%md1mt(ntpts))
