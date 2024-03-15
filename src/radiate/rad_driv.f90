@@ -764,7 +764,7 @@ Subroutine radcalc3 (m1,i,j,ngrid,maxnzp,mcat,iswrtyp,ilwrtyp,zm,zt &
 !  dl (nrad)        : air density of all radiation levels (kg/m^3)
 !  rl (nrad)        : vapor density of all radiation levels (kg/m^3)
 !  vp (nrad)        : vapor pressure (Pa)
-!  o3l (nrad)       : stores the calculated ozone profile (g/m^3)
+!  o3l (nrad)       : stores the calculated ozone profile (g/m^3) !GRL pretty sure this is also kg/m3 from values
 !  flxu (nrad)      : Total upwelling flux (W/m^2)
 !  flxd (nrad)      : Total downwelling flux (W/m^2)
 !  t (nrad)         : layer transmission func
@@ -1760,7 +1760,7 @@ use mem_grid, only:zmn, ztn, ngrid, initial, initorig
 use rconstants, only:rgas
 
 integer :: k,kk,k0,nzr,nrad,m1
-real :: dzr
+real :: dzr,g1,g2,g3,p_hpa,o3_ppmv
 real, dimension(m1) :: zm,zt,dn0,rv
 real, dimension(nrad) :: zml,ztl,pl,tl,dl,rl,o3l,dzl
 real,allocatable, dimension(:) :: zmt, ztt, dn0t, rvt 
@@ -1816,6 +1816,17 @@ CALL mclatchy (3,nzr  &
 if ((initial == 1 .or. initorig == 1) .and. io3flg == 1) then
    o3l(1:nzr) = o3ref(1:nzr,ngrid)
 endif
+
+! new ozone concentrations
+g1 = 3.6478
+g2 = 0.83209
+g3 = 11.3515
+
+do k = 1, nrad
+   p_hpa = pl(k)*0.01
+   o3_ppmv = g1 * (p_hpa**g2) * exp(-p_hpa/g3)
+   o3l(k) = dl(k) * o3_ppmv * 1.65716e-6
+enddo
 
 do k = 1,nrad
    if (rl(k) <   0. .or.  &
