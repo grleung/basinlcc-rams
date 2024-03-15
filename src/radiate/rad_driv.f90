@@ -882,12 +882,7 @@ real, external :: rslf
 
 if (ncall == 0) then
    ncall = 1
-   if (initial == 1 .or. initorig == 1) then
-      nrad = nzref - 1 + narad
-   else
-      nrad = m1 - 1 + narad
-   endif
-   nradmax = nrad
+   nradmax = maxnzp + namax
    allocate(zml  (nradmax) ,ztl  (nradmax) ,dzl  (nradmax) ,pl (nradmax)  &
            ,tl   (nradmax) ,dl   (nradmax) ,rl   (nradmax) ,o3l(nradmax)  &
            ,vp   (nradmax) ,flxus(nradmax) ,flxds(nradmax) ,tg (nradmax)  &
@@ -900,6 +895,7 @@ if (ncall == 0) then
    tg=0.
 endif
 
+nrad = m1 - 1 + narad
 CALL prep_atm_profiles(nrad,zml,ztl,pl,tl,dl,rl,o3l,dzl, &
                        m1,zm,zt,dn0,rv, &
                        glat,rtgt,topt,rlongup) 
