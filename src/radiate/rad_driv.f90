@@ -635,8 +635,9 @@ cdec = cos(declin)
 
 d0 = 6.2831853 * float(jday-1) / 365.
 d02 = d0 * 2.
-solfac = 1.000110 + 0.034221 * cos (d0) + 0.001280 * sin(d0)  &
-   + 0.000719 * cos(d02) + 0.000077 * sin(d02)
+! GRL 2023-12-05  set solar factor to 1 to not correct for Earth-sun difference
+solfac = 1.!1.000110 + 0.034221 * cos (d0) + 0.001280 * sin(d0)  &
+   !+ 0.000719 * cos(d02) + 0.000077 * sin(d02)
 
 ! Find day of year equation of time adjustment (Saleeby2008: improve accuracy)
 pisolar=3.1415927
