@@ -1595,12 +1595,7 @@ integer, parameter :: kradcat(16) = (/1,3,6,6,5,4,4,2,8, 8, 7, 9, 8, 8, 7, 9/)
 ! FIRST CALL INITIALIZATIONS
  if (ncall == 0) then
    ncall = 1
-   if (initial == 1 .or. initorig == 1) then
-      nrad = nzref - 1 + narad
-   else
-      nrad = m1 - 1 + narad
-   endif
-   nradmax = nrad
+   nradmax = maxnzp + namax
    allocate(zml  (nradmax) ,ztl  (nradmax) ,dzl  (nradmax) ,pl (nradmax)  &
            ,tl   (nradmax) ,dl   (nradmax) ,rl   (nradmax) ,o3l(nradmax)  &
            , fthsw (nradmax),fthlw(nradmax)                               &
@@ -1638,6 +1633,7 @@ integer, parameter :: kradcat(16) = (/1,3,6,6,5,4,4,2,8, 8, 7, 9, 8, 8, 7, 9/)
  endif
 !END FIRST CALL CODE ------------------------------------------
   
+nrad = m1 - 1 + narad
 
 !GET ATMOSPHERE ABOVE MODEL TOP-------------------------------
 CALL prep_atm_profiles(nrad,zml,ztl,pl,tl,dl,rl,o3l,dzl, &
