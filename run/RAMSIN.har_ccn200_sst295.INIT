@@ -17,7 +17,7 @@
 
    TIMEUNIT = 'h',              ! 'h','m','s' - Time units of TIMMAX, TIMSTR
 
-   TIMMAX   = 96.0,             ! Final time of simulation
+   TIMMAX   = 240.0,             ! Final time of simulation
 
 !  Start of simulation or ISAN processing
 
@@ -220,16 +220,16 @@
 !-----------------------------------------------------------------------
    FRQLITE  = 900.,            ! Frequency for "lite" files
                              !   = 0 : no lite files
-   NLITE_VARS=41,
+   NLITE_VARS=39,
 
    LITE_VARS= 'GLAT','GLON','TOPT','PATCH_AREA', !Keep these always
               'UP','VP','WP', !This would be useful for hi-frequency trajectories
               'PI','PP','THETA','RTP','RV',
               'CCP','CDP','CRP','CHP','CGP','CPP','CAP','CSP',         
               'RCP','RDP','RRP','RHP','RGP','RPP','RAP','RSP',
-              'CN1NP','CN1MP','SFLUX_T','SFLUX_R',
+              'SFLUX_T','SFLUX_R',
               'ACCPR','PCPRR','LATHEATVAP','LATHEATFRZ',
-              'FTHRD','SWUP','SWDN','LWUP','LWDN'
+              'FTHRD','SWUP','SWDN','LWUP','LWDN',
 
 !-----------------------------------------------------------------------
    AVGTIM   = 0.,            ! Averaging time for analysis variables
