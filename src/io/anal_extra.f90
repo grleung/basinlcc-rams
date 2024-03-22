@@ -52,10 +52,15 @@ endif
 an_extra(1)%name='PI';  an_extra(1)%idim_type=3; an_extra(1)%ind_comp=1
 an_extra(2)%name='HKH'; an_extra(2)%idim_type=3; an_extra(2)%ind_comp=2
 an_extra(3)%name='VKH'; an_extra(3)%idim_type=3; an_extra(3)%ind_comp=3
-an_extra(4)%name='DN01'; an_extra(4)%idim_type=3; an_extra(4)%ind_comp=4 !placeholder
-an_extra(5)%name='SOIL_WATER1';  an_extra(5)%idim_type=4; an_extra(5)%ind_comp=5 !placeholder
-an_extra(6)%name='SFCWATER1';    an_extra(6)%idim_type=5; an_extra(6)%ind_comp=6 !placeholder
-an_extra(7)%name='STOM_RESIST1'; an_extra(7)%idim_type=6; an_extra(7)%ind_comp=7 !placeholder
+!GRL 2024-03-22 added extra variables for RCEMIPls
+an_extra(4)%name='RSATV'; an_extra(4)%idim_type=3; an_extra(4)%ind_comp=4 
+an_extra(5)%name='TEMP';  an_extra(5)%idim_type=4; an_extra(5)%ind_comp=5 
+an_extra(6)%name='PRES';    an_extra(6)%idim_type=5; an_extra(6)%ind_comp=6 
+an_extra(7)%name='RH'; an_extra(7)%idim_type=6; an_extra(7)%ind_comp=7 
+!an_extra(4)%name='DN01'; an_extra(4)%idim_type=3; an_extra(4)%ind_comp=4 !placeholder
+!an_extra(5)%name='SOIL_WATER1';  an_extra(5)%idim_type=4; an_extra(5)%ind_comp=5 !placeholder
+!an_extra(6)%name='SFCWATER1';    an_extra(6)%idim_type=5; an_extra(6)%ind_comp=6 !placeholder
+!an_extra(7)%name='STOM_RESIST1'; an_extra(7)%idim_type=6; an_extra(7)%ind_comp=7 !placeholder
 if (level==4) then
  an_extra(8)%name='RCP';     an_extra(8)%idim_type=3;   an_extra(8)%ind_comp=8
  an_extra(9)%name='RRP';     an_extra(9)%idim_type=3;   an_extra(9)%ind_comp=9
@@ -129,17 +134,35 @@ select case (an_extra(nv)%ind_comp)
       CALL ancomp_vkh (mmxyzp(ngr),turb_g(ngr)%vkh  &
              ,basic_g(ngr)%dn0,a)
    case(4) 
+      ! GRL 2024-03-22 added extra variables for RCEMIP
+      ! rsatv
+      CALL ancomp_rsatv (mmxyzp(ngr)  &
+                 ,basic_g(ngr)%pp,basic_g(ngr)%pi0,basic_g(ngr)%theta,a)
+
       ! Check; 3D variable here
-      skip = .true.
+      !skip = .true.
    case(5)
+      ! GRL 2024-03-22 added extra variables for RCEMIP
+      ! temp
+      CALL ancomp_temp (mmxyzp(ngr)  &
+                 ,basic_g(ngr)%pp,basic_g(ngr)%pi0,basic_g(ngr)%theta,a)
       ! Check; add new here 4D leaf
-      skip = .true.
+      !skip = .true.
    case(6)
+      ! GRL 2024-03-22 added extra variables for RCEMIP
+      ! pres
+      CALL ancomp_pres (mmxyzp(ngr)  &
+                 ,basic_g(ngr)%pp,basic_g(ngr)%pi0,a)
       ! Check; add new here 5D leaf
-      skip = .true.
+      !skip = .true.
    case(7)
+      ! GRL 2024-03-22 added extra variables for RCEMIP
+      ! RH
+      CALL ancomp_rh (mmxyzp(ngr) & 
+                  ,basic_g(ngr)%pp,basic_g(ngr)%pi0,basic_g(ngr)%theta,basic_g(ngr)%rv,a)
+                        
       ! Check; add new here 6D leaf
-      skip = .true.
+      !skip = .true.
    case(8)
       ! Total cloud water
       CALL sum_bins (micro_g(ngr)%ffcd,a &
@@ -353,6 +376,92 @@ enddo
 return
 END SUBROUTINE ancomp_pi
 
+!##############################################################################
+Subroutine ancomp_pres (n1,pp,pi0,pres)
+
+use rconstants, only: p00,cpi,cpor
+
+implicit none
+
+integer :: n1
+real, dimension(n1) :: pp,pi0,pres
+integer :: i
+real :: pi
+ 
+do i=1,n1
+   pi = pp(i) + pi0(i)
+   pres(i)=p00 * (pi*cpi) ** (cpor)
+enddo
+
+return
+END SUBROUTINE ancomp_pres
+      
+!##############################################################################
+Subroutine ancomp_temp (n1,pp,pi0,theta,temp)
+
+use rconstants, only:cpi
+implicit none
+
+integer :: n1
+real, dimension(n1) :: pp,pi0,theta,temp
+integer :: i
+real :: pi 
+
+do i=1,n1
+   pi = pp(i) + pi0(i)
+   temp(i)=theta(i) * pi * cpi
+enddo
+
+return
+END SUBROUTINE ancomp_temp
+                  
+!##############################################################################
+Subroutine ancomp_rsatv (n1,pp,pi0,theta,rsatv)
+
+use rconstants, only: p00,cpi,cpor
+
+implicit none
+
+integer :: n1
+real, dimension(n1) :: pp,pi0,theta,rsatv
+integer :: i
+real :: es,pi,temp,pres
+ 
+do i=1,n1
+   pi = pp(i) + pi0(i)
+   temp=theta(i) * pi * cpi
+   pres=p00 * (pi*cpi) ** (cpor)
+   es = 610.78 * exp(17.269*(temp-273.15)/(temp-35.86))
+   rsatv(i) = .622 * es/(pres-es)
+enddo
+
+return
+END SUBROUTINE ancomp_rsatv
+
+!##############################################################################
+Subroutine ancomp_rh (n1,pp,pi0,theta,rv,rh)
+
+use rconstants, only: p00,cpi,cpor
+
+implicit none
+
+integer :: n1
+real, dimension(n1) :: pp,pi0,theta,rv,rh
+integer :: i
+real :: es, pi,temp,pres,rsatv
+ 
+do i=1,n1
+   pi = pp(i) + pi0(i)
+   temp=theta(i) * pi * cpi
+   pres=p00 * (pi*cpi) ** (cpor)
+   es = 610.78 * exp(17.269*(temp-273.15)/(temp-35.86))
+   rsatv = .622 * es/(pres-es)
+
+   rh(i) = 100. * rsatv/rv(i)
+enddo 
+
+return
+END SUBROUTINE ancomp_rh
 !##############################################################################
 Subroutine ancomp_hkh (n1,hkm,vkh,dn0,idiffk,xkhkm,a)
 

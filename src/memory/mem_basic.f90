@@ -56,7 +56,6 @@ implicit none
       allocate (basic%dn0(n1,n2,n3))
       allocate (basic%dn0u(n1,n2,n3))
       allocate (basic%dn0v(n1,n2,n3))
-      
       allocate (basic%fcoru(n2,n3))
       allocate (basic%fcorv(n2,n3))
 
@@ -97,6 +96,7 @@ implicit none
    if (allocated(basic%dn0  ))    deallocate (basic%dn0  )
    if (allocated(basic%dn0u ))    deallocate (basic%dn0u )
    if (allocated(basic%dn0v ))    deallocate (basic%dn0v )
+
    if (allocated(basic%fcoru ))   deallocate (basic%fcoru )
    if (allocated(basic%fcorv ))   deallocate (basic%fcorv )
 
@@ -176,6 +176,7 @@ implicit none
       CALL vtables2 (basic%rv(1,1,1),basicm%rv(1,1,1)  &
                  ,ng, npts, imean,  &
                  'RV :3:anal:mpti')
+
                  
    if (allocated(basic%pi0)) &
       CALL vtables2 (basic%pi0(1,1,1),basicm%pi0(1,1,1)  &
