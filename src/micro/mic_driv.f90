@@ -101,6 +101,8 @@ ngr = ngrid
 if (iswrtyp .eq. 3 .or. ilwrtyp .eq. 3 .or. iswrtyp .eq. 4 .or. ilwrtyp .eq. 4) then
   if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. .001) then
     CALL azero (mzp*mxp*myp,radiate_g(ngrid)%fthrd(1,1,1))
+    CALL azero (mzp*mxp*myp,radiate_g(ngrid)%fthrdlw(1,1,1))
+    CALL azero (mzp*mxp*myp,radiate_g(ngrid)%fthrdsw(1,1,1))
   endif
 endif
 
