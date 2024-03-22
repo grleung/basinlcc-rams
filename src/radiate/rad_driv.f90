@@ -159,6 +159,7 @@ if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. 0.001) then
            ! Zero out the radiative heating rate "fthrd" if this this a 
            ! radiation timestep and fthrd will be updated.
            CALL azero (mzp*mxp*myp,radiate_g(ngrid)%fthrd(1,1,1))
+
            ! Run the Harrington radiation for non-LEVEL=3 micro
            CALL radcomp3 (mzp,mxp,myp,ia,iz,ja,jz  &
             ,grid_g(ngrid)%glat       (1,1)    &
@@ -1532,7 +1533,7 @@ END SUBROUTINE radcalc4
 !##############################################################################
 Subroutine radcalc5 (m1,maxnzp,iswrtyp,ilwrtyp  &
    ,glat,rtgt,topt,albedt,cosz,rlongup,rshort,rlong,aodt  &
-   ,zm,zt,rv,dn0,pi0,pp,fthrd,i,j,ngrid &
+   ,zm,zt,rv,dn0,pi0,pp,fthrd,fthrdlw,fthrdsw,i,j,ngrid &
    ,bext,swup,swdn,lwup,lwdn)
 
 ! RTE+RRTMGP radiation
@@ -1552,7 +1553,7 @@ integer i,j,k,ii,printsound
 integer, save :: ncall = 0,nradmax
 
 real :: glat,rtgt,topt,cosz,albedt,rlongup,rshort,rlong,aodt
-real :: zm(m1),zt(m1),dn0(m1),rv(m1),pi0(m1),pp(m1),fthrd(m1)
+real :: zm(m1),zt(m1),dn0(m1),rv(m1),pi0(m1),pp(m1),fthrd(m1),fthrdlw(m1),fthrdsw(m1)
 real :: bext(m1),swup(m1),swdn(m1),lwup(m1),lwdn(m1)
 
 real, allocatable, save, dimension(:) :: zml,ztl,dzl,pl,tl,dl,rl,o3l  &
@@ -1734,6 +1735,10 @@ do k = 2,m1
    exner(k) = (pi0(k)+pp(k))/cp
    !divide by exner to get potential temp heating rate
    fthrd(k) = (fthsw(k)+fthlw(k))/exner(k)
+
+   !GRL 2024-03-22 added lw and sw heating rates
+   fthrdlw(k) = fthlw(k)/exner(k)
+   fthrdsw(k) = fthsw(k)/exner(k)
 enddo
 
 rshort = flxds(1)

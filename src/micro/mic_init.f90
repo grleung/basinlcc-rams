@@ -274,6 +274,7 @@ do j = 1,n3
    ! GRL 2024-03-15 Fixed mixing ratio in the vertical for RCEMIP
    
    cn1np(k,i,j) = ccn1_maxt
+   
    !Output initial sample profile
    if(iaeroprnt==1 .and. i==1 .and. j==1 .and. print_msg) then
      if(k==1) print*,' CCN-1-init (k,zt,ccn1/mg,ccn1/cc) on Grid:',ifm

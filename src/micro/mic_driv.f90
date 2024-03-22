@@ -309,7 +309,8 @@ if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. .001) then
          ,radiate%albedt  (i,j) ,radiate%cosz  (i,j)  &
          ,radiate%rlongup (i,j) ,radiate%rshort(i,j)  &
          ,radiate%rlong   (i,j) ,radiate%aodt  (i,j)  &
-         ,zm,zt,rv(1),dn0(1),pi0(1),pp(1),radiate%fthrd(1,i,j),i,j,ngr &
+         ,zm,zt,rv(1),dn0(1),pi0(1),pp(1),radiate%fthrd(1,i,j) &
+         ,radiate%fthrdlw(1,i,j),radiate%fthrdsw(1,i,j),i,j,ngr & !GRL 2024-03-22 added lw and sw heating rates
          ,radiate%bext(1,i,j),radiate%swup(1,i,j),radiate%swdn(1,i,j) &
          ,radiate%lwup(1,i,j),radiate%lwdn(1,i,j))
    endif

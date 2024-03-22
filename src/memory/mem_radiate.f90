@@ -7,7 +7,8 @@ implicit none
    
       ! Variables to be dimensioned by (nzp,nxp,nyp)
    real, allocatable, dimension(:,:,:) :: &
-                          fthrd,fthrdp,bext,swup,swdn,lwup,lwdn
+                          fthrd,fthrdp,bext,swup,swdn,lwup,lwdn &
+                          ,fthrdsw,fthrdlw !GRL 2024-03-22 added variables for lw and sw heating rates
                           
       ! Variables to be dimensioned by (nxp,nyp)
    real, allocatable, dimension(:,:) :: &
@@ -41,6 +42,9 @@ implicit none
                          allocate (radiate%albedt(n2,n3))
                          allocate (radiate%cosz(n2,n3))
                          allocate (radiate%aodt(n2,n3))
+                         !GRL 2024-03-22 added variables for lw and sw heating rates
+                         allocate (radiate%fthrdsw(n1,n2,n3))
+                         allocate (radiate%fthrdlw(n1,n2,n3))
       endif
       if(ilwrtyp >= 3 .or. iswrtyp >= 3) then
          allocate (radiate%bext(n1,n2,n3))
@@ -77,6 +81,9 @@ implicit none
    if (allocated(radiate%swdn))     deallocate (radiate%swdn)
    if (allocated(radiate%lwup))     deallocate (radiate%lwup)
    if (allocated(radiate%lwdn))     deallocate (radiate%lwdn)
+   !GRL 2024-03-22 added variables for lw and sw heating rates
+   if (allocated(radiate%fthrdsw))  deallocate (radiate%fthrdsw)
+   if (allocated(radiate%fthrdlw))  deallocate (radiate%fthrdlw)
 
 return
 END SUBROUTINE dealloc_radiate
@@ -120,7 +127,15 @@ implicit none
       CALL vtables2 (radiate%lwdn(1,1,1),radiatem%lwdn(1,1,1)  &
                  ,ng, npts, imean,  &
                  'LWDN :3:anal:mpti')
-
+   !GRL 2024-03-22 added variables for lw and sw heating rates
+   if (allocated(radiate%fthrdlw))  &
+      CALL vtables2 (radiate%fthrdlw(1,1,1),radiatem%fthrdlw(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'FTHRDLW :3:anal:mpti')
+   if (allocated(radiate%fthrdsw))  &
+      CALL vtables2 (radiate%fthrdsw(1,1,1),radiatem%fthrdsw(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'FTHRDSW :3:anal:mpti')
 
    npts=n2*n3
    if (allocated(radiate%rshort))  &
