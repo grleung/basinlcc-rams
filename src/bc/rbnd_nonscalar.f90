@@ -892,6 +892,9 @@ if (iand(ibcon,1) .ne. 0) then
  do j = 1,m3
   do k = 1,m1
    radiate%fthrd(k,1,j)  = radiate%fthrd(k,2,j)
+   ! GRL 2024-03-22 added lw and sw heating rates
+   radiate%fthrdlw(k,1,j)  = radiate%fthrdlw(k,2,j)
+   radiate%fthrdsw(k,1,j)  = radiate%fthrdsw(k,2,j)
    if(ilwrtyp >= 3 .or. iswrtyp >= 3) then
      radiate%bext(k,1,j)   = radiate%bext(k,2,j)
    endif
@@ -912,6 +915,9 @@ if (iand(ibcon,2) .ne. 0) then
  do j = 1,m3
   do k = 1,m1
    radiate%fthrd(k,m2,j) = radiate%fthrd(k,m2-1,j)
+   ! GRL 2024-03-22 added lw and sw heating rates
+   radiate%fthrdlw(k,m2,j) = radiate%fthrdlw(k,m2-1,j)
+   radiate%fthrdsw(k,m2,j) = radiate%fthrdsw(k,m2-1,j)
    if(ilwrtyp >= 3 .or. iswrtyp >= 3) then
      radiate%bext(k,m2,j)  = radiate%bext(k,m2-1,j)
    endif
@@ -932,6 +938,9 @@ if ((iand(ibcon,4) .ne. 0) .and. (jdim .eq. 1)) then
   do i = 1,m2
    do k = 1,m1
      radiate%fthrd(k,i,1)   = radiate%fthrd(k,i,2)
+     ! GRL 2024-03-22 added lw and sw heating rates
+     radiate%fthrdlw(k,i,1)   = radiate%fthrdlw(k,i,2)
+     radiate%fthrdsw(k,i,1)   = radiate%fthrdsw(k,i,2)
      if(ilwrtyp >= 3 .or. iswrtyp >= 3) then
        radiate%bext(k,i,1)    = radiate%bext(k,i,2)
      endif
@@ -952,6 +961,9 @@ if ((iand(ibcon,8) .ne. 0) .and. (jdim .eq. 1)) then
   do i = 1,m2
    do k = 1,m1
      radiate%fthrd(k,i,m3)  = radiate%fthrd(k,i,m3-1)
+     ! GRL 2024-03-22 added lw and sw heating rates
+     radiate%fthrdlw(k,i,m3)  = radiate%fthrdlw(k,i,m3-1)
+     radiate%fthrdsw(k,i,m3)  = radiate%fthrdsw(k,i,m3-1)
      if(ilwrtyp >= 3 .or. iswrtyp >= 3) then
        radiate%bext(k,i,m3)   = radiate%bext(k,i,m3-1)
      endif
