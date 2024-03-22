@@ -10,7 +10,9 @@ implicit none
                           up,uc,vp,vc,wp,wc,pp,pc  &
                          ,rv,theta,thp,rtp &
                          ,pi0,th0,rvt0,dn0,dn0u,dn0v &
-                         ,wp_buoy_theta,wp_buoy_cond,wp_advdif
+                         ,wp_buoy_theta,wp_buoy_cond,wp_advdif &
+                         !GRL 2024-03-22 added variables for RCEMIP
+                         ,rsatv,rh,temp,pres,thte,tcon,tconfrac
 
       ! These were used for testing perturbations of updated
       ! domain-mean base state quantities. Could be useful in testing.
@@ -56,6 +58,15 @@ implicit none
       allocate (basic%dn0(n1,n2,n3))
       allocate (basic%dn0u(n1,n2,n3))
       allocate (basic%dn0v(n1,n2,n3))
+      !GRL 2024-03-22 added variables for RCEMIP
+      allocate (basic%rsatv(n1,n2,n3))
+      allocate (basic%rh(n1,n2,n3))
+      allocate (basic%temp(n1,n2,n3))
+      allocate (basic%pres(n1,n2,n3))
+      allocate (basic%thte(n1,n2,n3))
+      allocate (basic%tcon(n1,n2,n3))
+      allocate (basic%tconfrac(n1,n2,n3))
+      
       allocate (basic%fcoru(n2,n3))
       allocate (basic%fcorv(n2,n3))
 
@@ -96,7 +107,16 @@ implicit none
    if (allocated(basic%dn0  ))    deallocate (basic%dn0  )
    if (allocated(basic%dn0u ))    deallocate (basic%dn0u )
    if (allocated(basic%dn0v ))    deallocate (basic%dn0v )
+   !GRL 2024-03-22 added variables for RCEMIP
+   if (allocated(basic%rsatv  ))   deallocate (basic%rsatv )
+   if (allocated(basic%rh  ))    deallocate (basic%rh  )
+   if (allocated(basic%temp ))    deallocate (basic%temp )
+   if (allocated(basic%pres ))    deallocate (basic%pres )
+   if (allocated(basic%thte ))    deallocate (basic%thte )
+   if (allocated(basic%tcon ))    deallocate (basic%tcon )
+   if (allocated(basic%tconfrac ))    deallocate (basic%tconfrac )
 
+    
    if (allocated(basic%fcoru ))   deallocate (basic%fcoru )
    if (allocated(basic%fcorv ))   deallocate (basic%fcorv )
 
@@ -177,6 +197,35 @@ implicit none
                  ,ng, npts, imean,  &
                  'RV :3:anal:mpti')
 
+   !GRL 2024-03-22 added variables for RCEMIP
+   if (allocated(basic%temp)) &
+      CALL vtables2 (basic%temp(1,1,1),basicm%temp(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'TEMP :3:anal:mpti')
+   if (allocated(basic%rv)) &
+      CALL vtables2 (basic%rsatv(1,1,1),basicm%rsatv(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'RSATV :3:anal:mpti')
+   if (allocated(basic%pres)) &
+      CALL vtables2 (basic%pres(1,1,1),basicm%pres(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'PRES :3:anal:mpti')
+   if (allocated(basic%rh)) &
+      CALL vtables2 (basic%rh(1,1,1),basicm%rh(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'RH :3:anal:mpti')
+   if (allocated(basic%thte)) &
+      CALL vtables2 (basic%thte(1,1,1),basicm%thte(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'THETAE :3:anal:mpti')
+   if (allocated(basic%tcon)) &
+      CALL vtables2 (basic%tcon(1,1,1),basicm%tcon(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'TCON :3:anal:mpti')
+   if (allocated(basic%tconfrac)) &
+      CALL vtables2 (basic%tconfrac(1,1,1),basicm%tconfrac(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'TCONFRAC :3:anal:mpti')
                  
    if (allocated(basic%pi0)) &
       CALL vtables2 (basic%pi0(1,1,1),basicm%pi0(1,1,1)  &
