@@ -37,7 +37,7 @@ elseif (level .eq. 3) then
      ,micro_g(ngrid)%q7(1,1,1)  ,micro_g(ngrid)%rdp  (1,1,1)  &
      ,basic_g(ngrid)%pi0(1,1,1) ,basic_g(ngrid)%pp   (1,1,1)  &
      ! GRL 2024-03-22 added variables for RCEMIP
-     ,basic_g(ngrid)%pres(1,1,1),basic_g(ngrid)%temp (1,1,1)  &
+     ,basic_g(ngrid)%pres(1,1,1),basic_g(ngrid)%tmpt (1,1,1)  &
      ,basic_g(ngrid)%rh(1,1,1)  ,basic_g(ngrid)%rsatv(1,1,1)  &
      ,basic_g(ngrid)%thte(1,1,1),basic_g(ngrid)%tcon (1,1,1)  &
      ,basic_g(ngrid)%tconfrac(1,1,1) &
@@ -138,7 +138,7 @@ END SUBROUTINE satadjst
 !##############################################################################
 Subroutine wetthrm3 (m1,m2,m3,ia,iz,ja,jz                   &
    ,thp,theta,rtp,rv,rcp,rrp,rpp,rsp,rap,rgp,rhp,q6,q7,rdp  &
-   ,pi0,pp,pres,temp,rh,rsatv,thte,tcon,tconfrac                          &
+   ,pi0,pp,pres,tmpt,rh,rsatv,thte,tcon,tconfrac                          &
    )
 
 ! This routine calculates theta and rv for "level 3 microphysics"
@@ -154,7 +154,7 @@ integer :: m1,m2,m3,ia,iz,ja,jz,i,j,k
 real :: tcoal,fracliq,tairstr,es,tcon_cond
 real, dimension(m1) :: picpi
 real, dimension(m1,m2,m3) :: pi0,pp,thp,theta,rtp,rv,rcp,rrp,rpp,rsp,rap &
-                            ,rgp,rhp,q6,q7,rdp,pres,temp,rh,rsatv,pi,thte,tcon,tconfrac
+                            ,rgp,rhp,q6,q7,rdp,pres,tmpt,rh,rsatv,pi,thte,tcon,tconfrac
 tcon_cond = 1.e-5 !condition for cloud fraction to be 1
 
 do j = ja,jz
@@ -238,17 +238,17 @@ do j = ja,jz
       ! GRL 2024-03-22 adding RCEMIP output
       do k = 1,m1
          pi(k,i,j) = (pi0(k,i,j) + pp(k,i,j)) * cpi
-         temp(k,i,j) = theta(k,i,j)*pi(k,i,j)
+         tmpt(k,i,j) = theta(k,i,j)*pi(k,i,j)
          pres(k,i,j) = p00 * (pi(k,i,j)*cpi)**cpor
 
-         es = 610.78*exp(17.269*(temp(k,i,j)-273.15)/(temp(k,i,j)-273.15))
+         es = 610.78*exp(17.269*(tmpt(k,i,j)-273.15)/(tmpt(k,i,j)-273.15))
          rsatv(k,i,j) = 0.622*es/(pres(k,i,j)-es)
          rh(k,i,j) = 100. * rv(k,i,j)/rsatv(k,i,j)
 
-         thte(k,i,j) = theta(k,i,j)*exp(alvl*rsatv(k,i,j)*cpi/temp(k,i,j))
+         thte(k,i,j) = theta(k,i,j)*exp(alvl*rsatv(k,i,j)*cpi/tmpt(k,i,j))
 
          tcon(k,i,j) = rtp(k,i,j) - rv(k,i,j)
-         if (tcon(k,i,j) .geq. tcon_cond) then
+         if (tcon(k,i,j) .ge. tcon_cond) then
             tconfrac(k,i,j) = 1.
          else
             tconfrac(k,i,j) = 0.
