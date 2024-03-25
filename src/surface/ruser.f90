@@ -623,9 +623,11 @@ elseif(ibubble==3) then
  !
  ! In order to save memory space, do one level at a time.
 
- do k=2,m1
+ ! GRL 2024-03-25 changed perturbation such that it starts in lowest level and decreases
+ ! linearly to 0.02 in fifth level (Wing et al. 2018)
+ do k=2,5
    ! select levels for temp. pert. based on altitude
-   if( zt(k) <= (500.+zt(2)) ) then ! only over lowest 500 m
+   !if( zt(k) <= (500.+zt(2)) ) then ! only over lowest 500 m
      ! allocate memory for entire horizontal domain
      allocate(bub_rand_nums(nnxp(ibubgrd), nnyp(ibubgrd)))
 
@@ -652,11 +654,12 @@ elseif(ibubble==3) then
 
          !Default perturbations amplitude of 0.1K, largest at level 2,
          !decreased linearly over 500m.
-         R = R*0.1*(500.+zt(2)-zt(k))/500.
+         R = R*0.1*(0.2 - 0.8*(zt(k)-zt(5))/(zt(1)-zt(5)))!(zt(5).+zt(2)-zt(k))/zt(5).
 
          !RCE perturbations amplitude of "rce_bubl", largest at level 2,
          !decreased linearly over 500m. Override default.
-         if(irce == 1) R = R*rce_bubl*(500.+zt(2)-zt(k))/500.
+         !if(irce == 1) R = R*rce_bubl*(500.+zt(2)-zt(k))/500.
+         if(irce == 1) R = R*rce_bubl*(0.2 - 0.8*(zt(k)-zt(5))/(zt(1)-zt(5)))
 
          thp(k,i,j)=thp(k,i,j) + R
          if(k==2) thp(1,i,j)=thp(k,i,j) ! set level 1 to level 2
@@ -664,7 +667,7 @@ elseif(ibubble==3) then
      enddo ! j
 
      deallocate(bub_rand_nums)
-   endif ! in lowest 500 m
+   !endif ! in lowest 500 m
  enddo ! k
 
 endif
