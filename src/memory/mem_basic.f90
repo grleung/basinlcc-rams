@@ -12,7 +12,7 @@ implicit none
                          ,pi0,th0,rvt0,dn0,dn0u,dn0v &
                          ,wp_buoy_theta,wp_buoy_cond,wp_advdif &
                          !GRL 2024-03-22 added variables for RCEMIP
-                         ,tmpt,rsatv,rh,pres,thte,tcon,tconfrac
+                         ,tmpt,rsatv,rh,pres,thte,tcon,cfrac
 
       ! These were used for testing perturbations of updated
       ! domain-mean base state quantities. Could be useful in testing.
@@ -59,13 +59,13 @@ implicit none
       allocate (basic%dn0u(n1,n2,n3))
       allocate (basic%dn0v(n1,n2,n3))
       !GRL 2024-03-22 added variables for RCEMIP
+      allocate (basic%cfrac(n1,n2,n3))
       allocate (basic%rsatv(n1,n2,n3))
       allocate (basic%rh(n1,n2,n3))
       allocate (basic%tmpt(n1,n2,n3))
       allocate (basic%pres(n1,n2,n3))
       allocate (basic%thte(n1,n2,n3))
       allocate (basic%tcon(n1,n2,n3))
-      allocate (basic%tconfrac(n1,n2,n3))
       
       allocate (basic%fcoru(n2,n3))
       allocate (basic%fcorv(n2,n3))
@@ -114,9 +114,8 @@ implicit none
    if (allocated(basic%pres ))    deallocate (basic%pres )
    if (allocated(basic%thte ))    deallocate (basic%thte )
    if (allocated(basic%tcon ))    deallocate (basic%tcon )
-   if (allocated(basic%tconfrac)) deallocate (basic%tconfrac )
+   if (allocated(basic%cfrac)) deallocate (basic%cfrac )
 
-    
    if (allocated(basic%fcoru ))   deallocate (basic%fcoru )
    if (allocated(basic%fcorv ))   deallocate (basic%fcorv )
 
@@ -222,10 +221,10 @@ implicit none
       CALL vtables2 (basic%tcon(1,1,1),basicm%tcon(1,1,1)  &
                  ,ng, npts, imean,  &
                  'TCON :3:anal:mpti')
-   if (allocated(basic%tconfrac)) &
-      CALL vtables2 (basic%tconfrac(1,1,1),basicm%tconfrac(1,1,1)  &
+   if (allocated(basic%cfrac)) &
+      CALL vtables2 (basic%cfrac(1,1,1),basicm%cfrac(1,1,1)  &
                  ,ng, npts, imean,  &
-                 'TCONFRAC :3:anal:mpti')
+                 'CFRAC :3:anal:mpti')
                  
    if (allocated(basic%pi0)) &
       CALL vtables2 (basic%pi0(1,1,1),basicm%pi0(1,1,1)  &
