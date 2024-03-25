@@ -6,7 +6,7 @@
 
    EXPNME   = 'RAMS Simulations',
 
-!  Type of model run to perform
+!  Type of model run to performqs
 
    RUNTYPE  = 'INITIAL',                                                             
 !   RUNTYPE  = 'MAKESFC',                       
@@ -210,7 +210,7 @@
                               !   state,mean,lite,both
                               
 !------------------------------------------------------------------------
-   FRQSTATE   = 3600.,         ! "state" file write frequency
+   FRQSTATE   = 172800.,         ! "state" file write frequency
                               !  can be different for each grid
                               !  works best if grids are multiples of each other
    FRQST_KEEP   =    0.,      ! If > 0., frequency at which "state" files will be 
@@ -218,28 +218,29 @@
                               !  the subsequent write. 
                               !  Intended to be a mutiple of and >= FRQSTATE
 !-----------------------------------------------------------------------
-   FRQLITE  = 900.,            ! Frequency for "lite" files
+   FRQLITE  = 21600.,            ! Frequency for "lite" files
                              !   = 0 : no lite files
-   NLITE_VARS=39,
+   NLITE_VARS=53,
 
-   LITE_VARS= 'GLAT','GLON','TOPT','PATCH_AREA', !Keep these always
-              'UP','VP','WP', !This would be useful for hi-frequency trajectories
-              'PI','PP','THETA','RTP','RV',
-              'CCP','CDP','CRP','CHP','CGP','CPP','CAP','CSP',         
-              'RCP','RDP','RRP','RHP','RGP','RPP','RAP','RSP',
-              'SFLUX_T','SFLUX_R',
-              'ACCPR','PCPRR','LATHEATVAP','LATHEATFRZ',
-              'FTHRD','SWUP','SWDN','LWUP','LWDN',
-
-
+   LITE_VARS=  'GLAT','GLON',                                           ! 2D Basic (2)
+               'THETA','RV','WP','VP','UP','PI','PP',                   ! 3D State (7)
+               'PCPRR','PCPRP','PCPRS','PCPRA','PCPRG','PCPRH','PCPRD', ! 2D Precip Rates (7)
+               'RTP','RCP','RDP','RRP','RHP','RGP','RPP','RAP','RSP',   ! 3D Mixing Ratio (9)
+               'CCP','CDP','CRP','CHP','CGP','CPP','CAP','CSP',         ! 3D Number concentration (8)
+               'SFLUX_T','SFLUX_R',                                     ! 2D Flux/Radiation (2)  
+               'FTHRD','FTHRDLW','FTHRDSW',                             ! 3D Rates (3)
+               'SWUP','SWDN','LWUP','LWDN',                             ! 3D Radiative Fluxes (4)
+               'TEMPP','RH','RSATV','PRES','THETAE','TCON','CFRAC',
+               'CLRFLAG','CLRHR','CLRHRLW','CLRHRSW',          
+               
 !-----------------------------------------------------------------------
-   AVGTIM   = 0.,            ! Averaging time for analysis variables
+   AVGTIM   = 3600.,            ! Averaging time for analysis variables
                              !   must be abs(AVGTIM) <= FRQANL
                              !   > 0 : averaging is centered at FRQANL
                              !   < 0 : averaging ends at FRQANL
                              !   = 0 : no averaged files
    FRQMEAN  = 0.,            ! Frequency for "averaged" files
-   FRQBOTH  = 0.,            ! Frequency for Both ("averaged"/"lite") files
+   FRQBOTH  = 3600.,            ! Frequency for Both ("averaged"/"lite") files
 
 ! Input topography variables
 

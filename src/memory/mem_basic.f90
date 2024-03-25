@@ -20,7 +20,7 @@ implicit none
 
       ! Variables to be dimensioned by (nxp,nyp)
    real, allocatable, dimension(:,:) :: &
-                          fcoru,fcorv
+                          fcoru,fcorv,clrflag !GRL 2024-03-22 added variables for RCEMIP
 
    End Type
    
@@ -66,6 +66,7 @@ implicit none
       allocate (basic%pres(n1,n2,n3))
       allocate (basic%thte(n1,n2,n3))
       allocate (basic%tcon(n1,n2,n3))
+      allocate (basic%clrflag(n2,n3))
       
       allocate (basic%fcoru(n2,n3))
       allocate (basic%fcorv(n2,n3))
@@ -115,6 +116,7 @@ implicit none
    if (allocated(basic%thte ))    deallocate (basic%thte )
    if (allocated(basic%tcon ))    deallocate (basic%tcon )
    if (allocated(basic%cfrac)) deallocate (basic%cfrac )
+   if (allocated(basic%clrflag)) deallocate (basic%clrflag )
 
    if (allocated(basic%fcoru ))   deallocate (basic%fcoru )
    if (allocated(basic%fcorv ))   deallocate (basic%fcorv )
@@ -225,7 +227,7 @@ implicit none
       CALL vtables2 (basic%cfrac(1,1,1),basicm%cfrac(1,1,1)  &
                  ,ng, npts, imean,  &
                  'CFRAC :3:anal:mpti')
-                 
+           
    if (allocated(basic%pi0)) &
       CALL vtables2 (basic%pi0(1,1,1),basicm%pi0(1,1,1)  &
                  ,ng, npts, imean,  &
@@ -283,6 +285,10 @@ implicit none
       CALL vtables2 (basic%fcorv(1,1),basicm%fcorv(1,1)  &
                  ,ng, npts, imean,  &
                  'FCORV :2:mpti')
+   if (allocated(basic%clrflag)) &
+      CALL vtables2 (basic%clrflag(1,1),basicm%clrflag(1,1)  &
+               ,ng, npts, imean,  &
+               'CLRFLAG :2:anal:mpti')
  
 return
 END SUBROUTINE filltab_basic

@@ -4,6 +4,7 @@ Subroutine thermo ()
 use mem_grid
 use mem_basic
 use mem_micro
+use mem_radiate
 use mem_scratch
 use micphys, only:level
 use node_mod, only:mzp,mxp,myp
@@ -40,7 +41,10 @@ elseif (level .eq. 3) then
      ,basic_g(ngrid)%pres(1,1,1),basic_g(ngrid)%tmpt (1,1,1)  &
      ,basic_g(ngrid)%rh(1,1,1)  ,basic_g(ngrid)%rsatv(1,1,1)  &
      ,basic_g(ngrid)%thte(1,1,1),basic_g(ngrid)%tcon (1,1,1)  &
-     ,basic_g(ngrid)%cfrac(1,1,1) &
+     ,basic_g(ngrid)%cfrac(1,1,1),basic_g(ngrid)%clrflag(1,1) &
+     ,radiate_g(ngrid)%fthrd(1,1,1),radiate_g(ngrid)%fthrdlw (1,1,1)  &
+     ,radiate_g(ngrid)%fthrdsw(1,1,1),radiate_g(ngrid)%clrhr (1,1,1)  &
+     ,radiate_g(ngrid)%clrhrlw(1,1,1),radiate_g(ngrid)%clrhrsw (1,1,1)  &
      )
 
 elseif (level .eq. 4) then
@@ -138,7 +142,8 @@ END SUBROUTINE satadjst
 !##############################################################################
 Subroutine wetthrm3 (m1,m2,m3,ia,iz,ja,jz                   &
    ,thp,theta,rtp,rv,rcp,rrp,rpp,rsp,rap,rgp,rhp,q6,q7,rdp  &
-   ,pi0,pp,pres,tmpt,rh,rsatv,thte,tcon,cfrac                          &
+   ,pi0,pp,pres,tmpt,rh,rsatv,thte,tcon,cfrac,clrflag       &
+   ,fthrd,fthrdlw,fthrdsw,clrhr,clrhrlw,clrhrsw             &
    )
 
 ! This routine calculates theta and rv for "level 3 microphysics"
@@ -154,7 +159,10 @@ integer :: m1,m2,m3,ia,iz,ja,jz,i,j,k
 real :: tcoal,fracliq,tairstr,es,tcon_cond,pi
 real, dimension(m1) :: picpi
 real, dimension(m1,m2,m3) :: pi0,pp,thp,theta,rtp,rv,rcp,rrp,rpp,rsp,rap &
-                            ,rgp,rhp,q6,q7,rdp,pres,tmpt,rh,rsatv,thte,tcon,cfrac
+                            ,rgp,rhp,q6,q7,rdp,pres,tmpt,rh,rsatv,thte,tcon,cfrac &
+                            ,fthrd,fthrdlw,fthrdsw,clrhr,clrhrlw,clrhrsw
+real, dimension(m2,m3)  :: clrflag
+
 tcon_cond = 1.e-5 !condition for cloud fraction to be 1
 
 do j = ja,jz
@@ -224,7 +232,7 @@ do j = ja,jz
          qhydm(k) = alvl * rliq(k) + alvi * rice(k)
          rv(k,i,j) = rtp(k,i,j) - rliq(k) - rice(k)
       enddo
-
+      
       do k = 1,m1
          if (tair(k) .gt. 253.) then
             tairstr = 0.5 * (til(k)  &
@@ -236,6 +244,9 @@ do j = ja,jz
       enddo
 
       ! GRL 2024-03-22 adding RCEMIP output
+
+      clrflag(i,j) = 0.
+
       do k = 1,m1
          pi = pi0(k,i,j) + pp(k,i,j)
          tmpt(k,i,j) = theta(k,i,j)*pi*cpi
@@ -250,12 +261,30 @@ do j = ja,jz
          tcon(k,i,j) = rtp(k,i,j) - rv(k,i,j)
          if (tcon(k,i,j) .ge. tcon_cond) then
             cfrac(k,i,j) = 1.
+            clrflag(i,j) = 1.
          else
             cfrac(k,i,j) = 0.
          endif
-
-
       enddo
+      
+      if (clrflag(i,j) .eq. 1) then
+         do k = 1,m1
+            clrhr(k,i,j) = fthrd(k,i,j)
+            clrhrlw(k,i,j) = fthrdlw(k,i,j)
+            clrhrsw(k,i,j) = fthrdsw(k,i,j)
+         enddo
+      else
+         do k = 1,m1
+            clrhr(k,i,j) = 0.
+            clrhrlw(k,i,j) = 0.
+            clrhrsw(k,i,j) = 0.
+         enddo
+      endif
+
+
+
+         ! GRL 2024-03-25 This is where to add terms for clear-sky radiative heating
+         ! check that column is clrsky (cfrac=0 throughout column), then copy heating rate terms
 
    enddo
 enddo
