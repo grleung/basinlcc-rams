@@ -245,7 +245,7 @@ do j = ja,jz
 
       ! GRL 2024-03-22 adding RCEMIP output
 
-      clrflag(i,j) = 0.
+      clrflag(i,j) = 1.
 
       do k = 1,m1
          pi = pi0(k,i,j) + pp(k,i,j)
@@ -261,7 +261,7 @@ do j = ja,jz
          tcon(k,i,j) = rtp(k,i,j) - rv(k,i,j)
          if (tcon(k,i,j) .ge. tcon_cond) then
             cfrac(k,i,j) = 1.
-            clrflag(i,j) = 1.
+            clrflag(i,j) = 0.
          else
             cfrac(k,i,j) = 0.
          endif
