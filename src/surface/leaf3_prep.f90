@@ -250,7 +250,9 @@ real :: alb,vfc,fcpct,alg,rad,als,fractrans,absg,algs,emv,emgs,gslong,vlong,alv
 
 if (ip == 1) then
    if (cosz > .03) then
-      alb = min(max(-.0139 + .0467 * tan(acos(cosz)),.03),.999)
+      ! GRL 2024-03-25 set albedo to be consistent with rcemip
+      alb = 0.07
+      !alb = min(max(-.0139 + .0467 * tan(acos(cosz)),.03),.999)
       albedt = albedt + patch_area * alb
    endif
    CALL qtk (soil_energy(mzg),tempk(mzg),fracliq(mzg))
