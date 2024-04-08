@@ -39,12 +39,17 @@ elseif (level .eq. 3) then
      ,basic_g(ngrid)%pi0(1,1,1) ,basic_g(ngrid)%pp   (1,1,1)  &
      ! GRL 2024-03-22 added variables for RCEMIP
      ,basic_g(ngrid)%pres(1,1,1),basic_g(ngrid)%tmpt (1,1,1)  &
-     ,basic_g(ngrid)%rh(1,1,1)  ,basic_g(ngrid)%rsatv(1,1,1)  &
+     ,basic_g(ngrid)%rhl(1,1,1) ,basic_g(ngrid)%rhi(1,1,1) &
+     ,basic_g(ngrid)%rsatvl(1,1,1),basic_g(ngrid)%rsatvi(1,1,1)  &
      ,basic_g(ngrid)%thte(1,1,1),basic_g(ngrid)%tcon (1,1,1)  &
      ,basic_g(ngrid)%cfrac(1,1,1),basic_g(ngrid)%clrflag(1,1) &
      ,radiate_g(ngrid)%fthrd(1,1,1),radiate_g(ngrid)%fthrdlw (1,1,1)  &
      ,radiate_g(ngrid)%fthrdsw(1,1,1),radiate_g(ngrid)%clrhr (1,1,1)  &
      ,radiate_g(ngrid)%clrhrlw(1,1,1),radiate_g(ngrid)%clrhrsw (1,1,1)  &
+     ,radiate_g(ngrid)%swup(1,1,1),radiate_g(ngrid)%swdn (1,1,1)  &
+     ,radiate_g(ngrid)%lwup(1,1,1),radiate_g(ngrid)%lwdn (1,1,1)  &
+     ,radiate_g(ngrid)%clrswup(1,1,1),radiate_g(ngrid)%clrswdn (1,1,1)  &
+     ,radiate_g(ngrid)%clrlwup(1,1,1),radiate_g(ngrid)%clrlwdn (1,1,1)  &
      )
 
 elseif (level .eq. 4) then
@@ -142,8 +147,9 @@ END SUBROUTINE satadjst
 !##############################################################################
 Subroutine wetthrm3 (m1,m2,m3,ia,iz,ja,jz                   &
    ,thp,theta,rtp,rv,rcp,rrp,rpp,rsp,rap,rgp,rhp,q6,q7,rdp  &
-   ,pi0,pp,pres,tmpt,rh,rsatv,thte,tcon,cfrac,clrflag       &
+   ,pi0,pp,pres,tmpt,rhl,rhi,rsatvl,rsatvi,thte,tcon,cfrac,clrflag       &
    ,fthrd,fthrdlw,fthrdsw,clrhr,clrhrlw,clrhrsw             &
+   ,swup,swdn,lwup,lwdn,clrswup,clrswdn,clrlwup,clrlwdn     &
    )
 
 ! This routine calculates theta and rv for "level 3 microphysics"
@@ -156,12 +162,13 @@ use micphys, only:tair,til,qhydm,rliq,rice,jnmb
 implicit none
 
 integer :: m1,m2,m3,ia,iz,ja,jz,i,j,k
-real :: tcoal,fracliq,tairstr,es,tcon_cond,pi
+real :: tcoal,fracliq,tairstr,es,tcon_cond,sat_cond,pi,tmpl,rsatv,tlcl
 real, dimension(m1) :: picpi
 real, dimension(m1,m2,m3) :: pi0,pp,thp,theta,rtp,rv,rcp,rrp,rpp,rsp,rap &
-                            ,rgp,rhp,q6,q7,rdp,pres,tmpt,rh,rsatv,thte,tcon,cfrac &
-                            ,fthrd,fthrdlw,fthrdsw,clrhr,clrhrlw,clrhrsw
+                            ,rgp,rhp,q6,q7,rdp,pres,tmpt,rhl,rhi,rsatvl,rsatvi,thte,tcon,cfrac &
+                            ,fthrd,fthrdlw,fthrdsw,clrhr,clrhrlw,clrhrsw,clrswdn,clrswup,clrlwdn,clrlwup,swdn,swup,lwdn,lwup
 real, dimension(m2,m3)  :: clrflag
+real, external :: rsif,rslf
 
 tcon_cond = 1.e-5 !condition for cloud fraction to be 1
 
@@ -245,6 +252,7 @@ do j = ja,jz
 
       ! GRL 2024-03-22 adding RCEMIP output
 
+      ! clearsky flag starts as 1 (yes clearsky), then gets set to 0 if any of points within column are cloudy
       clrflag(i,j) = 1.
 
       do k = 1,m1
@@ -252,14 +260,34 @@ do j = ja,jz
          tmpt(k,i,j) = theta(k,i,j)*pi*cpi
          pres(k,i,j) = ( pi/cp )**cpor*p00 
 
-         es = 610.78*exp(17.269*(tmpt(k,i,j)-273.15)/(tmpt(k,i,j)-35.86))
-         rsatv(k,i,j) = 0.622*es/(pres(k,i,j)-es)
-         rh(k,i,j) = 100. * rv(k,i,j)/rsatv(k,i,j)
+         ! calculate saturation and relative humidity with respect to liquid and ice
+         rsatvl(k,i,j) = rslf(pres(k,i,j),tmpt(k,i,j))
+         rsatvi(k,i,j) = rsif(pres(k,i,j),tmpt(k,i,j))
 
-         thte(k,i,j) = theta(k,i,j)*exp(alvl*rsatv(k,i,j)*cpi/tmpt(k,i,j))
+         rhl(k,i,j) = 100. * rv(k,i,j)/rsatvl(k,i,j)
+         rhi(k,i,j) = 100. * rv(k,i,j)/rsatvi(k,i,j)
+
+         if (tmpt(k,i,j)>=273.15) then
+            rsatv = rsatvl(k,i,j)
+         else
+            rsatv = rsatvi(k,i,j)
+         endif 
+
+         ! define alterantive cloud condition as 1% of saturation mixing ratio relative to liquid or ice (use lower threshold, which is ice, above 0C)
+         sat_cond = 0.01*rsatv
+
+         ! using eq 22 and 43 of Bolton 1980, where eq 43 is converted to take rv in kg/kg rather than g/kg
+         if (rhl(k,i,j)>=1.e-28) then 
+            tlcl = (1/((1/(tmpt(k,i,j)-55.))+(log(rhl(k,i,j)/100.)/2840.)))+55.
+            thte(k,i,j)=tmpt(k,i,j) * ((p00/pres(k,i,j))**(0.2854*(1-(.28*rv(k,i,j))))) * exp(((3.376/tlcl)-.00254) * 1.e3 * rv(k,i,j) * (1+(0.81*rv(k,i,j))))
+         else
+            ! if rh is very low then the above equation converges to this, so just using this to avoid small number errors
+            thte(k,i,j)=tmpt(k,i,j) * ((p00/pres(k,i,j))**0.2854) 
+         endif 
 
          tcon(k,i,j) = rtp(k,i,j) - rv(k,i,j)
-         if (tcon(k,i,j) .ge. tcon_cond) then
+
+         if ((tcon(k,i,j) .ge. tcon_cond) .or. (tcon(k,i,j) .ge. sat_cond)) then
             cfrac(k,i,j) = 1.
             clrflag(i,j) = 0.
          else
@@ -267,24 +295,33 @@ do j = ja,jz
          endif
       enddo
       
+
+      ! GRL 2024-03-25 add terms for clear-sky radiative heating
+      ! check that column is clrsky (cfrac=0 throughout column), then copy heating rate terms
+
       if (clrflag(i,j) .eq. 1) then
          do k = 1,m1
             clrhr(k,i,j) = fthrd(k,i,j)
             clrhrlw(k,i,j) = fthrdlw(k,i,j)
             clrhrsw(k,i,j) = fthrdsw(k,i,j)
+            clrswdn(k,i,j) = swdn(k,i,j)
+            clrswup(k,i,j) = swup(k,i,j)
+            clrlwdn(k,i,j) = lwdn(k,i,j)
+            clrlwup(k,i,j) = lwup(k,i,j)
          enddo
       else
          do k = 1,m1
             clrhr(k,i,j) = 0.
             clrhrlw(k,i,j) = 0.
             clrhrsw(k,i,j) = 0.
+            clrswdn(k,i,j) = 0.
+            clrswup(k,i,j) = 0.
+            clrlwdn(k,i,j) = 0.
+            clrlwup(k,i,j) = 0.
          enddo
       endif
 
 
-
-         ! GRL 2024-03-25 This is where to add terms for clear-sky radiative heating
-         ! check that column is clrsky (cfrac=0 throughout column), then copy heating rate terms
 
    enddo
 enddo

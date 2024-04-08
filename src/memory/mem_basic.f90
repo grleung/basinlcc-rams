@@ -12,7 +12,7 @@ implicit none
                          ,pi0,th0,rvt0,dn0,dn0u,dn0v &
                          ,wp_buoy_theta,wp_buoy_cond,wp_advdif &
                          !GRL 2024-03-22 added variables for RCEMIP
-                         ,tmpt,rsatv,rh,pres,thte,tcon,cfrac
+                         ,tmpt,rsatvl,rhl,rsatvi,rhi,pres,thte,tcon,cfrac
 
       ! These were used for testing perturbations of updated
       ! domain-mean base state quantities. Could be useful in testing.
@@ -60,8 +60,10 @@ implicit none
       allocate (basic%dn0v(n1,n2,n3))
       !GRL 2024-03-22 added variables for RCEMIP
       allocate (basic%cfrac(n1,n2,n3))
-      allocate (basic%rsatv(n1,n2,n3))
-      allocate (basic%rh(n1,n2,n3))
+      allocate (basic%rsatvl(n1,n2,n3))
+      allocate (basic%rhl(n1,n2,n3))
+      allocate (basic%rsatvi(n1,n2,n3))
+      allocate (basic%rhi(n1,n2,n3))
       allocate (basic%tmpt(n1,n2,n3))
       allocate (basic%pres(n1,n2,n3))
       allocate (basic%thte(n1,n2,n3))
@@ -109,8 +111,10 @@ implicit none
    if (allocated(basic%dn0u ))    deallocate (basic%dn0u )
    if (allocated(basic%dn0v ))    deallocate (basic%dn0v )
    !GRL 2024-03-22 added variables for RCEMIP
-   if (allocated(basic%rsatv  ))  deallocate (basic%rsatv )
-   if (allocated(basic%rh  ))     deallocate (basic%rh  )
+   if (allocated(basic%rsatvl  ))  deallocate (basic%rsatvl )
+   if (allocated(basic%rhl  ))     deallocate (basic%rhl  )
+   if (allocated(basic%rsatvi  ))  deallocate (basic%rsatvi )
+   if (allocated(basic%rhi  ))     deallocate (basic%rhi  )
    if (allocated(basic%tmpt ))    deallocate (basic%tmpt )
    if (allocated(basic%pres ))    deallocate (basic%pres )
    if (allocated(basic%thte ))    deallocate (basic%thte )
@@ -203,18 +207,26 @@ implicit none
       CALL vtables2 (basic%tmpt(1,1,1),basicm%tmpt(1,1,1)  &
                  ,ng, npts, imean,  &
                  'TEMPP :3:anal:mpti')
-   if (allocated(basic%rsatv)) &
-      CALL vtables2 (basic%rsatv(1,1,1),basicm%rsatv(1,1,1)  &
-                 ,ng, npts, imean,  &
-                 'RSATV :3:anal:mpti')
    if (allocated(basic%pres)) &
       CALL vtables2 (basic%pres(1,1,1),basicm%pres(1,1,1)  &
                  ,ng, npts, imean,  &
                  'PRES :3:anal:mpti')
-   if (allocated(basic%rh)) &
-      CALL vtables2 (basic%rh(1,1,1),basicm%rh(1,1,1)  &
+   if (allocated(basic%rsatvl)) &
+      CALL vtables2 (basic%rsatvl(1,1,1),basicm%rsatvl(1,1,1)  &
                  ,ng, npts, imean,  &
-                 'RH :3:anal:mpti')
+                 'RSATVL :3:anal:mpti')
+   if (allocated(basic%rhl)) &
+      CALL vtables2 (basic%rhl(1,1,1),basicm%rhl(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'RHL :3:anal:mpti')
+   if (allocated(basic%rsatvi)) &
+      CALL vtables2 (basic%rsatvi(1,1,1),basicm%rsatvi(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'RSATVI :3:anal:mpti')
+   if (allocated(basic%rhi)) &
+      CALL vtables2 (basic%rhi(1,1,1),basicm%rhi(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'RHI :3:anal:mpti')
    if (allocated(basic%thte)) &
       CALL vtables2 (basic%thte(1,1,1),basicm%thte(1,1,1)  &
                  ,ng, npts, imean,  &

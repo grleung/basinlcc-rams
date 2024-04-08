@@ -289,6 +289,8 @@ if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. .001) then
          ,radiate%rlong  (i,j)    &
          ,radiate%aodt   (i,j)    &
          ,radiate%fthrd(1,i,j)    &
+         ,radiate%fthrdlw(1,i,j)    &
+         ,radiate%fthrdsw(1,i,j)    & !GRL 2024-03-22 added lw and sw heating rates
          ,radiate%bext (1,i,j)    &
          ,radiate%swup (1,i,j)    &
          ,radiate%swdn (1,i,j)    &
