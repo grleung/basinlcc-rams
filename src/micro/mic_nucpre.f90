@@ -28,10 +28,10 @@ do acat=1,aerocat
 
      !Assign aerosol specs to local arrays
      aeromass   = aeromas(k,acat)
-
+     
      !Keep median radius and aerosol mass in bounds
      if(aerocon(k,acat) > mincon .and. aeromas(k,acat) > minmas) then
-
+      
        rhosol=aero_rhosol(acat)
        aero_rg(acat)=((0.23873/rhosol*aeromas(k,acat)/aerocon(k,acat)) &
                     **(1./3.))/aero_rg2rm(acat)
@@ -46,7 +46,6 @@ do acat=1,aerocat
 
        if(iccnlev>=2 .and. itrkepsilon==1 .and. (acat==aerocat-1.or.acat==aerocat)) &
          regenmas(k,acat-(aerocat-2)) = regenmas(k,acat-(aerocat-2)) * (aeromas(k,acat) / aeromass)
-
      endif
 
   endif

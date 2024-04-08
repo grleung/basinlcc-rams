@@ -12,6 +12,12 @@ implicit none
 
 integer :: i,j
 
+! GRL 2024-04-08 test calling initial ccn every time to see if this fixes losing mass issue
+CALL init_ccn1 (mzp,mxp,myp    &
+          ,micro_g(ngrid)%cn1np (1,1,1)  &
+          ,micro_g(ngrid)%cn1mp (1,1,1)  &
+          ,basic_g(ngrid)%dn0   (1,1,1),ngrid)
+
 !Run the SEASALT and DUST Source model before the call to Micro
 if(idust==2) then
   CALL dust_sources (mzp,mxp,myp,ia,iz,ja,jz      &

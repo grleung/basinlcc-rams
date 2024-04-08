@@ -47,7 +47,7 @@ implicit none
            ,rimecldsnowt,rimecldaggrt,rimecldgraut,rimecldhailt            &
            ,rain2prt,rain2snt,rain2agt,rain2grt,rain2hat                   &
            ,aggrselfprist,aggrselfsnowt,aggrprissnowt                      &
-           ! MICRO BUDGET PROCESSES (imbudget >=3)
+           ! MICRO BUDGET PROCESSES (imbudget >=3) 
            ,dust1cldrt,dust2cldrt,dust1drzrt,dust2drzrt                    &
            ! BIN MICROPHYSICS, and some extra budget variables  
            ,t_old,rv_old,nuccldct,nucicect,inuchomct,inucifnct
