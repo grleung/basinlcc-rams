@@ -159,6 +159,8 @@ if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. 0.001) then
            ! Zero out the radiative heating rate "fthrd" if this this a 
            ! radiation timestep and fthrd will be updated.
            CALL azero (mzp*mxp*myp,radiate_g(ngrid)%fthrd(1,1,1))
+           CALL azero (mzp*mxp*myp,radiate_g(ngrid)%fthrdlw(1,1,1))
+           CALL azero (mzp*mxp*myp,radiate_g(ngrid)%fthrdsw(1,1,1))
 
            ! Run the Harrington radiation for non-LEVEL=3 micro
            CALL radcomp3 (mzp,mxp,myp,ia,iz,ja,jz  &
@@ -174,6 +176,8 @@ if (mod(time + .001,radfrq) .lt. dtlt .or. time .lt. 0.001) then
             ,basic_g(ngrid)%rv        (1,1,1)  &
             ,basic_g(ngrid)%dn0       (1,1,1)  &
             ,radiate_g(ngrid)%fthrd   (1,1,1)  &
+            ,radiate_g(ngrid)%fthrdlw   (1,1,1)  &
+            ,radiate_g(ngrid)%fthrdsw   (1,1,1)  &
             ,basic_g(ngrid)%pi0       (1,1,1)  &
             ,basic_g(ngrid)%pp        (1,1,1)  &
             ,basic_g(ngrid)%theta     (1,1,1)  &
@@ -481,7 +485,7 @@ END SUBROUTINE radcomp
 !##############################################################################
 Subroutine radcomp3 (m1,m2,m3,ia,iz,ja,jz  &
    ,glat,rtgt,topt,albedt,cosz,rlongup,rshort,rlong,aodt  &
-   ,rv,dn0,fthrd,pi0,pp,theta,rcp &
+   ,rv,dn0,fthrd,fthrdlw,fthrdsw,pi0,pp,theta,rcp &
    ,bext,swup,swdn,lwup,lwdn &
    ,cn1np,cn1mp,cn2np,cn2mp,md1np,md1mp,md2np,md2mp &
    ,salt_film_np,salt_film_mp,salt_jet_np,salt_jet_mp &
@@ -501,7 +505,7 @@ integer :: m1,m2,m3,ia,iz,ja,jz,mcat,i,j,k
 
 real :: cfmasi,cparmi,glg,glgm,picpi
 real, dimension(m2,m3) :: glat,rtgt,topt,cosz,albedt,rlongup,rshort,rlong,aodt
-real, dimension(m1,m2,m3) :: dn0,rv,fthrd,pi0,pp,theta,rcp
+real, dimension(m1,m2,m3) :: dn0,rv,fthrd,fthrdlw,fthrdsw,pi0,pp,theta,rcp
 real, dimension(m1,m2,m3) :: bext,swup,swdn,lwup,lwdn
 real, dimension(m1,m2,m3) :: cn1np,cn1mp,cn2np,cn2mp,md1np,md1mp,md2np,md2mp &
   ,salt_film_np,salt_film_mp,salt_jet_np,salt_jet_mp,salt_spum_np,salt_spum_mp &
@@ -578,6 +582,8 @@ do j = ja,jz
             ,rlong(i,j)           &
             ,aodt(i,j)            &
             ,fthrd(1,i,j)         &
+            ,fthrdlw(1,i,j)         &
+            ,fthrdsw(1,i,j)         &
             ,bext(1,i,j)          &
             ,swup(1,i,j)          &
             ,swdn(1,i,j)          &
@@ -683,7 +689,7 @@ END SUBROUTINE zen
 !##############################################################################
 Subroutine radcalc3 (m1,i,j,ngrid,maxnzp,mcat,iswrtyp,ilwrtyp,zm,zt &
    ,glat,rtgt,topt,rv,albedt,cosz,rlongup,rshort,rlong,aodt &
-   ,fthrd,bext,swup,swdn,lwup,lwdn &
+   ,fthrd,fthrdlw,fthrdsw,bext,swup,swdn,lwup,lwdn &
    ,dn0 &
    )
 
@@ -865,7 +871,7 @@ integer, save :: ngass(mg)=(/1, 1, 1/),ngast(mg)=(/1, 1, 1/)
 
 real, save :: eps=1.e-15
 real :: glat,rtgt,topt,cosz,albedt,rlongup,rshort,rlong,aodt
-real :: zm(m1),zt(m1),dn0(m1),rv(m1),fthrd(m1)
+real :: zm(m1),zt(m1),dn0(m1),rv(m1),fthrd(m1),fthrdsw(m1),fthrdlw(m1)
 real :: bext(m1),swup(m1),swdn(m1),lwup(m1),lwdn(m1)
 
 real, allocatable, save, dimension(:)     :: zml,ztl,dzl,pl,tl,dl,rl,o3l  &
@@ -961,9 +967,9 @@ if (iswrtyp == 3 .and. cosz > 0.03) then
    do k = 2,m1-1
       exner(k) = (press(k)*p00i)**rocp
       !divide by exner to get potential temp heating rate
-      fthrd(k) = fthrd(k)  &
-         + (flxds(k) - flxds(k-1) + flxus(k-1) - flxus(k)) &
+      fthrdsw(k) = (flxds(k) - flxds(k-1) + flxus(k-1) - flxus(k)) &
             / (dl(k) * dzl(k) * cp * exner(k))
+      fthrd(k) = fthrd(k) + fthrdsw(k)
       swup(k) = flxus(k)
       swdn(k) = flxds(k)
     enddo
@@ -1001,9 +1007,9 @@ if (ilwrtyp == 3) then
 
    do k = 2,m1-1
       !divide by exner to get potential temp heating rate
-      fthrd(k) = fthrd(k)  &
-         + (flxdl(k) - flxdl(k-1) + flxul(k-1) - flxul(k)) &
+      fthrdlw(k) = (flxdl(k) - flxdl(k-1) + flxul(k-1) - flxul(k)) &
             / (dl(k) * dzl(k) * cp * exner(k))
+      fthrd(k) = fthrd(k) +fthrdlw(k)
       lwup(k) = flxul(k)
       lwdn(k) = flxdl(k)
    enddo

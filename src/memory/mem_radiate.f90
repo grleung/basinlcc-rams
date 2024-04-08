@@ -9,11 +9,12 @@ implicit none
    real, allocatable, dimension(:,:,:) :: &
                           fthrd,fthrdp,bext,swup,swdn,lwup,lwdn &
                           !GRL 2024-03-22 added variables for lw and sw heating rates
-                          ,fthrdsw,fthrdlw,clrhr,clrhrsw,clrhrlw
+                          ,fthrdsw,fthrdlw,clrhr,clrhrsw,clrhrlw &
+                          ,clrswup,clrswdn,clrlwup,clrlwdn
                           
       ! Variables to be dimensioned by (nxp,nyp)
    real, allocatable, dimension(:,:) :: &
-                          rshort,rlong,rlongup,albedt,cosz,aodt
+                          rshort,rlong,rlongup,albedt,cosz,aodt 
 
    End Type
    
@@ -56,10 +57,14 @@ implicit none
       if(ilwrtyp >= 3)  then
          allocate (radiate%lwup(n1,n2,n3))
          allocate (radiate%lwdn(n1,n2,n3))
+         allocate (radiate%clrlwup(n1,n2,n3))
+         allocate (radiate%clrlwdn(n1,n2,n3))
       endif
       if(iswrtyp >= 3)  then
          allocate (radiate%swup(n1,n2,n3))
          allocate (radiate%swdn(n1,n2,n3))
+         allocate (radiate%clrswup(n1,n2,n3))
+         allocate (radiate%clrswdn(n1,n2,n3))
       endif
    
 return
@@ -91,6 +96,10 @@ implicit none
    if (allocated(radiate%clrhr))  deallocate (radiate%clrhr)
    if (allocated(radiate%clrhrlw))  deallocate (radiate%clrhrlw)
    if (allocated(radiate%clrhrsw))  deallocate (radiate%clrhrsw)
+   if (allocated(radiate%clrswup))     deallocate (radiate%clrswup)
+   if (allocated(radiate%clrswdn))     deallocate (radiate%clrswdn)
+   if (allocated(radiate%clrlwup))     deallocate (radiate%clrlwup)
+   if (allocated(radiate%clrlwdn))     deallocate (radiate%clrlwdn)
 
 return
 END SUBROUTINE dealloc_radiate
@@ -155,6 +164,22 @@ implicit none
       CALL vtables2 (radiate%clrhrsw(1,1,1),radiatem%clrhrsw(1,1,1)  &
                   ,ng, npts, imean,  &
                   'CLRHRSW :3:anal:mpti')
+   if (allocated(radiate%clrswup))  &
+      CALL vtables2 (radiate%clrswup(1,1,1),radiatem%clrswup(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'CLRSWUP :3:anal:mpti')
+   if (allocated(radiate%clrswdn))  &
+      CALL vtables2 (radiate%clrswdn(1,1,1),radiatem%clrswdn(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'CLRSWDN :3:anal:mpti')
+   if (allocated(radiate%clrlwup))  &
+      CALL vtables2 (radiate%clrlwup(1,1,1),radiatem%clrlwup(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'CLRLWUP :3:anal:mpti')
+   if (allocated(radiate%clrlwdn))  &
+      CALL vtables2 (radiate%clrlwdn(1,1,1),radiatem%clrlwdn(1,1,1)  &
+                 ,ng, npts, imean,  &
+                 'CLRLWDN :3:anal:mpti')
                                  
    npts=n2*n3
    if (allocated(radiate%rshort))  &
