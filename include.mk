@@ -20,7 +20,7 @@ MAKE=/usr/bin/make
 #############################################################################
 # Set your RAMS root path and version number.
 #############################################################################
-RAMS_ROOT=/nobackupp16/swbuild/grleung1/rcemip-rams
+RAMS_ROOT=/swbuild/grleung1/rcemip-rams
 RAMS_VERSION=6.3.04
 
 #############################################################################
