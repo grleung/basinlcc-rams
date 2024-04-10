@@ -343,7 +343,7 @@ do icv = 1,8
 enddo
 
 ! Pristine ice to snow transfer
-if (jnmb(3).ge.1) then
+if (jnmb(4) .ge. 1) then
    CALL psxfer (k1(3),k2(3),k1(4),k2(4),i,j)
 endif
 
@@ -453,7 +453,7 @@ qx_lhr = qx
 
 ! Pristine ice to snow transfer done after collision-coalescence to
 ! avoid any mass/number adjustments that impact cloud-ice number
-if (jnmb(3) .ge. 1) then
+if (jnmb(4) .ge. 1) then
    CALL psxfer (k1(3),k2(3),k1(4),k2(4),i,j)
 endif
 
