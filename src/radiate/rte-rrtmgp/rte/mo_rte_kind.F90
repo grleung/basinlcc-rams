@@ -38,7 +38,7 @@ module mo_rte_kind
 #ifdef RAMS_DOUBLE_PREC
   integer, parameter :: wp = dp
 #else
-  integer, parameter :: wp = sp
+  integer, parameter :: wp = dp
 #endif
   !
   ! Logical - for use with kernels

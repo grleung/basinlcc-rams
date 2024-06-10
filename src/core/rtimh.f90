@@ -40,8 +40,8 @@ real, dimension(mzp,mxp,myp) :: thvlast
 !For computing FULL EXNER FUNCTION (after thermo update)
 !This is experimental. Do not use yet. (Nov 19, 2017)
 !------------------------------------------------------------------------------
-! CALL exevolve (mzp,mxp,myp,ia,iz,ja,jz,izu,jzv,'ADV',thvlast)
-! CALL acctimes ('EXEVOLVE1')
+  CALL exevolve (mzp,mxp,myp,ia,iz,ja,jz,izu,jzv,'ADV',thvlast)
+  CALL acctimes ('EXEVOLVE1')
 
 !------------------------------------------------------------------------------
 !  Radiation parameterization
@@ -234,8 +234,8 @@ real, dimension(mzp,mxp,myp) :: thvlast
 !  For computing FULL EXNER FUNCTION (after thermo update)
 !  This is experimental. Do not use yet. (Nov 19, 2017)
 !------------------------------------------------------------------------------
-! CALL exevolve (mzp,mxp,myp,ia,iz,ja,jz,izu,jzv,'THV',thvlast)
-! CALL acctimes ('EXEVOLVE2')
+ CALL exevolve (mzp,mxp,myp,ia,iz,ja,jz,izu,jzv,'THV',thvlast)
+ CALL acctimes ('EXEVOLVE2')
 
 !------------------------------------------------------------------------------
 !  Lateral velocity boundaries - radiative

@@ -525,7 +525,8 @@ endif
 
 !     compute 2 horizontal scalar gradients needed for dscp/dt
 
-if (ihorgrad .eq. 1 .and. scalar_tab(n,ngrid)%name /= 'THP') then
+!GRL 2024-06-04 Made change for IHORGRAD=1 to be more consistent - this fixed energy balance
+if (ihorgrad .eq. 1) then! .and. scalar_tab(n,ngrid)%name /= 'THP') then
    ! only for ihorgrad = 1 for all scalars except thp
    ! vt3df=d(scp)/dx(?)
    CALL grad (m1,m2,m3,1,iz,ja,jz,scp_diffuse,vt3df,'XDIR','TPNT')
@@ -555,7 +556,7 @@ endif
 
 !         horizontal flux divergence for scalars
 
-if (ihorgrad .eq. 1 .and. scalar_tab(n,ngrid)%name /= 'THP') then
+if (ihorgrad .eq. 1) then! .and. scalar_tab(n,ngrid)%name /= 'THP') then
    ! This is called for ihorgrad=1 for all scalars except thp
    ! fluxdivx = scalar flux divergence in x direction [scp*kg/m3/s]
    ! fluxdivy = scalar flux divergence in y direction
@@ -563,7 +564,7 @@ if (ihorgrad .eq. 1 .and. scalar_tab(n,ngrid)%name /= 'THP') then
 
    CALL divcart (m1,m2,m3,ia,iz,ja,jz,vt3dg,fluxdivy,'YDIR','VPNT')
 
-elseif (ihorgrad .eq. 2 .or. scalar_tab(n,ngrid)%name == 'THP') then
+elseif (ihorgrad .eq. 2) then! .or. scalar_tab(n,ngrid)%name == 'THP') then
    ! This is called for ihorgrad=2 for all scalars, or just for 
    !  thp if ihorgrad=1 - haven't gone through this subroutine
    CALL truhor (m1,m2,m3,ia,iz,ja,jz  &
