@@ -484,9 +484,8 @@ elseif (iaction .eq. 2) then
    enddo
 
 ! Adjust solar fluxes at top of atmosphere by current Earth-Sun distance
-! GRL 2023 12 05 removed adjustment of solar constant by solar factor
    do is = 1,nsolb
-      solar1(is) = solar0(is) !* solfac
+      solar1(is) = solar0(is) * solfac
    enddo
 elseif (iaction .eq. 3) then
 
