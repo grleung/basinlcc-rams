@@ -40,6 +40,7 @@ real, dimension(mzp,mxp,myp) :: thvlast
 !For computing FULL EXNER FUNCTION (after thermo update)
 !This is experimental. Do not use yet. (Nov 19, 2017)
 !------------------------------------------------------------------------------
+!GRL calling full exner function helps solve pressure drift
   CALL exevolve (mzp,mxp,myp,ia,iz,ja,jz,izu,jzv,'ADV',thvlast)
   CALL acctimes ('EXEVOLVE1')
 
@@ -234,6 +235,7 @@ real, dimension(mzp,mxp,myp) :: thvlast
 !  For computing FULL EXNER FUNCTION (after thermo update)
 !  This is experimental. Do not use yet. (Nov 19, 2017)
 !------------------------------------------------------------------------------
+!GRL calling full exner function helps solve pressure drift
  CALL exevolve (mzp,mxp,myp,ia,iz,ja,jz,izu,jzv,'THV',thvlast)
  CALL acctimes ('EXEVOLVE2')
 
