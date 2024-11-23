@@ -240,7 +240,8 @@ do ngr=1,ngrids
 
          CALL shdf5_set_hs_select (vtab_r(nv,ngr)%idim_type,'W',ngr &
                 ,mem_select,file_select,file_chunks)
-                         ! GRL 2024-05-28 Added Steve's truncation code
+         
+                ! GRL 2024-05-28 Added Steve's truncation code
 
          !For LITE files, call data truncation routines to round to user-chosen decimal
          !places, which allows for much better data compression. We can do this on LITE

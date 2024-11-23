@@ -1,0 +1,21 @@
+#PBS -S /bin/csh
+#PBS -V
+#PBS -q devel
+#PBS -lselect=1:ncpus=128:mpiprocs=128:model=rom_ait,walltime=01:00:00
+#PBS -W group_list=s2832
+#PBS -j oe
+#PBS -o /nobackupp12/grleung1/test/ 
+#PBS -N test
+#PBS -m be
+#PBS -r n
+
+setenv MPI_TYPE_DEPTH 16
+
+module load gcc/10.3 comp-intel/2020.4.304 mpi-hpe/mpt szip/2.1.1 
+
+setenv LD_LIBRARY_PATH /home6/grleung1/misc/build/lib:$LD_LIBRARY_PATH
+setenv PATH /home6/grleung1/misc/build/bin:$PATH
+
+cd /swbuild/grleung1/bee-rams/run/
+
+mpiexec ./rams-6.3.04 -f ./RAMSIN.test >& /nobackupp12/grleung1/nick-test/rams_01.log
